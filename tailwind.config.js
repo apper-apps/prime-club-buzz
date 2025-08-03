@@ -5,7 +5,7 @@ export default {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {
+extend: {
       colors: {
         primary: {
           50: '#F5F3FF',
@@ -42,6 +42,13 @@ export default {
           700: '#374151',
           800: '#1F2937',
           900: '#111827',
+        },
+        sidebar: {
+          dark: '#1E1F2B',
+          inactive: '#C2C3CC',
+          active: '#E32032',
+          hover: '#2A2C3A',
+          divider: '#2E2F3A',
         },
       },
       fontFamily: {

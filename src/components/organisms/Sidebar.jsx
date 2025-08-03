@@ -20,39 +20,39 @@ const navigation = [
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
+<div className="hidden lg:block">
         <motion.div
           initial={{ x: -240 }}
           animate={{ x: 0 }}
           transition={{ duration: 0.3 }}
-          className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 shadow-lg z-30 transition-all duration-300 ${
-            isCollapsed ? "w-16" : "w-64"
+          className={`fixed left-0 top-0 h-full bg-sidebar-dark shadow-lg z-30 transition-all duration-300 ${
+            isCollapsed ? "w-16" : "w-60"
           }`}
         >
-<div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-divider">
             {!isCollapsed && (
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
                   <ApperIcon name="Zap" size={18} className="text-white" />
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-gray-900">CRM</h1>
+                  <h1 className="text-xl font-semibold text-white font-sans">CRM</h1>
                 </div>
               </div>
             )}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-sidebar-hover rounded-lg transition-colors"
             >
               <ApperIcon 
                 name={isCollapsed ? "ChevronRight" : "ChevronLeft"} 
                 size={20} 
-                className="text-gray-500" 
+                className="text-sidebar-inactive" 
               />
             </button>
           </div>
 
-          <nav className="p-4 space-y-2">
+          <nav className="px-4 py-3 space-y-1">
             {navigation.map((item) => (
               <NavItem
                 key={item.to}
@@ -64,7 +64,7 @@ const navigation = [
             ))}
           </nav>
 
-<div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3 border-t border-sidebar-divider">
             <UserSettings isCollapsed={isCollapsed} />
           </div>
         </motion.div>
@@ -77,25 +77,24 @@ const navigation = [
     </>
   );
 };
-
 const MobileSidebar = ({ navigation }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-<div className="flex items-center">
+      <div className="lg:hidden bg-sidebar-dark border-b border-sidebar-divider px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center">
           <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
             <ApperIcon name="Zap" size={18} className="text-white" />
           </div>
-          <h1 className="ml-3 text-xl font-bold text-gray-900">CRM</h1>
+          <h1 className="ml-3 text-xl font-semibold text-white font-sans">CRM</h1>
         </div>
         <button
           onClick={() => setIsOpen(true)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 hover:bg-sidebar-hover rounded-lg transition-colors"
         >
-          <ApperIcon name="Menu" size={24} className="text-gray-600" />
+          <ApperIcon name="Menu" size={24} className="text-sidebar-inactive" />
         </button>
       </div>
 
@@ -108,26 +107,26 @@ const MobileSidebar = ({ navigation }) => {
             animate={{ x: 0 }}
             exit={{ x: -320 }}
             transition={{ duration: 0.3 }}
-            className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl"
+            className="fixed left-0 top-0 h-full w-80 bg-sidebar-dark shadow-xl"
           >
-<div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-divider">
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
                   <ApperIcon name="Zap" size={18} className="text-white" />
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-gray-900">CRM</h1>
+                  <h1 className="text-xl font-semibold text-white font-sans">CRM</h1>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-sidebar-hover rounded-lg transition-colors"
               >
-                <ApperIcon name="X" size={20} className="text-gray-500" />
+                <ApperIcon name="X" size={20} className="text-sidebar-inactive" />
               </button>
             </div>
 
-            <nav className="p-4 space-y-2">
+            <nav className="px-4 py-3 space-y-1">
               {navigation.map((item) => (
                 <div key={item.to} onClick={() => setIsOpen(false)}>
                   <NavItem
@@ -148,27 +147,27 @@ const MobileSidebar = ({ navigation }) => {
 const UserSettings = ({ isCollapsed }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-const settingsItems = [
+  const settingsItems = [
     { icon: "User", label: "Profile", action: () => console.log("Profile") },
     { icon: "Settings", label: "Account Settings", action: () => console.log("Account Settings") },
     { icon: "Palette", label: "Preferences", action: () => console.log("Preferences") },
     { icon: "LogOut", label: "Logout", action: () => console.log("Logout") }
   ];
 
-return (
+  return (
     <div className="relative">
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="w-full flex items-center p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        className="w-full flex items-center px-4 py-3 hover:bg-sidebar-hover rounded-lg transition-colors"
       >
         <div className="flex items-center">
           <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
             <span className="text-white text-sm font-semibold">U</span>
           </div>
           {!isCollapsed && (
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">User</p>
-              <p className="text-xs text-gray-500">Sales Manager</p>
+            <div className="ml-2">
+              <p className="text-sm font-medium text-white font-sans">User</p>
+              <p className="text-xs text-sidebar-inactive font-sans">Sales Manager</p>
             </div>
           )}
         </div>
@@ -176,12 +175,12 @@ return (
           <ApperIcon 
             name="ChevronDown" 
             size={16} 
-            className="text-gray-500 ml-auto" 
+            className="text-sidebar-inactive ml-auto" 
           />
         )}
       </button>
 
-{isDropdownOpen && (
+      {isDropdownOpen && (
         <>
           <div 
             className="fixed inset-0 z-40"
@@ -196,7 +195,7 @@ return (
                     item.action();
                     setIsDropdownOpen(false);
                   }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center transition-colors font-sans"
                 >
                   <ApperIcon name={item.icon} size={16} className="mr-3 text-gray-500" />
                   {item.label}
@@ -204,7 +203,7 @@ return (
               ))}
             </div>
           </div>
-</>
+        </>
       )}
     </div>
   );

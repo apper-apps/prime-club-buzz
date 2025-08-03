@@ -347,7 +347,7 @@ useEffect(() => {
                 </div>
 {dailyUrls.slice(0, 10).map((url, index) => (
                   <motion.div
-                    key={`${url.websiteUrl || 'unknown'}-${url.createdAt || index}`}
+                    key={`daily-url-${index}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -355,24 +355,24 @@ useEffect(() => {
                   >
                     <div className="flex-1">
                       <div className="font-medium text-gray-900 text-sm">
-                        {url.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        {url?.websiteUrl ? url.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "") : 'Unknown URL'}
                       </div>
-                      <div className="text-xs text-gray-500">{url.category}</div>
+                      <div className="text-xs text-gray-500">{url?.category || 'No category'}</div>
                     </div>
                     <div className="text-right space-y-1">
                       <Badge 
                         variant={
-                          url.status === 'Connected' || url.status === 'Meeting Done' ? 'success' :
-                          url.status === 'Meeting Booked' ? 'warning' :
-                          url.status === 'Rejected' ? 'error' : 'default'
+                          url?.status === 'Connected' || url?.status === 'Meeting Done' ? 'success' :
+                          url?.status === 'Meeting Booked' ? 'warning' :
+                          url?.status === 'Rejected' ? 'error' : 'default'
                         }
                         size="sm"
                         className="text-xs"
                       >
-                        {url.status}
+                        {url?.status || 'Unknown'}
                       </Badge>
                       <div className="text-xs text-gray-500">
-                        {new Date(url.createdAt).toLocaleDateString()}
+                        {url?.createdAt ? new Date(url.createdAt).toLocaleDateString() : 'No date'}
                       </div>
                     </div>
                   </motion.div>

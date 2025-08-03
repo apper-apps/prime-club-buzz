@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { toast } from "react-toastify";
 import { getDailyWebsiteUrls } from "@/services/api/reportService";
-import { getDashboardMetrics, getDashboardPendingFollowUps, getDetailedRecentActivity, getLeadPerformanceChart, getRecentActivity, getRevenueTrendsData, getTeamPerformanceRankings, getTodaysMeetings } from "@/services/api/dashboardService";
+import { getDashboardMetrics, getPendingFollowUps, getDetailedRecentActivity, getLeadPerformanceChart, getRecentActivity, getRevenueTrendsData, getTeamPerformanceRankings, getTodaysMeetings } from "@/services/api/dashboardService";
 import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import MetricCard from "@/components/molecules/MetricCard";
@@ -56,8 +56,8 @@ const [
         getDashboardMetrics(),
         getRecentActivity(),
         getTodaysMeetings(),
-        getDashboardPendingFollowUps(),
-getLeadPerformanceChart(),
+        getPendingFollowUps(),
+        getLeadPerformanceChart(),
         getTeamPerformanceRankings(),
         getRevenueTrendsData(selectedYear),
         getDetailedRecentActivity()

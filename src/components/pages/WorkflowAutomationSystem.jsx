@@ -185,7 +185,103 @@ const [workflows, setWorkflows] = useState([
       tags: ["routing", "geographic", "timezone", "instant"]
     }
   ]);
+// Lead Scoring Rules State
+  const [scoringRules, setScoringRules] = useState({
+    demographic: {
+      companySize: [
+        { label: 'Enterprise (1000+)', points: 25, active: true },
+        { label: 'Mid-Market (200-999)', points: 20, active: true },
+        { label: 'Small Business (50-199)', points: 15, active: true },
+        { label: 'Startup (1-49)', points: 10, active: true }
+      ],
+      jobTitle: [
+        { label: 'C-Level Executive', points: 30, active: true },
+        { label: 'VP/Director', points: 25, active: true },
+        { label: 'Manager', points: 20, active: true },
+        { label: 'Individual Contributor', points: 10, active: true }
+      ],
+      industry: [
+        { label: 'Technology', points: 25, active: true },
+        { label: 'Healthcare', points: 20, active: true },
+        { label: 'Financial Services', points: 20, active: true },
+        { label: 'Manufacturing', points: 15, active: true },
+        { label: 'Retail', points: 10, active: true }
+      ],
+      budget: [
+        { label: '$100K+', points: 30, active: true },
+        { label: '$50K-$100K', points: 25, active: true },
+        { label: '$25K-$50K', points: 20, active: true },
+        { label: '$10K-$25K', points: 15, active: true },
+        { label: 'Under $10K', points: 5, active: true }
+      ]
+    },
+    behavioral: {
+      websiteEngagement: [
+        { action: 'Pricing Page Visit', points: 15, active: true },
+        { action: 'Product Demo Request', points: 25, active: true },
+        { action: 'Multiple Page Views (5+)', points: 10, active: true },
+        { action: 'Resource Download', points: 8, active: true },
+        { action: 'Contact Form Submit', points: 20, active: true }
+      ],
+      contentInteraction: [
+        { action: 'Whitepaper Download', points: 12, active: true },
+        { action: 'Webinar Attendance', points: 18, active: true },
+        { action: 'Case Study View', points: 10, active: true },
+        { action: 'Blog Engagement', points: 5, active: true },
+        { action: 'Video Watch (>50%)', points: 8, active: true }
+      ],
+      emailEngagement: [
+        { action: 'Email Open', points: 2, active: true },
+        { action: 'Email Click', points: 5, active: true },
+        { action: 'Reply to Email', points: 15, active: true },
+        { action: 'Forward Email', points: 8, active: true },
+        { action: 'Unsubscribe', points: -10, active: true }
+      ],
+      directEngagement: [
+        { action: 'Phone Call Answered', points: 25, active: true },
+        { action: 'Meeting Scheduled', points: 30, active: true },
+        { action: 'Social Media Follow', points: 3, active: true },
+        { action: 'LinkedIn Connection', points: 5, active: true },
+        { action: 'Referral Given', points: 20, active: true }
+      ]
+    },
+    timeDecay: {
+      enabled: true,
+      rules: [
+        { period: '0-7 days', multiplier: 1.0, active: true },
+        { period: '8-30 days', multiplier: 0.8, active: true },
+        { period: '31-90 days', multiplier: 0.6, active: true },
+        { period: '91-180 days', multiplier: 0.4, active: true },
+        { period: '180+ days', multiplier: 0.2, active: true }
+      ]
+    },
+    thresholds: {
+      cold: { min: 0, max: 25, color: 'blue' },
+      warm: { min: 26, max: 50, color: 'yellow' },
+      hot: { min: 51, max: 75, color: 'orange' },
+      salesReady: { min: 76, max: 100, color: 'green' }
+    }
+  });
 
+  // Sample leads for score calculation
+  const [sampleLeads] = useState([
+    {
+      id: 1,
+      name: 'John Smith',
+      company: 'TechCorp Inc',
+      demographic: { companySize: 'Enterprise (1000+)', jobTitle: 'VP/Director', industry: 'Technology', budget: '$100K+' },
+      behavioral: { websiteEngagement: ['Pricing Page Visit', 'Product Demo Request'], contentInteraction: ['Webinar Attendance'], emailEngagement: ['Email Click', 'Reply to Email'], directEngagement: ['Meeting Scheduled'] },
+      lastActivity: '2024-01-15'
+    },
+    {
+      id: 2,
+      name: 'Sarah Johnson',
+      company: 'Healthcare Plus',
+      demographic: { companySize: 'Mid-Market (200-999)', jobTitle: 'Manager', industry: 'Healthcare', budget: '$50K-$100K' },
+      behavioral: { websiteEngagement: ['Resource Download'], contentInteraction: ['Case Study View'], emailEngagement: ['Email Open'], directEngagement: [] },
+      lastActivity: '2024-01-10'
+    }
+  ]);
   // Comprehensive trigger types with icons and descriptions
 // Helper function to render trigger icons
   const renderTriggerIcon = (type) => {
@@ -1070,13 +1166,370 @@ const [workflows, setWorkflows] = useState([
             </div>
           )}
           
-          {activeTab === 'lead-scoring' && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Lead Scoring</h2>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <ApperIcon name="Target" size={48} className="text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Lead Scoring Configuration</h3>
-                <p className="text-gray-600">Configure lead scoring rules and view scoring analytics here.</p>
+{activeTab === 'lead-scoring' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Lead Scoring Configuration</h2>
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => {
+                    // Save scoring rules logic
+                    console.log('Saving scoring rules...', scoringRules);
+                  }}
+                >
+                  <ApperIcon name="Save" size={16} className="mr-2" />
+                  Save Changes
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left Column - Scoring Rules (2/3 width) */}
+                <div className="lg:col-span-2 space-y-6">
+                  
+                  {/* Demographic Scoring Section */}
+                  <div className="bg-white border border-blue-200 rounded-lg overflow-hidden">
+                    <div className="bg-blue-50 px-6 py-4 border-b border-blue-200">
+                      <div className="flex items-center">
+                        <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                          <ApperIcon name="User" size={20} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-blue-900">Demographic Scoring</h3>
+                          <p className="text-sm text-blue-600">Score based on lead profile attributes</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-6">
+                      {Object.entries(scoringRules.demographic).map(([category, rules]) => (
+                        <div key={category} className="space-y-3">
+                          <h4 className="font-medium text-gray-900 capitalize flex items-center">
+                            {category.replace(/([A-Z])/g, ' $1').trim()}
+                            <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                              {rules.filter(r => r.active).length} active
+                            </span>
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {rules.map((rule, index) => (
+                              <div key={index} className={`border rounded-lg p-3 transition-colors ${rule.active ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'}`}>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={rule.active}
+                                      onChange={(e) => {
+                                        const newRules = { ...scoringRules };
+                                        newRules.demographic[category][index].active = e.target.checked;
+                                        setScoringRules(newRules);
+                                      }}
+                                      className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    />
+                                    <span className={`ml-2 text-sm ${rule.active ? 'text-gray-900' : 'text-gray-500'}`}>
+                                      {rule.label}
+                                    </span>
+                                  </div>
+                                  <input
+                                    type="number"
+                                    value={rule.points}
+                                    onChange={(e) => {
+                                      const newRules = { ...scoringRules };
+                                      newRules.demographic[category][index].points = parseInt(e.target.value) || 0;
+                                      setScoringRules(newRules);
+                                    }}
+                                    className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    disabled={!rule.active}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Behavioral Scoring Section */}
+                  <div className="bg-white border border-green-200 rounded-lg overflow-hidden">
+                    <div className="bg-green-50 px-6 py-4 border-b border-green-200">
+                      <div className="flex items-center">
+                        <div className="p-2 bg-green-100 rounded-lg mr-3">
+                          <ApperIcon name="Activity" size={20} className="text-green-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-green-900">Behavioral Scoring</h3>
+                          <p className="text-sm text-green-600">Score based on lead actions and engagement</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-6">
+                      {Object.entries(scoringRules.behavioral).map(([category, actions]) => (
+                        <div key={category} className="space-y-3">
+                          <h4 className="font-medium text-gray-900 capitalize flex items-center">
+                            {category.replace(/([A-Z])/g, ' $1').trim()}
+                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                              {actions.filter(a => a.active).length} active
+                            </span>
+                          </h4>
+                          <div className="space-y-2">
+                            {actions.map((action, index) => (
+                              <div key={index} className={`border rounded-lg p-3 transition-colors ${action.active ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={action.active}
+                                      onChange={(e) => {
+                                        const newRules = { ...scoringRules };
+                                        newRules.behavioral[category][index].active = e.target.checked;
+                                        setScoringRules(newRules);
+                                      }}
+                                      className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
+                                    />
+                                    <span className={`ml-2 text-sm ${action.active ? 'text-gray-900' : 'text-gray-500'}`}>
+                                      {action.action}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="number"
+                                      value={action.points}
+                                      onChange={(e) => {
+                                        const newRules = { ...scoringRules };
+                                        newRules.behavioral[category][index].points = parseInt(e.target.value) || 0;
+                                        setScoringRules(newRules);
+                                      }}
+                                      className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                      disabled={!action.active}
+                                    />
+                                    <span className="text-xs text-gray-500">pts</span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Time Decay Settings */}
+                  <div className="bg-white border border-orange-200 rounded-lg overflow-hidden">
+                    <div className="bg-orange-50 px-6 py-4 border-b border-orange-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="p-2 bg-orange-100 rounded-lg mr-3">
+                            <ApperIcon name="Clock" size={20} className="text-orange-600" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-orange-900">Time Decay Settings</h3>
+                            <p className="text-sm text-orange-600">Adjust scores based on activity recency</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={scoringRules.timeDecay.enabled}
+                            onChange={(e) => {
+                              setScoringRules(prev => ({
+                                ...prev,
+                                timeDecay: { ...prev.timeDecay, enabled: e.target.checked }
+                              }));
+                            }}
+                            className="w-4 h-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500"
+                          />
+                          <span className="ml-2 text-sm text-orange-900">Enable Time Decay</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="space-y-3">
+                        {scoringRules.timeDecay.rules.map((rule, index) => (
+                          <div key={index} className={`border rounded-lg p-3 transition-colors ${scoringRules.timeDecay.enabled && rule.active ? 'border-orange-200 bg-orange-50' : 'border-gray-200 bg-gray-50'}`}>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={rule.active}
+                                  onChange={(e) => {
+                                    const newRules = { ...scoringRules };
+                                    newRules.timeDecay.rules[index].active = e.target.checked;
+                                    setScoringRules(newRules);
+                                  }}
+                                  disabled={!scoringRules.timeDecay.enabled}
+                                  className="w-4 h-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500"
+                                />
+                                <span className={`ml-2 text-sm ${scoringRules.timeDecay.enabled && rule.active ? 'text-gray-900' : 'text-gray-500'}`}>
+                                  {rule.period}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-xs text-gray-500">×</span>
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  max="1"
+                                  value={rule.multiplier}
+                                  onChange={(e) => {
+                                    const newRules = { ...scoringRules };
+                                    newRules.timeDecay.rules[index].multiplier = parseFloat(e.target.value) || 0;
+                                    setScoringRules(newRules);
+                                  }}
+                                  className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                  disabled={!scoringRules.timeDecay.enabled || !rule.active}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Score Thresholds & Calculator (1/3 width) */}
+                <div className="space-y-6">
+                  
+                  {/* Score Thresholds */}
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                        <ApperIcon name="Target" size={20} className="mr-2 text-gray-600" />
+                        Score Thresholds
+                      </h3>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      {Object.entries(scoringRules.thresholds).map(([level, threshold]) => {
+                        const colors = {
+                          blue: 'bg-blue-100 text-blue-800 border-blue-200',
+                          yellow: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                          orange: 'bg-orange-100 text-orange-800 border-orange-200',
+                          green: 'bg-green-100 text-green-800 border-green-200'
+                        };
+                        
+                        return (
+                          <div key={level} className={`border rounded-lg p-3 ${colors[threshold.color]}`}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium capitalize">{level.replace(/([A-Z])/g, ' $1').trim()}</span>
+                              <div className="text-sm font-mono">
+                                {threshold.min}-{threshold.max}
+                              </div>
+                            </div>
+                            <div className="flex space-x-2">
+                              <input
+                                type="number"
+                                value={threshold.min}
+                                onChange={(e) => {
+                                  const newRules = { ...scoringRules };
+                                  newRules.thresholds[level].min = parseInt(e.target.value) || 0;
+                                  setScoringRules(newRules);
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                placeholder="Min"
+                              />
+                              <input
+                                type="number"
+                                value={threshold.max}
+                                onChange={(e) => {
+                                  const newRules = { ...scoringRules };
+                                  newRules.thresholds[level].max = parseInt(e.target.value) || 0;
+                                  setScoringRules(newRules);
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                                placeholder="Max"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Live Score Calculator */}
+                  <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                        <ApperIcon name="Calculator" size={20} className="mr-2 text-gray-600" />
+                        Live Score Calculator
+                      </h3>
+                    </div>
+                    <div className="p-4 space-y-4">
+                      {sampleLeads.map(lead => {
+                        // Calculate score for sample lead
+                        let totalScore = 0;
+                        
+                        // Demographic scoring
+                        const demographicRules = scoringRules.demographic;
+                        Object.entries(lead.demographic).forEach(([category, value]) => {
+                          const rule = demographicRules[category]?.find(r => r.label === value && r.active);
+                          if (rule) totalScore += rule.points;
+                        });
+                        
+                        // Behavioral scoring
+                        const behavioralRules = scoringRules.behavioral;
+                        Object.entries(lead.behavioral).forEach(([category, actions]) => {
+                          actions.forEach(action => {
+                            const rule = behavioralRules[category]?.find(r => r.action === action && r.active);
+                            if (rule) totalScore += rule.points;
+                          });
+                        });
+                        
+                        // Time decay application
+                        if (scoringRules.timeDecay.enabled) {
+                          const daysSinceActivity = Math.floor((new Date() - new Date(lead.lastActivity)) / (1000 * 60 * 60 * 24));
+                          let multiplier = 1.0;
+                          
+                          if (daysSinceActivity > 180) multiplier = 0.2;
+                          else if (daysSinceActivity > 90) multiplier = 0.4;
+                          else if (daysSinceActivity > 30) multiplier = 0.6;
+                          else if (daysSinceActivity > 7) multiplier = 0.8;
+                          
+                          totalScore = Math.round(totalScore * multiplier);
+                        }
+                        
+                        // Determine level
+                        let level = 'cold';
+                        let levelColor = 'blue';
+                        Object.entries(scoringRules.thresholds).forEach(([thresholdLevel, threshold]) => {
+                          if (totalScore >= threshold.min && totalScore <= threshold.max) {
+                            level = thresholdLevel;
+                            levelColor = threshold.color;
+                          }
+                        });
+                        
+                        const levelColors = {
+                          blue: 'bg-blue-100 text-blue-800',
+                          yellow: 'bg-yellow-100 text-yellow-800',
+                          orange: 'bg-orange-100 text-orange-800',
+                          green: 'bg-green-100 text-green-800'
+                        };
+                        
+                        return (
+                          <div key={lead.id} className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <div className="font-medium text-sm text-gray-900">{lead.name}</div>
+                                <div className="text-xs text-gray-500">{lead.company}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-gray-900">{totalScore}</div>
+                                <div className={`text-xs px-2 py-1 rounded-full ${levelColors[levelColor]}`}>
+                                  {level.replace(/([A-Z])/g, ' $1').trim()}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full transition-all duration-300 ${levelColor === 'blue' ? 'bg-blue-500' : levelColor === 'yellow' ? 'bg-yellow-500' : levelColor === 'orange' ? 'bg-orange-500' : 'bg-green-500'}`}
+                                style={{ width: `${Math.min((totalScore / 100) * 100, 100)}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

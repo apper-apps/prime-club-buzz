@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
 import Analytics from "@/components/pages/Analytics";
 import Button from "@/components/atoms/Button";
@@ -21,9 +22,10 @@ const [builderState, setBuilderState] = useState({
   actions: [],
   tags: []
 });
-
 // Sample workflow data with comprehensive automation scenarios
 const [expandedWorkflow, setExpandedWorkflow] = useState(null);
+
+// Workflows state variable
 const [workflows, setWorkflows] = useState([
     {
       Id: 1,
@@ -204,6 +206,87 @@ const [workflows, setWorkflows] = useState([
       tags: ["routing", "geographic", "timezone", "instant"]
     }
   ]);
+
+// Save workflow function
+const saveWorkflow = () => {
+  // Validate required fields
+  if (!builderState.name?.trim()) {
+    toast.error('Workflow name is required');
+    return;
+  }
+
+  if (!builderState.trigger?.type) {
+    toast.error('Workflow trigger is required');
+    return;
+  }
+
+  if (!builderState.actions?.length) {
+    toast.error('At least one action is required');
+    return;
+  }
+
+  try {
+    if (currentWorkflow) {
+      // Update existing workflow
+      const updatedWorkflows = workflows.map(w => 
+        w.Id === currentWorkflow.Id 
+          ? { 
+              ...w, 
+              ...builderState,
+              lastModified: new Date().toISOString(),
+              modifiedBy: 'Current User'
+            }
+          : w
+      );
+      setWorkflows(updatedWorkflows);
+      toast.success(`Workflow "${builderState.name}" updated successfully`);
+    } else {
+      // Generate unique ID for new workflow
+      const maxId = workflows.length > 0 ? Math.max(...workflows.map(w => w.Id)) : 0;
+      const newId = maxId + 1;
+      
+      // Create new workflow with default values
+      const newWorkflow = {
+        Id: newId,
+        ...builderState,
+        isActive: true,
+        executions: 0,
+        successRate: 0,
+        lastRun: null,
+        createdBy: 'Current User',
+        createdAt: new Date().toISOString(),
+        lastModified: new Date().toISOString(),
+        modifiedBy: 'Current User'
+      };
+      
+      setWorkflows([...workflows, newWorkflow]);
+      toast.success(`Workflow "${builderState.name}" created successfully`);
+    }
+    
+    // Reset state and close modal
+    setCurrentWorkflow(null);
+    setBuilderState({
+      name: '',
+      description: '',
+      category: 'lead_nurturing',
+      priority: 'medium',
+      trigger: {
+        type: 'lead_created',
+        condition: '',
+        value: '',
+        additionalConditions: []
+      },
+      actions: [],
+      tags: []
+    });
+    setIsBuilderOpen(false);
+    
+  } catch (error) {
+    console.error('Error saving workflow:', error);
+    toast.error('Failed to save workflow. Please try again.');
+  }
+};
+// Lead Scoring Rules State
 // Lead Scoring Rules State
   // Execution History State
   const [executionHistory] = useState([
@@ -1237,9 +1320,19 @@ const actionTypes = [
                           
                           {/* Edit Button */}
                           <button 
-                            onClick={() => {
-                              // Add edit functionality
-                              console.log('Editing workflow:', workflow.name);
+onClick={() => {
+                              setCurrentWorkflow(workflow);
+                              setBuilderState({
+                                name: workflow.name,
+                                description: workflow.description,
+                                trigger: workflow.trigger,
+                                conditions: workflow.conditions || [],
+                                actions: workflow.actions || [],
+                                priority: workflow.priority,
+                                category: workflow.category
+                              });
+                              setIsBuilderOpen(true);
+                              toast.info(`Editing workflow: ${workflow.name}`);
                             }}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Edit workflow"
@@ -2725,35 +2818,9 @@ const actionTypes = [
                     >
                       Cancel
                     </Button>
-                    <Button
+<Button
                       onClick={() => {
-                        // TODO: Implement save workflow functionality
-                        console.log('Saving workflow:', builderState);
-                        
-                        if (currentWorkflow) {
-                          // Update existing workflow
-                          const updatedWorkflows = workflows.map(w => 
-                            w.Id === currentWorkflow.Id 
-                              ? { ...w, ...builderState, lastRun: new Date().toISOString() }
-                              : w
-                          );
-                          setWorkflows(updatedWorkflows);
-                        } else {
-                          // Create new workflow
-                          const newWorkflow = {
-                            Id: workflows.length + 1,
-                            ...builderState,
-                            isActive: true,
-                            executions: 0,
-                            successRate: 0,
-                            lastRun: null,
-                            createdBy: 'Current User',
-                            createdAt: new Date().toISOString()
-                          };
-                          setWorkflows([...workflows, newWorkflow]);
-                        }
-                        
-                        setIsBuilderOpen(false);
+                        saveWorkflow();
                       }}
                       variant="primary"
                       className="px-6 py-2"

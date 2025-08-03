@@ -186,6 +186,50 @@ const WorkflowAutomationSystem = () => {
   ]);
 
   // Comprehensive trigger types with icons and descriptions
+// Helper function to render trigger icons
+  const renderTriggerIcon = (type) => {
+    const triggerType = triggerTypes.find(t => t.type === type);
+    return triggerType?.icon || 'Circle';
+  };
+
+  // Helper function to render action icons
+  const renderActionIcon = (type) => {
+    const actionType = actionTypes.find(a => a.type === type);
+    return actionType?.icon || 'Circle';
+  };
+
+  // Helper function to get priority colors
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  // Helper function to get category colors
+  const getCategoryColor = (category) => {
+    switch (category) {
+      case 'lead_nurturing':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'retention':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'lead_routing':
+        return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'onboarding':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 're_engagement':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
   const triggerTypes = [
     {
       type: "lead_created",
@@ -682,13 +726,116 @@ const WorkflowAutomationSystem = () => {
                           </div>
                           <div className="text-xs text-gray-500">Created By</div>
                         </div>
+</div>
+
+                      {/* Workflow Visualization Section */}
+                      <div className="mt-6 pt-4 border-t border-gray-100">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                          <ApperIcon name="GitBranch" size={14} className="text-gray-600" />
+                          Workflow Visualization
+                        </h4>
+                        
+                        <div className="overflow-x-auto pb-2">
+                          <div className="flex items-center gap-3 min-w-max">
+                            {/* Trigger Box */}
+                            <div className="flex-shrink-0 min-w-[200px]">
+                              <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-3 shadow-sm">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <ApperIcon 
+                                    name={renderTriggerIcon(workflow.trigger.type)} 
+                                    size={16} 
+                                    className="text-white" 
+                                  />
+                                  <span className="text-sm font-medium">
+                                    {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-blue-100 leading-relaxed">
+                                  {triggerTypes.find(t => t.type === workflow.trigger.type)?.description}
+                                </p>
+                                {workflow.trigger.additionalConditions && workflow.trigger.additionalConditions.length > 0 && (
+                                  <div className="mt-2 text-xs text-blue-200">
+                                    +{workflow.trigger.additionalConditions.length} conditions
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Arrow Connector */}
+                            <div className="flex-shrink-0 flex items-center">
+                              <div className="w-6 h-0.5 bg-gray-300"></div>
+                              <ApperIcon name="ChevronRight" size={16} className="text-gray-400 mx-1" />
+                              <div className="w-6 h-0.5 bg-gray-300"></div>
+                            </div>
+
+                            {/* Action Boxes */}
+                            <div className="flex items-center gap-3">
+                              {workflow.actions.slice(0, 3).map((action, index) => (
+                                <div key={index} className="flex items-center gap-3">
+                                  <div className="flex-shrink-0 min-w-[180px]">
+                                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-3 shadow-sm">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <ApperIcon 
+                                          name={renderActionIcon(action.type)} 
+                                          size={16} 
+                                          className="text-white" 
+                                        />
+                                        <span className="text-sm font-medium">
+                                          {actionTypes.find(a => a.type === action.type)?.label || action.type}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-green-100 leading-relaxed">
+                                        {actionTypes.find(a => a.type === action.type)?.description}
+                                      </p>
+                                      {action.delay > 0 && (
+                                        <div className="mt-2 text-xs text-green-200 bg-green-600 bg-opacity-50 px-2 py-1 rounded">
+                                          Delay: {action.delay < 60 ? `${action.delay}m` : 
+                                                 action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
+                                                 `${Math.floor(action.delay / 1440)}d`}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Arrow between actions (except after last shown action) */}
+                                  {index < Math.min(workflow.actions.length, 3) - 1 && (
+                                    <div className="flex-shrink-0 flex items-center">
+                                      <div className="w-4 h-0.5 bg-gray-300"></div>
+                                      <ApperIcon name="ChevronRight" size={14} className="text-gray-400 mx-1" />
+                                      <div className="w-4 h-0.5 bg-gray-300"></div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+
+                              {/* Show +X more indicator */}
+                              {workflow.actions.length > 3 && (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-0.5 bg-gray-300"></div>
+                                  <ApperIcon name="ChevronRight" size={14} className="text-gray-400" />
+                                  <div className="flex-shrink-0 min-w-[120px]">
+                                    <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-3 text-center">
+                                      <ApperIcon name="MoreHorizontal" size={16} className="text-gray-500 mx-auto mb-1" />
+                                      <span className="text-xs font-medium text-gray-600">
+                                        +{workflow.actions.length - 3} more
+                                      </span>
+                                      <p className="text-xs text-gray-500 mt-1">
+                                        actions
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Trigger Section */}
-                      <div className="mb-4">
+                      {/* Legacy Trigger Section (kept for backwards compatibility) */}
+                      <div className="mb-4 mt-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                           <ApperIcon name="Zap" size={14} className="text-primary-600" />
-                          Trigger
+                          Trigger Details
                         </h4>
                         <div className="bg-primary-50 border border-primary-100 rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1">
@@ -712,7 +859,7 @@ const WorkflowAutomationSystem = () => {
                         </div>
                       </div>
 
-                      {/* Actions Section */}
+                      {/* Legacy Actions Section (kept for backwards compatibility) */}
                       <div className="mb-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                           <ApperIcon name="Play" size={14} className="text-blue-600" />

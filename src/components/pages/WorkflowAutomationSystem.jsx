@@ -2086,15 +2086,223 @@ const actionTypes = [
                 </div>
               </div>
             </div>
-          )}
+)}
           
           {activeTab === 'analytics' && (
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Analytics</h2>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <ApperIcon name="BarChart3" size={48} className="text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Workflow Analytics</h3>
-                <p className="text-gray-600">Comprehensive workflow performance metrics and analytics will be displayed here.</p>
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Workflow Analytics</h2>
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <ApperIcon name="Clock" size={16} />
+                  <span>Last updated: {new Date().toLocaleTimeString()}</span>
+                </div>
+              </div>
+
+              {/* Key Metrics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <ApperIcon name="Activity" size={16} className="text-blue-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600">Total Executions</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+                      analyticsData.performanceMetrics.totalExecutionsChange >= 0 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      <ApperIcon 
+                        name={analyticsData.performanceMetrics.totalExecutionsChange >= 0 ? "TrendingUp" : "TrendingDown"} 
+                        size={12} 
+                      />
+                      <span>{Math.abs(analyticsData.performanceMetrics.totalExecutionsChange)}%</span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">{analyticsData.totalExecutions.toLocaleString()}</div>
+                </div>
+
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <ApperIcon name="CheckCircle" size={16} className="text-green-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600">Success Rate</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+                      analyticsData.performanceMetrics.successRateChange >= 0 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      <ApperIcon 
+                        name={analyticsData.performanceMetrics.successRateChange >= 0 ? "TrendingUp" : "TrendingDown"} 
+                        size={12} 
+                      />
+                      <span>{Math.abs(analyticsData.performanceMetrics.successRateChange)}%</span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">{analyticsData.successRate}%</div>
+                </div>
+
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <ApperIcon name="Clock" size={16} className="text-orange-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600">Avg Execution Time</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+                      analyticsData.performanceMetrics.avgExecutionTimeChange <= 0 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      <ApperIcon 
+                        name={analyticsData.performanceMetrics.avgExecutionTimeChange <= 0 ? "TrendingDown" : "TrendingUp"} 
+                        size={12} 
+                      />
+                      <span>{Math.abs(analyticsData.performanceMetrics.avgExecutionTimeChange)}%</span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">{analyticsData.avgExecutionTime}s</div>
+                </div>
+
+                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <ApperIcon name="Settings" size={16} className="text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600">Active Workflows</span>
+                    </div>
+                    <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+                      analyticsData.performanceMetrics.activeWorkflowsChange >= 0 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      <ApperIcon 
+                        name={analyticsData.performanceMetrics.activeWorkflowsChange >= 0 ? "TrendingUp" : "TrendingDown"} 
+                        size={12} 
+                      />
+                      <span>{Math.abs(analyticsData.performanceMetrics.activeWorkflowsChange)}%</span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">{analyticsData.activeWorkflows}</div>
+                </div>
+              </div>
+
+              {/* Execution Trend Chart */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Execution Trend</h3>
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <span>Last 7 days</span>
+                  </div>
+                </div>
+                <div className="h-64">
+                  <div className="flex items-end justify-between h-full space-x-2">
+                    {analyticsData.executionTrend.map((item, index) => {
+                      const maxValue = Math.max(...analyticsData.executionTrend.map(i => i.executions));
+                      const height = (item.executions / maxValue) * 100;
+                      return (
+                        <div key={index} className="flex-1 flex flex-col items-center">
+                          <div className="w-full flex flex-col items-center mb-2">
+                            <div 
+                              className="w-full bg-blue-500 rounded-t transition-all duration-500 min-h-[4px] relative group cursor-pointer"
+                              style={{ height: `${height}%` }}
+                            >
+                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                {item.executions} executions
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-xs text-gray-600 font-medium">{item.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Top Performing Workflows */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Top Performing Workflows</h3>
+                  <Button variant="outline" size="sm">
+                    <ApperIcon name="Download" size={16} className="mr-2" />
+                    Export Report
+                  </Button>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Workflow</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Category</th>
+                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Executions</th>
+                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Success Rate</th>
+                        <th className="text-right py-3 px-4 font-semibold text-gray-700">Performance</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analyticsData.topPerformingWorkflows.map((workflow, index) => (
+                        <tr key={workflow.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
+                                <span className="text-sm font-bold text-blue-600">#{index + 1}</span>
+                              </div>
+                              <div>
+                                <div className="font-medium text-gray-900">{workflow.name}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(workflow.category)}`}>
+                              {workflow.category}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium text-gray-900">
+                            {workflow.executions.toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <div className="flex items-center justify-end space-x-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                                  style={{ width: `${workflow.successRate}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-sm font-medium text-gray-900">{workflow.successRate}%</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <div className="flex items-center justify-end">
+                              {workflow.successRate >= 95 ? (
+                                <div className="flex items-center space-x-1 text-green-600">
+                                  <ApperIcon name="TrendingUp" size={16} />
+                                  <span className="text-sm font-medium">Excellent</span>
+                                </div>
+                              ) : workflow.successRate >= 90 ? (
+                                <div className="flex items-center space-x-1 text-blue-600">
+                                  <ApperIcon name="Minus" size={16} />
+                                  <span className="text-sm font-medium">Good</span>
+                                </div>
+                              ) : (
+                                <div className="flex items-center space-x-1 text-orange-600">
+                                  <ApperIcon name="TrendingDown" size={16} />
+                                  <span className="text-sm font-medium">Needs Attention</span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

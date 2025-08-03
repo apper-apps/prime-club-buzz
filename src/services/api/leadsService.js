@@ -97,7 +97,7 @@ const newLead = {
     websiteUrl: leadData.websiteUrl,
     teamSize: leadData.teamSize || "1-3",
     arr: leadData.arr || 0,
-    category: leadData.category || "Other",
+category: leadData.category || "Website Contact Form",
     linkedinUrl: leadData.linkedinUrl || "",
     status: leadData.status || "Keep an Eye",
     fundingType: leadData.fundingType || "Bootstrapped",

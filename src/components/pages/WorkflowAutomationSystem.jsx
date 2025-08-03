@@ -277,17 +277,74 @@ const saveWorkflow = () => {
         additionalConditions: []
       },
       actions: [],
-      tags: []
+tags: []
     });
     setIsBuilderOpen(false);
-    
   } catch (error) {
     console.error('Error saving workflow:', error);
     toast.error('Failed to save workflow. Please try again.');
   }
 };
+
 // Lead Scoring Rules State
-// Lead Scoring Rules State
+const [leadScoringRules, setLeadScoringRules] = useState({
+  demographic: [
+    { field: 'jobTitle', operator: 'contains', value: 'Manager', score: 15 },
+    { field: 'company', operator: 'not_empty', value: '', score: 10 },
+  ],
+  behavioral: [
+    { field: 'emailOpens', operator: 'greater_than', value: '5', score: 20 },
+    { field: 'websiteVisits', operator: 'greater_than', value: '3', score: 15 },
+  ]
+});
+
+// Execution History State
+
+// Workflow Management Functions
+const editWorkflow = (workflow) => {
+  setCurrentWorkflow(workflow);
+  setBuilderState({
+    name: workflow.name,
+    description: workflow.description,
+    trigger: workflow.trigger,
+    conditions: workflow.conditions || [],
+    actions: workflow.actions || [],
+    priority: workflow.priority,
+    category: workflow.category,
+    tags: workflow.tags || []
+  });
+  setIsBuilderOpen(true);
+};
+  const deleteWorkflow = (workflowId) => {
+    const workflow = workflows.find(w => w.Id === workflowId);
+    if (!workflow) {
+      toast.error('Workflow not found');
+      return;
+    }
+
+    if (window.confirm(`Are you sure you want to delete "${workflow.name}"? This action cannot be undone.`)) {
+      const updatedWorkflows = workflows.filter(w => w.Id !== workflowId);
+      setWorkflows(updatedWorkflows);
+      toast.success(`Workflow "${workflow.name}" deleted successfully`);
+    }
+  };
+
+  const toggleWorkflow = (workflowId) => {
+    const workflow = workflows.find(w => w.Id === workflowId);
+    if (!workflow) {
+      toast.error('Workflow not found');
+      return;
+    }
+
+    const updatedWorkflows = workflows.map(w => 
+      w.Id === workflowId ? { ...w, isActive: !w.isActive } : w
+    );
+    setWorkflows(updatedWorkflows);
+    
+    const newStatus = !workflow.isActive ? 'activated' : 'paused';
+    toast.success(`Workflow "${workflow.name}" ${newStatus} successfully`);
+  };
+
   // Execution History State
   const [executionHistory] = useState([
     {
@@ -1300,14 +1357,9 @@ const actionTypes = [
                             <ApperIcon name="Copy" size={16} />
                           </button>
                           
-                          {/* Pause/Play Button */}
+{/* Pause/Play Button */}
                           <button
-                            onClick={() => {
-                              const updatedWorkflows = workflows.map(w => 
-                                w.Id === workflow.Id ? { ...w, isActive: !w.isActive } : w
-                              );
-                              setWorkflows(updatedWorkflows);
-                            }}
+                            onClick={() => toggleWorkflow(workflow.Id)}
                             className={`p-2 rounded-lg transition-colors ${
                               workflow.isActive 
                                 ? 'text-orange-600 hover:bg-orange-50' 
@@ -1317,20 +1369,11 @@ const actionTypes = [
                           >
                             <ApperIcon name={workflow.isActive ? "Pause" : "Play"} size={16} />
                           </button>
-                          
-                          {/* Edit Button */}
+{/* Edit Button */}
                           <button 
-onClick={() => {
+                            onClick={() => {
                               setCurrentWorkflow(workflow);
-                              setBuilderState({
-                                name: workflow.name,
-                                description: workflow.description,
-                                trigger: workflow.trigger,
-                                conditions: workflow.conditions || [],
-                                actions: workflow.actions || [],
-                                priority: workflow.priority,
-                                category: workflow.category
-                              });
+                              editWorkflow(workflow);
                               setIsBuilderOpen(true);
                               toast.info(`Editing workflow: ${workflow.name}`);
                             }}
@@ -1340,13 +1383,10 @@ onClick={() => {
                             <ApperIcon name="Edit" size={16} />
                           </button>
                           
-                          {/* Delete Button */}
+{/* Delete Button */}
                           <button 
                             onClick={() => {
-                              if (window.confirm('Are you sure you want to delete this workflow?')) {
-                                const updatedWorkflows = workflows.filter(w => w.Id !== workflow.Id);
-                                setWorkflows(updatedWorkflows);
-                              }
+                              deleteWorkflow(workflow.Id);
                             }}
                             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="Delete workflow"

@@ -36,7 +36,7 @@ const navigation = [
                   <ApperIcon name="Zap" size={18} className="text-white" />
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-gray-900">Prime Club</h1>
+                  <h1 className="text-xl font-bold text-gray-900">CRM</h1>
                 </div>
               </div>
             )}
@@ -85,11 +85,11 @@ const MobileSidebar = ({ navigation }) => {
     <>
       {/* Mobile Header */}
       <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center">
+<div className="flex items-center">
           <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
             <ApperIcon name="Zap" size={18} className="text-white" />
           </div>
-          <h1 className="ml-3 text-xl font-bold text-gray-900">Prime Club</h1>
+          <h1 className="ml-3 text-xl font-bold text-gray-900">CRM</h1>
         </div>
         <button
           onClick={() => setIsOpen(true)}
@@ -116,7 +116,7 @@ const MobileSidebar = ({ navigation }) => {
                   <ApperIcon name="Zap" size={18} className="text-white" />
                 </div>
                 <div className="ml-3">
-                  <h1 className="text-xl font-bold text-gray-900">Prime Club</h1>
+                  <h1 className="text-xl font-bold text-gray-900">CRM</h1>
                 </div>
               </div>
               <button

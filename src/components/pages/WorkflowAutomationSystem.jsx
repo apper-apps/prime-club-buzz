@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
 import Analytics from "@/components/pages/Analytics";
-
 const WorkflowAutomationSystem = () => {
 // Sample workflow data with comprehensive automation scenarios
   const [workflows, setWorkflows] = useState([
@@ -361,14 +361,30 @@ const WorkflowAutomationSystem = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-8">
+<div className="px-6 py-8">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Workflow Automation Hub
-            </h1>
-            <p className="text-lg text-gray-600 max-w-4xl">
-              Orchestrate intelligent, multi-channel workflows that nurture leads and automate your entire sales process
-            </p>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  Workflow Automation Hub
+                </h1>
+                <p className="text-lg text-gray-600 max-w-4xl">
+                  Orchestrate intelligent, multi-channel workflows that nurture leads and automate your entire sales process
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <Button
+                  onClick={() => {
+                    // TODO: Implement create workflow functionality
+                    console.log('Creating new workflow...');
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+                >
+                  <ApperIcon name="Plus" size={20} />
+                  Create Workflow
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 

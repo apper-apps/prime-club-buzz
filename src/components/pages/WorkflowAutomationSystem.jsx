@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
 import Analytics from "@/components/pages/Analytics";
+import Button from "@/components/atoms/Button";
 const WorkflowAutomationSystem = () => {
 // Sample workflow data with comprehensive automation scenarios
-  const [workflows, setWorkflows] = useState([
+const [expandedWorkflow, setExpandedWorkflow] = useState(null);
+const [workflows, setWorkflows] = useState([
     {
       Id: 1,
       name: "Premium Lead Nurturing Sequence",
@@ -634,8 +635,24 @@ const WorkflowAutomationSystem = () => {
                           )}
                         </div>
                         
-                        {/* Action Buttons */}
+{/* Action Buttons */}
                         <div className="flex items-center gap-1 ml-4">
+                          {/* Expand/Collapse Button */}
+                          <button
+                            onClick={() => {
+                              setExpandedWorkflow(
+                                expandedWorkflow === workflow.Id ? null : workflow.Id
+                              );
+                            }}
+                            className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            title={expandedWorkflow === workflow.Id ? 'Collapse details' : 'Expand details'}
+                          >
+                            <ApperIcon 
+                              name={expandedWorkflow === workflow.Id ? "ChevronDown" : "ChevronRight"} 
+                              size={16} 
+                            />
+                          </button>
+
                           {/* Duplicate Button */}
                           <button
                             onClick={() => {
@@ -859,41 +876,167 @@ const WorkflowAutomationSystem = () => {
                         </div>
                       </div>
 
-                      {/* Legacy Actions Section (kept for backwards compatibility) */}
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                          <ApperIcon name="Play" size={14} className="text-blue-600" />
-                          Actions ({workflow.actions.length})
-                        </h4>
-                        <div className="space-y-2">
-                          {workflow.actions.slice(0, 3).map((action, index) => (
-                            <div key={index} className="flex items-center gap-3 p-2 bg-blue-50 border border-blue-100 rounded-lg">
-                              <div className="flex items-center gap-2 flex-1">
-                                <ApperIcon 
-                                  name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
-                                  size={14} 
-                                  className="text-blue-600" 
-                                />
-                                <span className="text-sm font-medium text-blue-800">
-                                  {actionTypes.find(a => a.type === action.type)?.label || action.type}
-                                </span>
+{/* Expandable Detailed View */}
+                      <div 
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                          expandedWorkflow === workflow.Id 
+                            ? 'max-h-screen opacity-100' 
+                            : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        {expandedWorkflow === workflow.Id && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              {/* Left Column - Trigger Details */}
+                              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h4 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                                  <ApperIcon name="Zap" size={16} className="text-blue-600" />
+                                  Trigger Details
+                                </h4>
+                                
+                                <div className="space-y-3">
+                                  {/* Trigger Type */}
+                                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                                    <ApperIcon 
+                                      name={triggerTypes.find(t => t.type === workflow.trigger.type)?.icon || 'Circle'} 
+                                      size={20} 
+                                      className="text-blue-600" 
+                                    />
+                                    <div>
+                                      <div className="font-medium text-blue-900">
+                                        {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
+                                      </div>
+                                      <div className="text-xs text-blue-600">
+                                        {triggerTypes.find(t => t.type === workflow.trigger.type)?.description || 'Custom trigger'}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Trigger Conditions */}
+                                  {workflow.trigger.conditions && (
+                                    <div className="space-y-2">
+                                      <div className="text-sm font-medium text-blue-800">Conditions:</div>
+                                      {Object.entries(workflow.trigger.conditions).map(([key, value], index) => (
+                                        <div key={index} className="flex items-center justify-between p-2 bg-white/40 rounded text-sm">
+                                          <span className="text-blue-700 capitalize">{key.replace('_', ' ')}:</span>
+                                          <span className="text-blue-900 font-medium">{value}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              {action.delay > 0 && (
-                                <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                                  {action.delay < 60 ? `${action.delay}m` : 
-                                   action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
-                                   `${Math.floor(action.delay / 1440)}d`}
-                                </span>
-                              )}
+
+                              {/* Right Column - Actions Sequence */}
+                              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <h4 className="text-sm font-semibold text-green-800 mb-3 flex items-center gap-2">
+                                  <ApperIcon name="Play" size={16} className="text-green-600" />
+                                  Actions Sequence ({workflow.actions.length})
+                                </h4>
+                                
+                                <div className="space-y-3">
+                                  {workflow.actions.map((action, index) => (
+                                    <div key={index} className="flex gap-3 p-3 bg-white/60 rounded-lg">
+                                      {/* Step Number */}
+                                      <div className="flex-shrink-0 w-6 h-6 bg-green-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                        {index + 1}
+                                      </div>
+                                      
+                                      <div className="flex-1">
+                                        {/* Action Header */}
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <ApperIcon 
+                                            name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
+                                            size={16} 
+                                            className="text-green-600" 
+                                          />
+                                          <span className="font-medium text-green-900">
+                                            {actionTypes.find(a => a.type === action.type)?.label || action.type}
+                                          </span>
+                                          {action.delay > 0 && (
+                                            <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                                              {action.delay < 60 ? `${action.delay}m` : 
+                                               action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
+                                               `${Math.floor(action.delay / 1440)}d`} delay
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        {/* Action Details */}
+                                        <div className="space-y-1 text-sm">
+                                          {action.assignee && (
+                                            <div className="text-green-700">
+                                              <span className="font-medium">Assignee:</span> {action.assignee}
+                                            </div>
+                                          )}
+                                          {action.template && (
+                                            <div className="text-green-700">
+                                              <span className="font-medium">Template:</span> {action.template}
+                                            </div>
+                                          )}
+                                          {action.message && (
+                                            <div className="text-green-700">
+                                              <span className="font-medium">Message:</span> {action.message.substring(0, 60)}...
+                                            </div>
+                                          )}
+                                          {action.conditions && Object.keys(action.conditions).length > 0 && (
+                                            <div className="mt-2 p-2 bg-green-100/50 rounded text-xs">
+                                              <div className="font-medium text-green-800 mb-1">Conditions:</div>
+                                              {Object.entries(action.conditions).map(([key, value], condIndex) => (
+                                                <div key={condIndex} className="text-green-700">
+                                                  {key.replace('_', ' ')}: {value}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
-                          ))}
-                          {workflow.actions.length > 3 && (
-                            <div className="text-xs text-gray-500 text-center py-1">
-                              +{workflow.actions.length - 3} more actions
-                            </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
+
+                      {/* Compact Actions Summary (shown when not expanded) */}
+                      {expandedWorkflow !== workflow.Id && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                            <ApperIcon name="Play" size={14} className="text-blue-600" />
+                            Actions ({workflow.actions.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {workflow.actions.slice(0, 3).map((action, index) => (
+                              <div key={index} className="flex items-center gap-3 p-2 bg-blue-50 border border-blue-100 rounded-lg">
+                                <div className="flex items-center gap-2 flex-1">
+                                  <ApperIcon 
+                                    name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
+                                    size={14} 
+                                    className="text-blue-600" 
+                                  />
+                                  <span className="text-sm font-medium text-blue-800">
+                                    {actionTypes.find(a => a.type === action.type)?.label || action.type}
+                                  </span>
+                                </div>
+                                {action.delay > 0 && (
+                                  <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                                    {action.delay < 60 ? `${action.delay}m` : 
+                                     action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
+                                     `${Math.floor(action.delay / 1440)}d`}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                            {workflow.actions.length > 3 && (
+                              <div className="text-xs text-gray-500 text-center py-1">
+                                +{workflow.actions.length - 3} more actions
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
               </div>

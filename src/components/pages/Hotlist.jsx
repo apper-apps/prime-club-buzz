@@ -73,12 +73,13 @@ const Hotlist = () => {
       toast.success(`Lead status updated to ${newStatus}`);
       
       // Handle deal creation for specific statuses
-      const statusToStageMap = {
-        'Connected': 'Connected',
-        'Locked': 'Locked',
+const statusToStageMap = {
+        'Contacted': 'Connected',
         'Meeting Booked': 'Meeting Booked',
         'Meeting Done': 'Meeting Done',
+        'Commercials Sent': 'Negotiation',
         'Negotiation': 'Negotiation',
+        'Closed Won': 'Won',
         'Closed Lost': 'Lost'
       };
       
@@ -215,21 +216,22 @@ const targetStage = statusToStageMap[newStatus];
     setSelectedLeads([]);
   };
 
-  const getStatusColor = (status) => {
+const getStatusColor = (status) => {
     const colors = {
-      'Launched on AppSumo': 'success',
-      'Launched on Prime Club': 'primary',
+      'New Lead': 'info',
+      'Contacted': 'primary',
       'Keep an Eye': 'info',
-      'Rejected': 'error',
-      'Unsubscribed': 'warning',
-      'Outdated': 'default',
-      'Hotlist': 'primary',
-      'Out of League': 'error',
-      'Connected': 'info',
-      'Locked': 'warning',
+      'Proposal Sent': 'warning',
       'Meeting Booked': 'primary',
       'Meeting Done': 'success',
+      'Commercials Sent': 'warning',
       'Negotiation': 'accent',
+      'Hotlist': 'primary',
+      'Temporarily on hold': 'default',
+      'Out of League': 'error',
+      'Outdated': 'default',
+      'Rejected': 'error',
+      'Closed Won': 'success',
       'Closed Lost': 'error'
     };
     return colors[status] || 'default';
@@ -245,7 +247,7 @@ const targetStage = statusToStageMap[newStatus];
   };
 
   const teamSizeOptions = ['1-3', '4-10', '11-50', '51-100', '101-500', '501-1000', '1001+'];
-  const statusOptions = ['Launched on AppSumo', 'Launched on Prime Club', 'Keep an Eye', 'Rejected', 'Unsubscribed', 'Outdated', 'Hotlist', 'Out of League', 'Connected', 'Locked', 'Meeting Booked', 'Meeting Done', 'Negotiation', 'Closed Lost'];
+const statusOptions = ['New Lead', 'Contacted', 'Keep an Eye', 'Proposal Sent', 'Meeting Booked', 'Meeting Done', 'Commercials Sent', 'Negotiation', 'Hotlist', 'Temporarily on hold', 'Out of League', 'Outdated', 'Rejected', 'Closed Won', 'Closed Lost'];
   const fundingTypeOptions = ['Bootstrapped', 'Pre-seed', 'Y Combinator', 'Seed', 'Series A', 'Series B', 'Series C'];
 
 const filteredAndSortedData = React.useMemo(() => {

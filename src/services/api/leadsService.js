@@ -99,7 +99,7 @@ const newLead = {
     arr: leadData.arr || 0,
 category: leadData.category || "Website Contact Form",
     linkedinUrl: leadData.linkedinUrl || "",
-    status: leadData.status || "Keep an Eye",
+status: leadData.status || "New Lead",
     fundingType: leadData.fundingType || "Bootstrapped",
     edition: leadData.edition || "Select Edition",
     followUpDate: leadData.followUpDate || null,

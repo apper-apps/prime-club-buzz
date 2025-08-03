@@ -79,12 +79,13 @@ const handleStatusChange = async (leadId, newStatus) => {
       );
       
       // Define status-to-stage mapping for common statuses
-      const statusToStageMap = {
-        "Connected": "Connected",
-        "Locked": "Locked", 
+const statusToStageMap = {
+        "Contacted": "Connected",
         "Meeting Booked": "Meeting Booked",
         "Meeting Done": "Meeting Done",
+        "Commercials Sent": "Negotiation",
         "Negotiation": "Negotiation",
+        "Closed Won": "Won",
         "Closed Lost": "Lost"
       };
       
@@ -269,8 +270,8 @@ const addEmptyRow = () => {
       teamSize: "1-3", 
       arr: 0,
       category: "Accounting Software",
-      linkedinUrl: "",
-      status: "Keep an Eye",
+linkedinUrl: "",
+      status: "New Lead",
       fundingType: "Bootstrapped",
       followUpDate: "",
       productName: "",
@@ -450,10 +451,10 @@ const [categoryOptions, setCategoryOptions] = useState([
     "Field Sales",
     "Channel Partner"
   ]);
-  const statusOptions = [
-    "Launched on AppSumo", "Launched on Prime Club", "Keep an Eye", "Rejected", 
-    "Unsubscribed", "Outdated", "Hotlist", "Out of League", "Connected", 
-    "Locked", "Meeting Booked", "Meeting Done", "Negotiation", "Closed Lost"
+const statusOptions = [
+    "New Lead", "Contacted", "Keep an Eye", "Proposal Sent", "Meeting Booked", 
+    "Meeting Done", "Commercials Sent", "Negotiation", "Hotlist", "Temporarily on hold", 
+    "Out of League", "Outdated", "Rejected", "Closed Won", "Closed Lost"
   ];
   const fundingTypeOptions = ["Bootstrapped", "Pre-seed", "Y Combinator", "Angel", "Series A", "Series B", "Series C"];
 
@@ -467,19 +468,20 @@ const [categoryOptions, setCategoryOptions] = useState([
   };
 const getStatusColor = (status) => {
     const colors = {
-      "Launched on AppSumo": "success",
-      "Launched on Prime Club": "primary",
+      "New Lead": "info",
+      "Contacted": "primary",
       "Keep an Eye": "info",
-      "Rejected": "error",
-      "Unsubscribed": "warning",
-      "Outdated": "default",
-      "Hotlist": "primary",
-      "Out of League": "error",
-      "Connected": "info",
-      "Locked": "warning",
+      "Proposal Sent": "warning",
       "Meeting Booked": "primary",
       "Meeting Done": "success",
-      "Negotiation": "warning",
+      "Commercials Sent": "warning",
+      "Negotiation": "accent",
+      "Hotlist": "primary",
+      "Temporarily on hold": "default",
+      "Out of League": "error",
+      "Outdated": "default",
+      "Rejected": "error",
+      "Closed Won": "success",
       "Closed Lost": "error"
     };
     return colors[status] || "default";
@@ -611,19 +613,20 @@ const handleSort = (field) => {
                     onChange={e => setStatusFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Statuses</option>
-                    <option value="Launched on AppSumo">Launched on AppSumo</option>
-                    <option value="Launched on Prime Club">Launched on Prime Club</option>
+<option value="New Lead">New Lead</option>
+                    <option value="Contacted">Contacted</option>
                     <option value="Keep an Eye">Keep an Eye</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Unsubscribed">Unsubscribed</option>
-                    <option value="Outdated">Outdated</option>
-                    <option value="Hotlist">Hotlist</option>
-                    <option value="Out of League">Out of League</option>
-                    <option value="Connected">Connected</option>
-                    <option value="Locked">Locked</option>
+                    <option value="Proposal Sent">Proposal Sent</option>
                     <option value="Meeting Booked">Meeting Booked</option>
                     <option value="Meeting Done">Meeting Done</option>
+                    <option value="Commercials Sent">Commercials Sent</option>
                     <option value="Negotiation">Negotiation</option>
+                    <option value="Hotlist">Hotlist</option>
+                    <option value="Temporarily on hold">Temporarily on hold</option>
+                    <option value="Out of League">Out of League</option>
+                    <option value="Outdated">Outdated</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Closed Won">Closed Won</option>
                     <option value="Closed Lost">Closed Lost</option>
                 </select>
                 <select
@@ -1580,19 +1583,20 @@ return (
                 onChange={(e) => setFormData({...formData, status: e.target.value})}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
               >
-                <option value="Launched on AppSumo">Launched on AppSumo</option>
-                <option value="Launched on Prime Club">Launched on Prime Club</option>
+<option value="New Lead">New Lead</option>
+                <option value="Contacted">Contacted</option>
                 <option value="Keep an Eye">Keep an Eye</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Unsubscribed">Unsubscribed</option>
-                <option value="Outdated">Outdated</option>
-                <option value="Hotlist">Hotlist</option>
-                <option value="Out of League">Out of League</option>
-                <option value="Connected">Connected</option>
-                <option value="Locked">Locked</option>
+                <option value="Proposal Sent">Proposal Sent</option>
                 <option value="Meeting Booked">Meeting Booked</option>
                 <option value="Meeting Done">Meeting Done</option>
+                <option value="Commercials Sent">Commercials Sent</option>
                 <option value="Negotiation">Negotiation</option>
+                <option value="Hotlist">Hotlist</option>
+                <option value="Temporarily on hold">Temporarily on hold</option>
+                <option value="Out of League">Out of League</option>
+                <option value="Outdated">Outdated</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Closed Won">Closed Won</option>
                 <option value="Closed Lost">Closed Lost</option>
               </select>
             </div>
@@ -1809,19 +1813,20 @@ return (
                             status: e.target.value
                         })}
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                        <option value="Launched on AppSumo">Launched on AppSumo</option>
-                        <option value="Launched on Prime Club">Launched on Prime Club</option>
+<option value="New Lead">New Lead</option>
+                        <option value="Contacted">Contacted</option>
                         <option value="Keep an Eye">Keep an Eye</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Unsubscribed">Unsubscribed</option>
-                        <option value="Outdated">Outdated</option>
-                        <option value="Hotlist">Hotlist</option>
-                        <option value="Out of League">Out of League</option>
-                        <option value="Connected">Connected</option>
-                        <option value="Locked">Locked</option>
+                        <option value="Proposal Sent">Proposal Sent</option>
                         <option value="Meeting Booked">Meeting Booked</option>
                         <option value="Meeting Done">Meeting Done</option>
+                        <option value="Commercials Sent">Commercials Sent</option>
                         <option value="Negotiation">Negotiation</option>
+                        <option value="Hotlist">Hotlist</option>
+                        <option value="Temporarily on hold">Temporarily on hold</option>
+                        <option value="Out of League">Out of League</option>
+                        <option value="Outdated">Outdated</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Closed Won">Closed Won</option>
                         <option value="Closed Lost">Closed Lost</option>
                     </select>
                 </div>

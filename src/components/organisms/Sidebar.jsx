@@ -13,7 +13,8 @@ const navigation = [
     { to: "/pipeline", icon: "Kanban", label: "Deal Pipeline" },
     { to: "/calendar", icon: "Calendar", label: "Calendar" },
     { to: "/analytics", icon: "TrendingUp", label: "Analytics" },
-    { to: "/leaderboard", icon: "Trophy", label: "Leaderboard" }
+    { to: "/leaderboard", icon: "Trophy", label: "Leaderboard" },
+    { to: "/workflow-automation", icon: "Settings", label: "Workflow Automation" }
   ];
 
   return (

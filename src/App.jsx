@@ -11,6 +11,7 @@ import Dashboard from "@/components/pages/Dashboard";
 import Leads from "@/components/pages/Leads";
 import Hotlist from "@/components/pages/Hotlist";
 import WorkflowAutomationSystem from "@/components/pages/WorkflowAutomationSystem";
+import WebsiteUrlReport from "@/components/pages/WebsiteUrlReport";
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -208,6 +209,15 @@ transition={{ duration: 0.3 }}
               transition={{ duration: 0.3 }}
             >
               <WorkflowAutomationSystem />
+</motion.div>
+          } />
+          <Route path="/website-url-report" element={
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <WebsiteUrlReport />
             </motion.div>
           } />
         </Routes>

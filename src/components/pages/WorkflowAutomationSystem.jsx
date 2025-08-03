@@ -299,6 +299,35 @@ const [workflows, setWorkflows] = useState([
       channel: 'sms'
     }
   ]);
+// Analytics State
+  const [analyticsData] = useState({
+    totalExecutions: 12847,
+    successRate: 94.2,
+    avgExecutionTime: 2.4,
+    activeWorkflows: 23,
+    executionTrend: [
+      { date: '2024-01-15', executions: 145, label: 'Mon' },
+      { date: '2024-01-16', executions: 189, label: 'Tue' },
+      { date: '2024-01-17', executions: 167, label: 'Wed' },
+      { date: '2024-01-18', executions: 203, label: 'Thu' },
+      { date: '2024-01-19', executions: 178, label: 'Fri' },
+      { date: '2024-01-20', executions: 134, label: 'Sat' },
+      { date: '2024-01-21', executions: 98, label: 'Sun' }
+    ],
+    topPerformingWorkflows: [
+      { id: 1, name: 'Lead Qualification Automation', executions: 2847, successRate: 96.8, category: 'Lead Management' },
+      { id: 2, name: 'Welcome Email Sequence', executions: 2134, successRate: 94.2, category: 'Email Marketing' },
+      { id: 3, name: 'High-Value Lead Alert', executions: 1892, successRate: 98.1, category: 'Notifications' },
+      { id: 4, name: 'Territory Assignment', executions: 1674, successRate: 91.5, category: 'Lead Management' },
+      { id: 5, name: 'Follow-up Reminder', executions: 1456, successRate: 89.3, category: 'Task Management' }
+    ],
+    performanceMetrics: {
+      totalExecutionsChange: 12.4,
+      successRateChange: 2.1,
+      avgExecutionTimeChange: -8.7,
+      activeWorkflowsChange: 4.5
+    }
+  });
 
 // Lead Scoring Rules State
   const [scoringRules, setScoringRules] = useState({

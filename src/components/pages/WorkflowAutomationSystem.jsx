@@ -205,6 +205,102 @@ const [workflows, setWorkflows] = useState([
     }
   ]);
 // Lead Scoring Rules State
+  // Execution History State
+  const [executionHistory] = useState([
+    {
+      Id: 1,
+      workflowName: 'Lead Nurturing Sequence',
+      leadName: 'Sarah Johnson',
+      leadEmail: 'sarah.johnson@techcorp.com',
+      action: 'Send Welcome Email',
+      timestamp: '2024-01-15T10:30:00Z',
+      status: 'success',
+      duration: '0.8s',
+      channel: 'email'
+    },
+    {
+      Id: 2,
+      workflowName: 'Territory Assignment',
+      leadName: 'Michael Chen',
+      leadEmail: 'michael.chen@startupxyz.com',
+      action: 'Assign to Sales Rep',
+      timestamp: '2024-01-15T09:45:00Z',
+      status: 'success',
+      duration: '0.3s',
+      channel: 'assignment'
+    },
+    {
+      Id: 3,
+      workflowName: 'High Value Lead Alert',
+      leadName: 'Emily Rodriguez',
+      leadEmail: 'emily.rodriguez@enterprise.com',
+      action: 'Send SMS Notification',
+      timestamp: '2024-01-15T09:15:00Z',
+      status: 'failed',
+      duration: '2.1s',
+      channel: 'sms',
+      errorMessage: 'Invalid phone number format'
+    },
+    {
+      Id: 4,
+      workflowName: 'Demo Follow-up',
+      leadName: 'David Park',
+      leadEmail: 'david.park@bigcorp.com',
+      action: 'Send WhatsApp Message',
+      timestamp: '2024-01-15T08:30:00Z',
+      status: 'success',
+      duration: '1.2s',
+      channel: 'whatsapp'
+    },
+    {
+      Id: 5,
+      workflowName: 'Urgent Lead Alert',
+      leadName: 'Lisa Thompson',
+      leadEmail: 'lisa.thompson@innovate.com',
+      action: 'Post to Slack Channel',
+      timestamp: '2024-01-15T08:00:00Z',
+      status: 'failed',
+      duration: '5.0s',
+      channel: 'slack',
+      errorMessage: 'Slack API rate limit exceeded'
+    },
+    {
+      Id: 6,
+      workflowName: 'Lead Scoring Update',
+      leadName: 'James Wilson',
+      leadEmail: 'james.wilson@growth.com',
+      action: 'Update Lead Score',
+      timestamp: '2024-01-15T07:45:00Z',
+      status: 'success',
+      duration: '0.5s',
+      channel: 'assignment'
+    },
+    {
+      Id: 7,
+      workflowName: 'Cold Lead Reactivation',
+      leadName: 'Amanda Foster',
+      leadEmail: 'amanda.foster@oldclient.com',
+      action: 'Send Reactivation Email',
+      timestamp: '2024-01-15T07:30:00Z',
+      status: 'failed',
+      duration: '3.2s',
+      channel: 'email',
+      errorMessage: 'Email bounced - invalid address'
+    },
+    {
+      Id: 8,
+      workflowName: 'Demo Booking Confirmation',
+      leadName: 'Robert Kim',
+      leadEmail: 'robert.kim@futuretech.com',
+      action: 'Send Confirmation SMS',
+      timestamp: '2024-01-15T07:00:00Z',
+      status: 'success',
+      duration: '0.9s',
+      channel: 'sms'
+    }
+  ]);
+
+// Lead Scoring Rules State
   const [scoringRules, setScoringRules] = useState({
     demographic: {
       companySize: [
@@ -345,7 +441,17 @@ const [workflows, setWorkflows] = useState([
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
-
+// Helper function to get channel icon
+  const getChannelIcon = (channel) => {
+    const iconMap = {
+      email: 'Mail',
+      sms: 'MessageSquare',
+      whatsapp: 'MessageCircle',
+      slack: 'Hash',
+      assignment: 'UserCheck'
+    };
+    return iconMap[channel] || 'Bell';
+  };
 const triggerTypes = [
     {
       type: "lead_created",
@@ -1476,13 +1582,111 @@ const actionTypes = [
             </div>
           )}
           
-          {activeTab === 'execution-history' && (
+{activeTab === 'execution-history' && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Execution History</h2>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <ApperIcon name="History" size={48} className="text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Execution History</h3>
-                <p className="text-gray-600">Detailed workflow execution logs and history will be available here.</p>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Execution History</h2>
+              
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Workflow
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Lead
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Action
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Channel
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Duration
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Time
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {executionHistory.map((execution) => (
+                        <tr 
+                          key={execution.Id} 
+                          className="hover:bg-gray-50 transition-colors duration-150"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {execution.workflowName}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {execution.leadName}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {execution.leadEmail}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {execution.action}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center space-x-2">
+                              <ApperIcon 
+                                name={getChannelIcon(execution.channel)} 
+                                size={16} 
+                                className="text-gray-400"
+                              />
+                              <span className="text-sm text-gray-900 capitalize">
+                                {execution.channel}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col space-y-1">
+                              <span
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  execution.status === 'success'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                }`}
+                              >
+                                {execution.status === 'success' ? 'Success' : 'Failed'}
+                              </span>
+                              {execution.status === 'failed' && execution.errorMessage && (
+                                <div className="text-xs text-red-600 max-w-xs">
+                                  {execution.errorMessage}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {execution.duration}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(execution.timestamp).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                {executionHistory.length === 0 && (
+                  <div className="text-center py-12">
+                    <ApperIcon name="History" size={48} className="text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Execution History</h3>
+                    <p className="text-gray-600">Workflow executions will appear here once they start running.</p>
+                  </div>
+                )}
               </div>
             </div>
           )}

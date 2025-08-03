@@ -1,17 +1,20 @@
 import { Route, Routes } from "react-router-dom";
 import { motion } from "framer-motion";
 import React, { Component } from "react";
+import "@/index.css";
 import Layout from "@/components/organisms/Layout";
 import Error from "@/components/ui/Error";
-import Leaderboard from "@/components/pages/Leaderboard";
-import Calendar from "@/components/pages/Calendar";
-import Analytics from "@/components/pages/Analytics";
 import Pipeline from "@/components/pages/Pipeline";
+import Leaderboard from "@/components/pages/Leaderboard";
+import Hotlist from "@/components/pages/Hotlist";
+import Analytics from "@/components/pages/Analytics";
+import WebsiteUrlReport from "@/components/pages/WebsiteUrlReport";
+import WorkflowAutomationSystem from "@/components/pages/WorkflowAutomationSystem";
 import Dashboard from "@/components/pages/Dashboard";
 import Leads from "@/components/pages/Leads";
-import Hotlist from "@/components/pages/Hotlist";
-import WorkflowAutomationSystem from "@/components/pages/WorkflowAutomationSystem";
-import WebsiteUrlReport from "@/components/pages/WebsiteUrlReport";
+import Calendar from "@/components/pages/Calendar";
+import Teams from "@/components/pages/Teams";
+import Contacts from "@/components/pages/Contacts";
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -101,7 +104,7 @@ class ErrorBoundary extends Component {
             <p className="text-gray-600 mb-6">
               We encountered an unexpected error. Please try again or reload the page.
             </p>
-            <div className="space-y-3">
+<div className="space-y-3">
               <button
                 onClick={this.handleRetry}
                 className="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
@@ -113,7 +116,7 @@ class ErrorBoundary extends Component {
                 className="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Reload Page
-</button>
+              </button>
             </div>
             {import.meta.env?.DEV && this.state.error && (
               <details className="mt-4 text-left">
@@ -134,7 +137,7 @@ class ErrorBoundary extends Component {
   }
 }
 
-function App() {
+function MainApp() {
   return (
     <ErrorBoundary>
       <Layout>
@@ -148,10 +151,10 @@ function App() {
               <Dashboard />
             </motion.div>
           } />
-          <Route path="/leads" element={
+<Route path="/leads" element={
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
               <Leads />
@@ -163,9 +166,9 @@ animate={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Hotlist />
+<Hotlist />
             </motion.div>
-} />
+          } />
           <Route path="/pipeline" element={
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -186,9 +189,9 @@ animate={{ opacity: 1, y: 0 }}
           } />
           <Route path="/calendar" element={
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-transition={{ duration: 0.3 }}
+              transition={{ duration: 0.3 }}
             >
               <Calendar />
             </motion.div>
@@ -201,7 +204,7 @@ transition={{ duration: 0.3 }}
             >
               <Leaderboard />
             </motion.div>
-          } />
+} />
           <Route path="/workflow-automation" element={
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -209,7 +212,25 @@ transition={{ duration: 0.3 }}
               transition={{ duration: 0.3 }}
             >
               <WorkflowAutomationSystem />
-</motion.div>
+            </motion.div>
+          } />
+          <Route path="/teams" element={
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Teams />
+            </motion.div>
+          } />
+          <Route path="/contacts" element={
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Contacts />
+            </motion.div>
           } />
           <Route path="/website-url-report" element={
             <motion.div
@@ -225,5 +246,4 @@ transition={{ duration: 0.3 }}
     </ErrorBoundary>
   );
 }
-
-export default App;
+export default MainApp;

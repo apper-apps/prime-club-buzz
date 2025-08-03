@@ -355,9 +355,9 @@ useEffect(() => {
                     {dailyUrls.length >= 10 ? 'Target Met' : 'Below Target'}
                   </span>
                 </div>
-                {dailyUrls.slice(0, 10).map((url, index) => (
+{dailyUrls.slice(0, 10).map((url, index) => (
                   <motion.div
-                    key={index}
+                    key={`${url.websiteUrl || 'unknown'}-${url.createdAt || index}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}

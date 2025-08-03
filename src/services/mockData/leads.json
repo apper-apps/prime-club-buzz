@@ -10,14 +10,35 @@
     "linkedinUrl": "https://linkedin.com/company/notion",
     "status": "Keep an Eye",
     "fundingType": "Series A",
-"followUpDate": "2024-12-25T10:30:00Z",
+    "followUpDate": "2024-12-25T10:30:00Z",
     "edition": "Black Edition",
     "productName": "Notion AI",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-12-19T10:30:00Z"
+    "createdAt": "2024-12-19T10:30:00Z",
+    "leadScore": 72,
+    "scoreComponents": {
+      "demographic": 85,
+      "behavioral": 68,
+      "engagement": 73
+    },
+    "activities": {
+      "emails": 15,
+      "calls": 3,
+      "meetings": 1,
+      "websiteVisits": 45,
+      "documentsDownloaded": 7,
+      "webinarAttendance": 2
+    },
+    "lastActivity": "2024-12-20T14:30:00Z",
+    "engagementLevel": "High",
+    "responseRate": 67,
+    "dealPotential": "Medium",
+    "timeInStage": 6,
+    "leadSource": "Inbound",
+    "campaignSource": "Content Marketing"
   },
-{
+  {
     "Id": 2,
     "name": "Canva",
     "email": "business@canva.com",
@@ -28,14 +49,35 @@
     "linkedinUrl": "https://linkedin.com/company/canva",
     "status": "Launched on AppSumo",
     "fundingType": "Series C",
-"followUpDate": "2024-12-30T14:20:00Z",
+    "followUpDate": "2024-12-30T14:20:00Z",
     "edition": "Collector's Edition",
     "productName": "Canva Pro",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-12-19T14:20:00Z"
+    "createdAt": "2024-12-19T14:20:00Z",
+    "leadScore": 92,
+    "scoreComponents": {
+      "demographic": 95,
+      "behavioral": 89,
+      "engagement": 92
+    },
+    "activities": {
+      "emails": 28,
+      "calls": 8,
+      "meetings": 4,
+      "websiteVisits": 120,
+      "documentsDownloaded": 15,
+      "webinarAttendance": 3
+    },
+    "lastActivity": "2024-12-21T09:15:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 85,
+    "dealPotential": "High",
+    "timeInStage": 2,
+    "leadSource": "Partnership Referral",
+    "campaignSource": "Partner Network"
   },
-{
+  {
     "Id": 3,
     "name": "Figma",
     "email": "partnerships@figma.com",
@@ -46,14 +88,35 @@
     "linkedinUrl": "https://linkedin.com/company/figma",
     "status": "Hotlist",
     "fundingType": "Series B",
-"followUpDate": "2024-01-25T09:15:00Z",
+    "followUpDate": "2024-01-25T09:15:00Z",
     "edition": "Limited Edition",
     "productName": "Figma Design",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-01-18T09:15:00Z"
+    "createdAt": "2024-01-18T09:15:00Z",
+    "leadScore": 88,
+    "scoreComponents": {
+      "demographic": 90,
+      "behavioral": 85,
+      "engagement": 89
+    },
+    "activities": {
+      "emails": 22,
+      "calls": 6,
+      "meetings": 3,
+      "websiteVisits": 85,
+      "documentsDownloaded": 12,
+      "webinarAttendance": 4
+    },
+    "lastActivity": "2024-12-22T11:45:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 78,
+    "dealPotential": "High",
+    "timeInStage": 1,
+    "leadSource": "Direct Outreach",
+    "campaignSource": "LinkedIn Campaign"
   },
-{
+  {
     "Id": 4,
     "name": "Stripe",
     "email": "partnerships@stripe.com",
@@ -64,14 +127,35 @@
     "linkedinUrl": "https://linkedin.com/company/stripe",
     "status": "Out of League",
     "fundingType": "Series C",
-"followUpDate": "",
+    "followUpDate": "",
     "edition": "Black Edition",
     "productName": "Stripe Connect",
     "addedBy": 4,
     "addedByName": "Emily Chen",
-    "createdAt": "2024-01-20T11:45:00Z"
+    "createdAt": "2024-01-20T11:45:00Z",
+    "leadScore": 45,
+    "scoreComponents": {
+      "demographic": 98,
+      "behavioral": 25,
+      "engagement": 12
+    },
+    "activities": {
+      "emails": 5,
+      "calls": 0,
+      "meetings": 0,
+      "websiteVisits": 8,
+      "documentsDownloaded": 1,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-02-05T16:20:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 0,
+    "dealPotential": "Low",
+    "timeInStage": 90,
+    "leadSource": "Cold Email",
+    "campaignSource": "Enterprise Outreach"
   },
-{
+  {
     "Id": 5,
     "name": "Shopify",
     "email": "partnerships@shopify.com",
@@ -82,14 +166,35 @@
     "linkedinUrl": "https://linkedin.com/company/shopify",
     "status": "Launched on Prime Club",
     "fundingType": "Series C",
-"followUpDate": "2024-01-20T16:30:00Z",
+    "followUpDate": "2024-01-20T16:30:00Z",
     "edition": "Collector's Edition",
     "productName": "Shopify Plus",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
-    "createdAt": "2024-01-12T16:30:00Z"
+    "createdAt": "2024-01-12T16:30:00Z",
+    "leadScore": 94,
+    "scoreComponents": {
+      "demographic": 96,
+      "behavioral": 92,
+      "engagement": 94
+    },
+    "activities": {
+      "emails": 35,
+      "calls": 12,
+      "meetings": 6,
+      "websiteVisits": 150,
+      "documentsDownloaded": 20,
+      "webinarAttendance": 5
+    },
+    "lastActivity": "2024-12-21T16:30:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 89,
+    "dealPotential": "Very High",
+    "timeInStage": 1,
+    "leadSource": "Webinar",
+    "campaignSource": "Product Launch Event"
   },
-{
+  {
     "Id": 6,
     "name": "Slack",
     "email": "partnerships@slack.com",
@@ -103,9 +208,30 @@
     "edition": "Select Edition",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-01-14T13:20:00Z"
+    "createdAt": "2024-01-14T13:20:00Z",
+    "leadScore": 35,
+    "scoreComponents": {
+      "demographic": 88,
+      "behavioral": 15,
+      "engagement": 8
+    },
+    "activities": {
+      "emails": 12,
+      "calls": 2,
+      "meetings": 1,
+      "websiteVisits": 15,
+      "documentsDownloaded": 2,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-02-28T09:45:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 25,
+    "dealPotential": "Low",
+    "timeInStage": 45,
+    "leadSource": "Cold Call",
+    "campaignSource": "Enterprise Outreach"
   },
-{
+  {
     "Id": 7,
     "name": "Zoom",
     "email": "partnerships@zoom.us",
@@ -119,7 +245,28 @@
     "edition": "Limited Edition",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-01-08T10:00:00Z"
+    "createdAt": "2024-01-08T10:00:00Z",
+    "leadScore": 28,
+    "scoreComponents": {
+      "demographic": 92,
+      "behavioral": 5,
+      "engagement": 2
+    },
+    "activities": {
+      "emails": 8,
+      "calls": 1,
+      "meetings": 0,
+      "websiteVisits": 3,
+      "documentsDownloaded": 0,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-01-15T14:22:00Z",
+    "engagementLevel": "Very Low",
+    "responseRate": 0,
+    "dealPotential": "Very Low",
+    "timeInStage": 120,
+    "leadSource": "Trade Show",
+    "campaignSource": "Tech Conference 2024"
   },
   {
     "Id": 8,
@@ -135,7 +282,28 @@
     "edition": "Black Edition",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-12-19T15:10:00Z"
+    "createdAt": "2024-12-19T15:10:00Z",
+    "leadScore": 58,
+    "scoreComponents": {
+      "demographic": 65,
+      "behavioral": 52,
+      "engagement": 57
+    },
+    "activities": {
+      "emails": 10,
+      "calls": 2,
+      "meetings": 1,
+      "websiteVisits": 25,
+      "documentsDownloaded": 4,
+      "webinarAttendance": 1
+    },
+    "lastActivity": "2024-12-20T10:15:00Z",
+    "engagementLevel": "Medium",
+    "responseRate": 40,
+    "dealPotential": "Medium",
+    "timeInStage": 30,
+    "leadSource": "Social Media",
+    "campaignSource": "Twitter Campaign"
   },
   {
     "Id": 9,
@@ -150,7 +318,28 @@
     "fundingType": "Series C",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-12-19T08:45:00Z"
+    "createdAt": "2024-12-19T08:45:00Z",
+    "leadScore": 78,
+    "scoreComponents": {
+      "demographic": 95,
+      "behavioral": 72,
+      "engagement": 68
+    },
+    "activities": {
+      "emails": 18,
+      "calls": 4,
+      "meetings": 2,
+      "websiteVisits": 55,
+      "documentsDownloaded": 9,
+      "webinarAttendance": 3
+    },
+    "lastActivity": "2024-12-21T13:20:00Z",
+    "engagementLevel": "High",
+    "responseRate": 72,
+    "dealPotential": "High",
+    "timeInStage": 3,
+    "leadSource": "Content Download",
+    "campaignSource": "CRM Whitepaper"
   },
   {
     "Id": 10,
@@ -165,7 +354,28 @@
     "fundingType": "Series A",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-12-18T14:30:00Z"
+    "createdAt": "2024-12-18T14:30:00Z",
+    "leadScore": 82,
+    "scoreComponents": {
+      "demographic": 78,
+      "behavioral": 85,
+      "engagement": 83
+    },
+    "activities": {
+      "emails": 24,
+      "calls": 7,
+      "meetings": 3,
+      "websiteVisits": 75,
+      "documentsDownloaded": 14,
+      "webinarAttendance": 4
+    },
+    "lastActivity": "2024-12-22T08:30:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 81,
+    "dealPotential": "High",
+    "timeInStage": 4,
+    "leadSource": "Referral",
+    "campaignSource": "Customer Referral"
   },
   {
     "Id": 11,
@@ -180,7 +390,28 @@
     "fundingType": "Bootstrapped",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-12-17T11:20:00Z"
+    "createdAt": "2024-12-17T11:20:00Z",
+    "leadScore": 85,
+    "scoreComponents": {
+      "demographic": 82,
+      "behavioral": 87,
+      "engagement": 86
+    },
+    "activities": {
+      "emails": 30,
+      "calls": 9,
+      "meetings": 4,
+      "websiteVisits": 95,
+      "documentsDownloaded": 18,
+      "webinarAttendance": 5
+    },
+    "lastActivity": "2024-12-22T15:45:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 83,
+    "dealPotential": "Very High",
+    "timeInStage": 5,
+    "leadSource": "Email Campaign",
+    "campaignSource": "Marketing Automation Series"
   },
   {
     "Id": 12,
@@ -195,7 +426,28 @@
     "fundingType": "Series A",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-12-16T09:30:00Z"
+    "createdAt": "2024-12-16T09:30:00Z",
+    "leadScore": 76,
+    "scoreComponents": {
+      "demographic": 68,
+      "behavioral": 80,
+      "engagement": 79
+    },
+    "activities": {
+      "emails": 21,
+      "calls": 6,
+      "meetings": 3,
+      "websiteVisits": 62,
+      "documentsDownloaded": 11,
+      "webinarAttendance": 2
+    },
+    "lastActivity": "2024-12-21T12:15:00Z",
+    "engagementLevel": "High",
+    "responseRate": 75,
+    "dealPotential": "Medium",
+    "timeInStage": 6,
+    "leadSource": "Organic Search",
+    "campaignSource": "SEO Content"
   },
   {
     "Id": 13,
@@ -210,7 +462,28 @@
     "fundingType": "Series C",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-12-15T16:45:00Z"
+    "createdAt": "2024-12-15T16:45:00Z",
+    "leadScore": 42,
+    "scoreComponents": {
+      "demographic": 98,
+      "behavioral": 20,
+      "engagement": 8
+    },
+    "activities": {
+      "emails": 6,
+      "calls": 1,
+      "meetings": 0,
+      "websiteVisits": 12,
+      "documentsDownloaded": 2,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-12-16T09:30:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 17,
+    "dealPotential": "Low",
+    "timeInStage": 7,
+    "leadSource": "Direct Outreach",
+    "campaignSource": "Developer Tools Campaign"
   },
   {
     "Id": 14,
@@ -225,7 +498,28 @@
     "fundingType": "Series B",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-12-14T11:20:00Z"
+    "createdAt": "2024-12-14T11:20:00Z",
+    "leadScore": 89,
+    "scoreComponents": {
+      "demographic": 85,
+      "behavioral": 91,
+      "engagement": 91
+    },
+    "activities": {
+      "emails": 32,
+      "calls": 11,
+      "meetings": 5,
+      "websiteVisits": 110,
+      "documentsDownloaded": 22,
+      "webinarAttendance": 6
+    },
+    "lastActivity": "2024-12-22T16:20:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 88,
+    "dealPotential": "Very High",
+    "timeInStage": 8,
+    "leadSource": "Demo Request",
+    "campaignSource": "Product Demo Page"
   },
   {
     "Id": 15,
@@ -240,7 +534,28 @@
     "fundingType": "Series B",
     "addedBy": 4,
     "addedByName": "Emily Chen",
-    "createdAt": "2024-12-13T14:10:00Z"
+    "createdAt": "2024-12-13T14:10:00Z",
+    "leadScore": 87,
+    "scoreComponents": {
+      "demographic": 88,
+      "behavioral": 86,
+      "engagement": 87
+    },
+    "activities": {
+      "emails": 26,
+      "calls": 8,
+      "meetings": 4,
+      "websiteVisits": 88,
+      "documentsDownloaded": 16,
+      "webinarAttendance": 4
+    },
+    "lastActivity": "2024-12-22T11:45:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 79,
+    "dealPotential": "High",
+    "timeInStage": 9,
+    "leadSource": "Partner Referral",
+    "campaignSource": "DevOps Partner Network"
   },
   {
     "Id": 16,
@@ -255,7 +570,28 @@
     "fundingType": "Series A",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
-    "createdAt": "2024-12-12T08:30:00Z"
+    "createdAt": "2024-12-12T08:30:00Z",
+    "leadScore": 81,
+    "scoreComponents": {
+      "demographic": 75,
+      "behavioral": 84,
+      "engagement": 84
+    },
+    "activities": {
+      "emails": 27,
+      "calls": 8,
+      "meetings": 4,
+      "websiteVisits": 72,
+      "documentsDownloaded": 13,
+      "webinarAttendance": 3
+    },
+    "lastActivity": "2024-12-21T14:30:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 78,
+    "dealPotential": "High",
+    "timeInStage": 10,
+    "leadSource": "Content Download",
+    "campaignSource": "Analytics Guide"
   },
   {
     "Id": 17,
@@ -270,7 +606,28 @@
     "fundingType": "Series B",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-12-11T13:45:00Z"
+    "createdAt": "2024-12-11T13:45:00Z",
+    "leadScore": 84,
+    "scoreComponents": {
+      "demographic": 82,
+      "behavioral": 85,
+      "engagement": 85
+    },
+    "activities": {
+      "emails": 29,
+      "calls": 9,
+      "meetings": 4,
+      "websiteVisits": 92,
+      "documentsDownloaded": 17,
+      "webinarAttendance": 5
+    },
+    "lastActivity": "2024-12-22T10:20:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 82,
+    "dealPotential": "Very High",
+    "timeInStage": 11,
+    "leadSource": "Webinar",
+    "campaignSource": "Product Analytics Webinar"
   },
   {
     "Id": 18,
@@ -285,7 +642,28 @@
     "fundingType": "Series A",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-12-10T10:15:00Z"
+    "createdAt": "2024-12-10T10:15:00Z",
+    "leadScore": 90,
+    "scoreComponents": {
+      "demographic": 76,
+      "behavioral": 93,
+      "engagement": 95
+    },
+    "activities": {
+      "emails": 38,
+      "calls": 14,
+      "meetings": 7,
+      "websiteVisits": 125,
+      "documentsDownloaded": 25,
+      "webinarAttendance": 6
+    },
+    "lastActivity": "2024-12-22T17:10:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 91,
+    "dealPotential": "Very High",
+    "timeInStage": 12,
+    "leadSource": "Trial Sign-up",
+    "campaignSource": "Free Trial Campaign"
   },
   {
     "Id": 19,
@@ -300,7 +678,28 @@
     "fundingType": "Series C",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-12-09T15:20:00Z"
+    "createdAt": "2024-12-09T15:20:00Z",
+    "leadScore": 38,
+    "scoreComponents": {
+      "demographic": 98,
+      "behavioral": 15,
+      "engagement": 5
+    },
+    "activities": {
+      "emails": 4,
+      "calls": 0,
+      "meetings": 0,
+      "websiteVisits": 6,
+      "documentsDownloaded": 1,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-12-10T11:45:00Z",
+    "engagementLevel": "Very Low",
+    "responseRate": 0,
+    "dealPotential": "Very Low",
+    "timeInStage": 13,
+    "leadSource": "Cold Email",
+    "campaignSource": "Enterprise HR Campaign"
   },
   {
     "Id": 20,
@@ -315,7 +714,28 @@
     "fundingType": "Series C",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-11-28T09:30:00Z"
+    "createdAt": "2024-11-28T09:30:00Z",
+    "leadScore": 41,
+    "scoreComponents": {
+      "demographic": 98,
+      "behavioral": 18,
+      "engagement": 7
+    },
+    "activities": {
+      "emails": 7,
+      "calls": 1,
+      "meetings": 0,
+      "websiteVisits": 9,
+      "documentsDownloaded": 1,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-11-30T14:22:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 14,
+    "dealPotential": "Low",
+    "timeInStage": 24,
+    "leadSource": "Trade Show",
+    "campaignSource": "Dreamforce Event"
   },
   {
     "Id": 21,
@@ -330,7 +750,28 @@
     "fundingType": "Series B",
     "addedBy": 4,
     "addedByName": "Emily Chen",
-    "createdAt": "2024-11-25T12:10:00Z"
+    "createdAt": "2024-11-25T12:10:00Z",
+    "leadScore": 93,
+    "scoreComponents": {
+      "demographic": 84,
+      "behavioral": 96,
+      "engagement": 97
+    },
+    "activities": {
+      "emails": 42,
+      "calls": 16,
+      "meetings": 8,
+      "websiteVisits": 140,
+      "documentsDownloaded": 28,
+      "webinarAttendance": 7
+    },
+    "lastActivity": "2024-12-22T18:30:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 94,
+    "dealPotential": "Very High",
+    "timeInStage": 27,
+    "leadSource": "Demo Request",
+    "campaignSource": "CRM Comparison Page"
   },
   {
     "Id": 22,
@@ -345,7 +786,28 @@
     "fundingType": "Series B",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
-    "createdAt": "2024-11-20T16:45:00Z"
+    "createdAt": "2024-11-20T16:45:00Z",
+    "leadScore": 69,
+    "scoreComponents": {
+      "demographic": 86,
+      "behavioral": 62,
+      "engagement": 59
+    },
+    "activities": {
+      "emails": 14,
+      "calls": 3,
+      "meetings": 1,
+      "websiteVisits": 38,
+      "documentsDownloaded": 6,
+      "webinarAttendance": 2
+    },
+    "lastActivity": "2024-12-18T13:15:00Z",
+    "engagementLevel": "Medium",
+    "responseRate": 58,
+    "dealPotential": "Medium",
+    "timeInStage": 32,
+    "leadSource": "LinkedIn",
+    "campaignSource": "Sales Tools Campaign"
   },
   {
     "Id": 23,
@@ -360,7 +822,28 @@
     "fundingType": "Series A",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-11-18T11:30:00Z"
+    "createdAt": "2024-11-18T11:30:00Z",
+    "leadScore": 74,
+    "scoreComponents": {
+      "demographic": 81,
+      "behavioral": 73,
+      "engagement": 68
+    },
+    "activities": {
+      "emails": 19,
+      "calls": 5,
+      "meetings": 2,
+      "websiteVisits": 52,
+      "documentsDownloaded": 9,
+      "webinarAttendance": 3
+    },
+    "lastActivity": "2024-12-19T16:45:00Z",
+    "engagementLevel": "High",
+    "responseRate": 68,
+    "dealPotential": "Medium",
+    "timeInStage": 34,
+    "leadSource": "Content Download",
+    "campaignSource": "Sales Playbook"
   },
   {
     "Id": 24,
@@ -375,7 +858,28 @@
     "fundingType": "Series A",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-11-15T14:20:00Z"
+    "createdAt": "2024-11-15T14:20:00Z",
+    "leadScore": 86,
+    "scoreComponents": {
+      "demographic": 72,
+      "behavioral": 89,
+      "engagement": 92
+    },
+    "activities": {
+      "emails": 33,
+      "calls": 12,
+      "meetings": 6,
+      "websiteVisits": 105,
+      "documentsDownloaded": 21,
+      "webinarAttendance": 5
+    },
+    "lastActivity": "2024-12-22T12:30:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 85,
+    "dealPotential": "High",
+    "timeInStage": 37,
+    "leadSource": "Free Trial",
+    "campaignSource": "Form Builder Trial"
   },
   {
     "Id": 25,
@@ -390,7 +894,28 @@
     "fundingType": "Series B",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-11-12T08:15:00Z"
+    "createdAt": "2024-11-12T08:15:00Z",
+    "leadScore": 88,
+    "scoreComponents": {
+      "demographic": 79,
+      "behavioral": 91,
+      "engagement": 93
+    },
+    "activities": {
+      "emails": 31,
+      "calls": 10,
+      "meetings": 5,
+      "websiteVisits": 98,
+      "documentsDownloaded": 19,
+      "webinarAttendance": 4
+    },
+    "lastActivity": "2024-12-21T15:20:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 87,
+    "dealPotential": "Very High",
+    "timeInStage": 40,
+    "leadSource": "Webinar",
+    "campaignSource": "Database Solutions Webinar"
   },
   {
     "Id": 26,
@@ -405,7 +930,28 @@
     "fundingType": "Series A",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-11-08T13:50:00Z"
+    "createdAt": "2024-11-08T13:50:00Z",
+    "leadScore": 80,
+    "scoreComponents": {
+      "demographic": 74,
+      "behavioral": 82,
+      "engagement": 84
+    },
+    "activities": {
+      "emails": 25,
+      "calls": 7,
+      "meetings": 3,
+      "websiteVisits": 68,
+      "documentsDownloaded": 12,
+      "webinarAttendance": 3
+    },
+    "lastActivity": "2024-12-20T09:45:00Z",
+    "engagementLevel": "High",
+    "responseRate": 76,
+    "dealPotential": "High",
+    "timeInStage": 44,
+    "leadSource": "Organic Search",
+    "campaignSource": "Website Builder SEO"
   },
   {
     "Id": 27,
@@ -420,7 +966,28 @@
     "fundingType": "Bootstrapped",
     "addedBy": 4,
     "addedByName": "Emily Chen",
-    "createdAt": "2024-11-05T10:40:00Z"
+    "createdAt": "2024-11-05T10:40:00Z",
+    "leadScore": 83,
+    "scoreComponents": {
+      "demographic": 78,
+      "behavioral": 86,
+      "engagement": 85
+    },
+    "activities": {
+      "emails": 28,
+      "calls": 9,
+      "meetings": 4,
+      "websiteVisits": 82,
+      "documentsDownloaded": 15,
+      "webinarAttendance": 4
+    },
+    "lastActivity": "2024-12-21T11:30:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 80,
+    "dealPotential": "High",
+    "timeInStage": 47,
+    "leadSource": "Partner Referral",
+    "campaignSource": "Integration Partner Network"
   },
   {
     "Id": 28,
@@ -435,7 +1002,28 @@
     "fundingType": "Series B",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
-    "createdAt": "2024-11-02T15:25:00Z"
+    "createdAt": "2024-11-02T15:25:00Z",
+    "leadScore": 91,
+    "scoreComponents": {
+      "demographic": 87,
+      "behavioral": 93,
+      "engagement": 94
+    },
+    "activities": {
+      "emails": 36,
+      "calls": 13,
+      "meetings": 6,
+      "websiteVisits": 118,
+      "documentsDownloaded": 23,
+      "webinarAttendance": 6
+    },
+    "lastActivity": "2024-12-22T14:15:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 90,
+    "dealPotential": "Very High",
+    "timeInStage": 50,
+    "leadSource": "Demo Request",
+    "campaignSource": "Customer Support Demo"
   },
   {
     "Id": 29,
@@ -450,7 +1038,28 @@
     "fundingType": "Series C",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-10-30T09:10:00Z"
+    "createdAt": "2024-10-30T09:10:00Z",
+    "leadScore": 32,
+    "scoreComponents": {
+      "demographic": 93,
+      "behavioral": 8,
+      "engagement": 5
+    },
+    "activities": {
+      "emails": 9,
+      "calls": 1,
+      "meetings": 0,
+      "websiteVisits": 11,
+      "documentsDownloaded": 1,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-11-15T16:30:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 11,
+    "dealPotential": "Low",
+    "timeInStage": 53,
+    "leadSource": "Cold Call",
+    "campaignSource": "Help Desk Solutions"
   },
   {
     "Id": 30,
@@ -465,7 +1074,28 @@
     "fundingType": "Series C",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-10-28T12:35:00Z"
+    "createdAt": "2024-10-28T12:35:00Z",
+    "leadScore": 26,
+    "scoreComponents": {
+      "demographic": 95,
+      "behavioral": 3,
+      "engagement": 1
+    },
+    "activities": {
+      "emails": 3,
+      "calls": 0,
+      "meetings": 0,
+      "websiteVisits": 2,
+      "documentsDownloaded": 0,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-11-02T10:20:00Z",
+    "engagementLevel": "Very Low",
+    "responseRate": 0,
+    "dealPotential": "Very Low",
+    "timeInStage": 55,
+    "leadSource": "Trade Show",
+    "campaignSource": "Retail Tech Expo"
   },
   {
     "Id": 31,
@@ -480,7 +1110,28 @@
     "fundingType": "Series C",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-10-25T16:20:00Z"
+    "createdAt": "2024-10-25T16:20:00Z",
+    "leadScore": 52,
+    "scoreComponents": {
+      "demographic": 91,
+      "behavioral": 35,
+      "engagement": 30
+    },
+    "activities": {
+      "emails": 11,
+      "calls": 2,
+      "meetings": 1,
+      "websiteVisits": 22,
+      "documentsDownloaded": 3,
+      "webinarAttendance": 1
+    },
+    "lastActivity": "2024-11-18T14:45:00Z",
+    "engagementLevel": "Medium",
+    "responseRate": 27,
+    "dealPotential": "Low",
+    "timeInStage": 58,
+    "leadSource": "API Documentation",
+    "campaignSource": "Developer Portal"
   },
   {
     "Id": 32,
@@ -495,7 +1146,28 @@
     "fundingType": "Series B",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-10-22T11:45:00Z"
+    "createdAt": "2024-10-22T11:45:00Z",
+    "leadScore": 48,
+    "scoreComponents": {
+      "demographic": 83,
+      "behavioral": 32,
+      "engagement": 28
+    },
+    "activities": {
+      "emails": 16,
+      "calls": 4,
+      "meetings": 2,
+      "websiteVisits": 35,
+      "documentsDownloaded": 5,
+      "webinarAttendance": 1
+    },
+    "lastActivity": "2024-12-01T09:30:00Z",
+    "engagementLevel": "Medium",
+    "responseRate": 44,
+    "dealPotential": "Low",
+    "timeInStage": 61,
+    "leadSource": "Content Download",
+    "campaignSource": "Customer Data Platform Guide"
   },
   {
     "Id": 33,
@@ -510,7 +1182,28 @@
     "fundingType": "Series B",
     "addedBy": 4,
     "addedByName": "Emily Chen",
-    "createdAt": "2024-10-18T14:30:00Z"
+    "createdAt": "2024-10-18T14:30:00Z",
+    "leadScore": 87,
+    "scoreComponents": {
+      "demographic": 80,
+      "behavioral": 90,
+      "engagement": 91
+    },
+    "activities": {
+      "emails": 29,
+      "calls": 9,
+      "meetings": 4,
+      "websiteVisits": 86,
+      "documentsDownloaded": 17,
+      "webinarAttendance": 4
+    },
+    "lastActivity": "2024-12-21T13:45:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 83,
+    "dealPotential": "Very High",
+    "timeInStage": 65,
+    "leadSource": "Free Trial",
+    "campaignSource": "Collaboration Tools Trial"
   },
   {
     "Id": 34,
@@ -525,7 +1218,28 @@
     "fundingType": "Series A",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
-    "createdAt": "2024-10-15T08:50:00Z"
+    "createdAt": "2024-10-15T08:50:00Z",
+    "leadScore": 77,
+    "scoreComponents": {
+      "demographic": 58,
+      "behavioral": 84,
+      "engagement": 89
+    },
+    "activities": {
+      "emails": 23,
+      "calls": 6,
+      "meetings": 3,
+      "websiteVisits": 64,
+      "documentsDownloaded": 11,
+      "webinarAttendance": 3
+    },
+    "lastActivity": "2024-12-20T16:20:00Z",
+    "engagementLevel": "High",
+    "responseRate": 78,
+    "dealPotential": "Medium",
+    "timeInStage": 68,
+    "leadSource": "Product Hunt",
+    "campaignSource": "Product Hunt Launch"
   },
   {
     "Id": 35,
@@ -540,7 +1254,28 @@
     "fundingType": "Series A",
     "addedBy": 6,
     "addedByName": "Shashank Sharma",
-    "createdAt": "2024-10-12T13:15:00Z"
+    "createdAt": "2024-10-12T13:15:00Z",
+    "leadScore": 75,
+    "scoreComponents": {
+      "demographic": 67,
+      "behavioral": 79,
+      "engagement": 79
+    },
+    "activities": {
+      "emails": 20,
+      "calls": 5,
+      "meetings": 3,
+      "websiteVisits": 58,
+      "documentsDownloaded": 10,
+      "webinarAttendance": 2
+    },
+    "lastActivity": "2024-12-19T11:30:00Z",
+    "engagementLevel": "High",
+    "responseRate": 70,
+    "dealPotential": "Medium",
+    "timeInStage": 71,
+    "leadSource": "Referral",
+    "campaignSource": "Customer Referral Program"
   },
   {
     "Id": 36,
@@ -555,7 +1290,28 @@
     "fundingType": "Series B",
     "addedBy": 1,
     "addedByName": "Sarah Johnson",
-    "createdAt": "2024-10-08T10:25:00Z"
+    "createdAt": "2024-10-08T10:25:00Z",
+    "leadScore": 95,
+    "scoreComponents": {
+      "demographic": 89,
+      "behavioral": 97,
+      "engagement": 98
+    },
+    "activities": {
+      "emails": 45,
+      "calls": 18,
+      "meetings": 9,
+      "websiteVisits": 165,
+      "documentsDownloaded": 32,
+      "webinarAttendance": 8
+    },
+    "lastActivity": "2024-12-22T19:45:00Z",
+    "engagementLevel": "Very High",
+    "responseRate": 96,
+    "dealPotential": "Very High",
+    "timeInStage": 75,
+    "leadSource": "Demo Request",
+    "campaignSource": "CRM Solutions Demo"
   },
   {
     "Id": 37,
@@ -570,7 +1326,28 @@
     "fundingType": "Series C",
     "addedBy": 2,
     "addedByName": "Mike Davis",
-    "createdAt": "2024-10-05T15:40:00Z"
+    "createdAt": "2024-10-05T15:40:00Z",
+    "leadScore": 44,
+    "scoreComponents": {
+      "demographic": 97,
+      "behavioral": 22,
+      "engagement": 13
+    },
+    "activities": {
+      "emails": 8,
+      "calls": 1,
+      "meetings": 0,
+      "websiteVisits": 14,
+      "documentsDownloaded": 2,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-10-28T12:15:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 13,
+    "dealPotential": "Low",
+    "timeInStage": 78,
+    "leadSource": "Cold Email",
+    "campaignSource": "DevOps Tools Campaign"
   },
   {
     "Id": 38,
@@ -585,7 +1362,28 @@
     "fundingType": "Series C",
     "addedBy": 3,
     "addedByName": "Tom Wilson",
-    "createdAt": "2024-09-28T09:20:00Z"
+    "createdAt": "2024-09-28T09:20:00Z",
+    "leadScore": 36,
+    "scoreComponents": {
+      "demographic": 94,
+      "behavioral": 12,
+      "engagement": 8
+    },
+    "activities": {
+      "emails": 10,
+      "calls": 2,
+      "meetings": 1,
+      "websiteVisits": 16,
+      "documentsDownloaded": 2,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-11-20T15:30:00Z",
+    "engagementLevel": "Low",
+    "responseRate": 20,
+    "dealPotential": "Low",
+    "timeInStage": 85,
+    "leadSource": "Industry Report",
+    "campaignSource": "Digital Transformation Study"
   },
   {
     "Id": 39,
@@ -600,7 +1398,28 @@
     "fundingType": "Series C",
     "addedBy": 4,
     "addedByName": "Emily Chen",
-    "createdAt": "2024-09-25T12:55:00Z"
+    "createdAt": "2024-09-25T12:55:00Z",
+    "leadScore": 29,
+    "scoreComponents": {
+      "demographic": 92,
+      "behavioral": 6,
+      "engagement": 2
+    },
+    "activities": {
+      "emails": 5,
+      "calls": 0,
+      "meetings": 0,
+      "websiteVisits": 4,
+      "documentsDownloaded": 0,
+      "webinarAttendance": 0
+    },
+    "lastActivity": "2024-10-10T08:45:00Z",
+    "engagementLevel": "Very Low",
+    "responseRate": 0,
+    "dealPotential": "Very Low",
+    "timeInStage": 88,
+    "leadSource": "Cold Email",
+    "campaignSource": "Cloud Storage Campaign"
   },
   {
     "Id": 40,
@@ -615,6 +1434,27 @@
     "fundingType": "Series C",
     "addedBy": 5,
     "addedByName": "Alex Rodriguez",
-    "createdAt": "2024-09-20T16:10:00Z"
+    "createdAt": "2024-09-20T16:10:00Z",
+    "leadScore": 55,
+    "scoreComponents": {
+      "demographic": 94,
+      "behavioral": 42,
+      "engagement": 29
+    },
+    "activities": {
+      "emails": 13,
+      "calls": 3,
+      "meetings": 1,
+      "websiteVisits": 28,
+      "documentsDownloaded": 4,
+      "webinarAttendance": 1
+    },
+    "lastActivity": "2024-12-05T14:20:00Z",
+    "engagementLevel": "Medium",
+    "responseRate": 38,
+    "dealPotential": "Medium",
+    "timeInStage": 93,
+    "leadSource": "Security Webinar",
+    "campaignSource": "Identity Security Webinar"
   }
 ]

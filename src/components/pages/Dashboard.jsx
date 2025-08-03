@@ -3,29 +3,19 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { toast } from "react-toastify";
+import { getDailyWebsiteUrls, getSalesReps } from "@/services/api/reportService";
+import { getDashboardMetrics, getDashboardPendingFollowUps, getDetailedRecentActivity, getLeadPerformanceChart, getRecentActivity, getRevenueTrendsData, getTeamPerformanceRankings, getTodaysMeetings } from "@/services/api/dashboardService";
+import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
+import MetricCard from "@/components/molecules/MetricCard";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Pipeline from "@/components/pages/Pipeline";
+import Analytics from "@/components/pages/Analytics";
+import Leads from "@/components/pages/Leads";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
-import Analytics from "@/components/pages/Analytics";
-import Pipeline from "@/components/pages/Pipeline";
-import Leads from "@/components/pages/Leads";
-import MetricCard from "@/components/molecules/MetricCard";
-import { getSalesReps } from "@/services/api/salesRepService";
-import { getDailyWebsiteUrls } from "@/services/api/reportService";
-import { getPendingFollowUps } from "@/services/api/leadsService";
-import { 
-  getDashboardMetrics, 
-  getDetailedRecentActivity, 
-  getLeadPerformanceChart, 
-  getPendingFollowUps as getDashboardPendingFollowUps, 
-  getRecentActivity, 
-  getRevenueTrendsData, 
-  getTeamPerformanceRankings, 
-  getTodaysMeetings 
-} from "@/services/api/dashboardService";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState([]);

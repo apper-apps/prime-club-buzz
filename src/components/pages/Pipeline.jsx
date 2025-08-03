@@ -167,12 +167,12 @@ const Pipeline = () => {
                           snapshot.isDraggingOver ? "bg-primary-50" : ""
                         }`}
                       >
-                        {stageDeals.length === 0 ? (
+{stageDeals.length === 0 ? (
                           <div className="flex flex-col items-center justify-center h-32 text-gray-400">
                             <ApperIcon name="Package" size={32} className="mb-2" />
                             <p className="text-sm">No deals in this stage</p>
                           </div>
-) : (
+                        ) : (
                           stageDeals.map((deal, index) => (
                             <DealCard
                               key={deal.Id}

@@ -1,34 +1,44 @@
 import { motion } from "framer-motion";
 import { Draggable } from "react-beautiful-dnd";
-import Card from "@/components/atoms/Card";
+import React from "react";
+import ApperIcon from "@/components/ApperIcon";
 import Badge from "@/components/atoms/Badge";
 import Avatar from "@/components/atoms/Avatar";
-import ApperIcon from "@/components/ApperIcon";
+import Card from "@/components/atoms/Card";
 
-const DealCard = ({ deal, index, onEdit }) => {
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
 
-  const getStageColor = (stage) => {
-    const colors = {
-      "Connected": "default",
-      "Locked": "info",
-      "Meeting Booked": "warning",
-      "Meeting Done": "primary",
-      "Negotiation": "warning",
-      "Closed": "success",
-      "Lost": "error"
-    };
-    return colors[stage] || "default";
-  };
+function getStageColor(stage) {
+  const colors = {
+    'Connected': 'default',
+    'Locked': 'info',
+    'Meeting Booked': 'warning',
+    'Meeting Done': 'primary',
+    'Negotiation': 'warning',
+    'Closed': 'success',
+    'Lost': 'error'
+  }
+  return colors[stage] || 'default'
+}
+
+function DealCard({ deal, index, onEdit }) {
+  // Ensure unique draggable ID with fallback
+  const draggableId = deal?.id || `deal-${index}-${Date.now()}`
+  
+  // Validate deal object to prevent rendering errors
+  if (!deal) {
+    return null
+  }
 
   return (
-    <Draggable draggableId={deal.Id.toString()} index={index}>
+    <Draggable draggableId={draggableId} index={index}>
       {(provided, snapshot) => (
         <motion.div
           ref={provided.innerRef}
@@ -36,24 +46,24 @@ const DealCard = ({ deal, index, onEdit }) => {
           {...provided.dragHandleProps}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className={`mb-3 ${snapshot.isDragging ? "rotate-3" : ""}`}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+          className={`mb-3 ${snapshot.isDragging ? 'dragging' : ''}`}
         >
-          <Card className={`p-4 cursor-grab active:cursor-grabbing transition-all duration-200 ${
-            snapshot.isDragging ? "shadow-2xl ring-2 ring-primary-500 bg-primary-50" : "hover:shadow-md"
-          }`}>
-<div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-900 mb-1">{deal.name}</h4>
-                <p className="text-sm text-gray-600">{deal.leadName}</p>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                {deal.edition && deal.edition !== "Select Edition" && (
+          <Card className="group cursor-pointer transition-all duration-200 hover:shadow-lg">
+            <div className="space-y-3">
+              {/* Header */}
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+                    {deal.title || 'Untitled Deal'}
+                  </h3>
+{deal.edition && deal.edition !== "Select Edition" && (
                   <Badge variant="primary" size="sm" className="text-xs">
                     {deal.edition}
                   </Badge>
                 )}
-<button
+                </div>
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit?.(deal);
@@ -66,7 +76,7 @@ const DealCard = ({ deal, index, onEdit }) => {
               </div>
             </div>
             
-<div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-lg font-bold text-green-600">
                 {formatCurrency(deal.value)}
               </span>

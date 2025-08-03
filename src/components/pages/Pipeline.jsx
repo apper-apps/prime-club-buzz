@@ -2,21 +2,21 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
-import Empty from "@/components/ui/Empty";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
-import DealCard from "@/components/molecules/DealCard";
-import DealEditModal from "@/components/molecules/DealEditModal";
 import salesRepsData from "@/services/mockData/salesReps.json";
 import dashboardData from "@/services/mockData/dashboard.json";
 import dealsData from "@/services/mockData/deals.json";
 import leadsData from "@/services/mockData/leads.json";
 import contactsData from "@/services/mockData/contacts.json";
 import { getDeals, updateDeal } from "@/services/api/dealsService";
+import ApperIcon from "@/components/ApperIcon";
+import DealEditModal from "@/components/molecules/DealEditModal";
+import DealCard from "@/components/molecules/DealCard";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Empty from "@/components/ui/Empty";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
 
 const Pipeline = () => {
   const [deals, setDeals] = useState([]);
@@ -172,10 +172,10 @@ const Pipeline = () => {
                             <ApperIcon name="Package" size={32} className="mb-2" />
                             <p className="text-sm">No deals in this stage</p>
                           </div>
-                        ) : (
+) : (
                           stageDeals.map((deal, index) => (
                             <DealCard
-key={deal.Id}
+                              key={deal.Id}
                               deal={deal}
                               index={index}
                               onEdit={handleEditDeal}
@@ -184,7 +184,7 @@ key={deal.Id}
                         )}
                         {provided.placeholder}
                       </div>
-)}
+                    )}
                   </Droppable>
                 </Card>
               </div>
@@ -193,13 +193,15 @@ key={deal.Id}
         </div>
       </DragDropContext>
 
-      <DealEditModal
-        isOpen={showEditModal}
-        onClose={handleCloseEditModal}
-        deal={editingDeal}
-        onSave={handleSaveDeal}
-      />
-</div>
+      {/* Edit Deal Modal */}
+      {showEditModal && editingDeal && (
+        <DealEditModal
+          deal={editingDeal}
+          onSave={handleSaveDeal}
+          onClose={handleCloseEditModal}
+        />
+      )}
+    </div>
   );
 };
 

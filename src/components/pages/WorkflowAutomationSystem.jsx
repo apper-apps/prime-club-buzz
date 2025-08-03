@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import ApperIcon from '@/components/ApperIcon';
+import React, { useState } from "react";
+import ApperIcon from "@/components/ApperIcon";
+import Analytics from "@/components/pages/Analytics";
 
 const WorkflowAutomationSystem = () => {
 // Sample workflow data with comprehensive automation scenarios
@@ -318,7 +319,7 @@ const WorkflowAutomationSystem = () => {
     }
   ];
 
-  // Categories for workflow filtering
+// Categories for workflow filtering
   const categories = [
     { value: "all", label: "All Categories", count: 3 },
     { value: "lead_nurturing", label: "Lead Nurturing", count: 1 },
@@ -332,7 +333,7 @@ const WorkflowAutomationSystem = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const tabs = [
     {
       id: 'workflows',
@@ -401,39 +402,92 @@ const WorkflowAutomationSystem = () => {
 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           {activeTab === 'workflows' && (
             <div>
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 lg:mb-0">Workflow Automation</h2>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="relative">
-                    <ApperIcon name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    <input
-                      type="text"
-                      placeholder="Search workflows..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-64"
-                    />
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Workflow Automation</h2>
+                
+                {/* Filters and Search Section */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                    {/* Search Input */}
+                    <div className="relative flex-1 lg:max-w-md">
+                      <ApperIcon name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                      <input
+                        type="text"
+                        placeholder="Search workflows..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full"
+                      />
+                    </div>
+                    
+                    {/* Category Filter */}
+                    <select
+                      value={filterCategory}
+                      onChange={(e) => setFilterCategory(e.target.value)}
+                      className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent min-w-[160px]"
+                    >
+                      {categories.map(category => (
+                        <option key={category.value} value={category.value}>
+                          {category.label} ({category.count})
+                        </option>
+                      ))}
+                    </select>
+                    
+                    {/* Status Filter */}
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent min-w-[120px]"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                    
+                    {/* More Filters Button */}
+                    <button
+                      onClick={() => setShowMoreFilters(!showMoreFilters)}
+                      className="px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 text-gray-700"
+                    >
+                      <ApperIcon name="Filter" size={16} />
+                      More Filters
+                    </button>
                   </div>
-                  <select
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  >
-                    {categories.map(category => (
-                      <option key={category.value} value={category.value}>
-                        {category.label} ({category.count})
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
+                  
+                  {/* Expanded Filters */}
+                  {showMoreFilters && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                          <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="all">All Priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Created By</label>
+                          <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="all">All Users</option>
+                            <option value="admin">Admin</option>
+                            <option value="sarah">Sarah Chen</option>
+                            <option value="mike">Mike Johnson</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                          <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="all">All Time</option>
+                            <option value="week">Last Week</option>
+                            <option value="month">Last Month</option>
+                            <option value="quarter">Last Quarter</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -467,12 +521,14 @@ const WorkflowAutomationSystem = () => {
                     return matchesSearch && matchesCategory && matchesStatus;
                   })
                   .map(workflow => (
-                    <div key={workflow.Id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+<div key={workflow.Id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+                      {/* Header with Name, Status, and Priority Badges */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-lg font-semibold text-gray-900">{workflow.name}</h3>
                             <div className="flex items-center gap-2">
+                              {/* Status Badge */}
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 workflow.isActive 
                                   ? 'bg-green-100 text-green-800' 
@@ -483,18 +539,56 @@ const WorkflowAutomationSystem = () => {
                                 }`}></span>
                                 {workflow.isActive ? 'Active' : 'Inactive'}
                               </span>
+                              
+                              {/* Priority Badge */}
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 workflow.priority === 'high' ? 'bg-red-100 text-red-800' :
                                 workflow.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-blue-100 text-blue-800'
+                                'bg-green-100 text-green-800'
                               }`}>
-                                {workflow.priority}
+                                {workflow.priority.charAt(0).toUpperCase() + workflow.priority.slice(1)}
+                              </span>
+                              
+                              {/* Category Badge */}
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {workflow.category?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'General'}
                               </span>
                             </div>
                           </div>
+                          
+                          {/* Description */}
                           <p className="text-gray-600 text-sm mb-4">{workflow.description}</p>
+                          
+                          {/* Tags */}
+                          {workflow.tags && workflow.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-4">
+                              {workflow.tags.map((tag, index) => (
+                                <span 
+                                  key={index} 
+                                  className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-2 ml-4">
+                        
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-1 ml-4">
+                          {/* Duplicate Button */}
+                          <button
+                            onClick={() => {
+                              // Add duplicate functionality
+                              console.log('Duplicating workflow:', workflow.name);
+                            }}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Duplicate workflow"
+                          >
+                            <ApperIcon name="Copy" size={16} />
+                          </button>
+                          
+                          {/* Pause/Play Button */}
                           <button
                             onClick={() => {
                               const updatedWorkflows = workflows.map(w => 
@@ -504,19 +598,73 @@ const WorkflowAutomationSystem = () => {
                             }}
                             className={`p-2 rounded-lg transition-colors ${
                               workflow.isActive 
-                                ? 'text-green-600 hover:bg-green-50' 
-                                : 'text-gray-400 hover:bg-gray-50'
+                                ? 'text-orange-600 hover:bg-orange-50' 
+                                : 'text-green-600 hover:bg-green-50'
                             }`}
-                            title={workflow.isActive ? 'Deactivate workflow' : 'Activate workflow'}
+                            title={workflow.isActive ? 'Pause workflow' : 'Activate workflow'}
                           >
-                            <ApperIcon name="Power" size={16} />
+                            <ApperIcon name={workflow.isActive ? "Pause" : "Play"} size={16} />
                           </button>
-                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                          
+                          {/* Edit Button */}
+                          <button 
+                            onClick={() => {
+                              // Add edit functionality
+                              console.log('Editing workflow:', workflow.name);
+                            }}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit workflow"
+                          >
                             <ApperIcon name="Edit" size={16} />
                           </button>
-                          <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                          
+                          {/* Delete Button */}
+                          <button 
+                            onClick={() => {
+                              if (window.confirm('Are you sure you want to delete this workflow?')) {
+                                const updatedWorkflows = workflows.filter(w => w.Id !== workflow.Id);
+                                setWorkflows(updatedWorkflows);
+                              }
+                            }}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete workflow"
+                          >
                             <ApperIcon name="Trash2" size={16} />
                           </button>
+                        </div>
+                      </div>
+
+                      {/* Stats Row */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-t border-gray-100">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <ApperIcon name="Activity" size={14} className="text-blue-600 mr-1" />
+                            <div className="text-lg font-semibold text-gray-900">{workflow.executions?.toLocaleString() || '0'}</div>
+                          </div>
+                          <div className="text-xs text-gray-500">Executions</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <ApperIcon name="TrendingUp" size={14} className="text-green-600 mr-1" />
+                            <div className="text-lg font-semibold text-green-600">{workflow.successRate || '0'}%</div>
+                          </div>
+                          <div className="text-xs text-gray-500">Success Rate</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <ApperIcon name="Clock" size={14} className="text-gray-600 mr-1" />
+                            <div className="text-lg font-semibold text-gray-900">
+                              {workflow.lastRun ? new Date(workflow.lastRun).toLocaleDateString() : 'Never'}
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-500">Last Run</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <ApperIcon name="User" size={14} className="text-purple-600 mr-1" />
+                            <div className="text-lg font-semibold text-gray-900">{workflow.createdBy || 'Unknown'}</div>
+                          </div>
+                          <div className="text-xs text-gray-500">Created By</div>
                         </div>
                       </div>
 
@@ -582,44 +730,6 @@ const WorkflowAutomationSystem = () => {
                             </div>
                           )}
                         </div>
-                      </div>
-
-                      {/* Tags */}
-                      <div className="mb-4">
-                        <div className="flex flex-wrap gap-1">
-                          {workflow.tags.map((tag, index) => (
-                            <span 
-                              key={index} 
-                              className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Performance Metrics */}
-                      <div className="border-t border-gray-100 pt-4 grid grid-cols-3 gap-4">
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">{workflow.executions.toLocaleString()}</div>
-                          <div className="text-xs text-gray-500">Executions</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-green-600">{workflow.successRate}%</div>
-                          <div className="text-xs text-gray-500">Success Rate</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">
-                            {new Date(workflow.lastRun).toLocaleDateString()}
-                          </div>
-                          <div className="text-xs text-gray-500">Last Run</div>
-                        </div>
-                      </div>
-
-                      {/* Created By Info */}
-                      <div className="border-t border-gray-100 pt-3 mt-3 flex items-center justify-between text-xs text-gray-500">
-                        <span>Created by {workflow.createdBy}</span>
-                        <span>{new Date(workflow.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   ))}

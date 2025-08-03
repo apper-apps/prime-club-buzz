@@ -2,7 +2,26 @@ import React, { useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
 import Analytics from "@/components/pages/Analytics";
 import Button from "@/components/atoms/Button";
+
 const WorkflowAutomationSystem = () => {
+// Workflow Builder Modal States
+const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+const [currentWorkflow, setCurrentWorkflow] = useState(null);
+const [builderState, setBuilderState] = useState({
+  name: '',
+  description: '',
+  category: 'lead_nurturing',
+  priority: 'medium',
+  trigger: {
+    type: 'lead_created',
+    condition: '',
+    value: '',
+    additionalConditions: []
+  },
+  actions: [],
+  tags: []
+});
+
 // Sample workflow data with comprehensive automation scenarios
 const [expandedWorkflow, setExpandedWorkflow] = useState(null);
 const [workflows, setWorkflows] = useState([
@@ -514,10 +533,24 @@ const [workflows, setWorkflows] = useState([
                 </p>
               </div>
               <div className="flex-shrink-0">
-                <Button
+<Button
                   onClick={() => {
-                    // TODO: Implement create workflow functionality
-                    console.log('Creating new workflow...');
+                    setCurrentWorkflow(null);
+                    setBuilderState({
+                      name: '',
+                      description: '',
+                      category: 'lead_nurturing',
+                      priority: 'medium',
+                      trigger: {
+                        type: 'lead_created',
+                        condition: '',
+                        value: '',
+                        additionalConditions: []
+                      },
+                      actions: [],
+                      tags: []
+                    });
+                    setIsBuilderOpen(true);
                   }}
                   className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors shadow-sm"
                 >
@@ -1545,7 +1578,420 @@ const [workflows, setWorkflows] = useState([
             </div>
           )}
         </div>
-      </div>
+</div>
+
+      {/* Workflow Builder Modal */}
+      {isBuilderOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          {/* Fixed Overlay with Semi-transparent Background */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+            onClick={() => setIsBuilderOpen(false)}
+          ></div>
+          
+          {/* Centered Modal with Max Width and Height */}
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div 
+              className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Sticky Header with Title and Close Button */}
+              <div className="sticky top-0 z-10 bg-white border-b border-gray-200 rounded-t-lg px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      {currentWorkflow ? 'Edit Workflow' : 'Create New Workflow'}
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Build intelligent automation workflows to nurture leads and streamline your sales process
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsBuilderOpen(false)}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Close modal"
+                  >
+                    <ApperIcon name="X" size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto px-6 py-6">
+                <div className="space-y-8">
+                  {/* Basic Information Section */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="p-2 bg-blue-600 rounded-lg mr-3">
+                        <ApperIcon name="Info" size={20} className="text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-blue-900">Basic Information</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Workflow Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={builderState.name}
+                            onChange={(e) => setBuilderState(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Enter workflow name..."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Category
+                          </label>
+                          <select
+                            value={builderState.category}
+                            onChange={(e) => setBuilderState(prev => ({ ...prev, category: e.target.value }))}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="lead_nurturing">Lead Nurturing</option>
+                            <option value="retention">Retention</option>
+                            <option value="lead_routing">Lead Routing</option>
+                            <option value="onboarding">Onboarding</option>
+                            <option value="re_engagement">Re-engagement</option>
+                          </select>
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Priority
+                          </label>
+                          <select
+                            value={builderState.priority}
+                            onChange={(e) => setBuilderState(prev => ({ ...prev, priority: e.target.value }))}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          >
+                            <option value="high">High Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Description *
+                        </label>
+                        <textarea
+                          value={builderState.description}
+                          onChange={(e) => setBuilderState(prev => ({ ...prev, description: e.target.value }))}
+                          placeholder="Describe what this workflow does and when it should be used..."
+                          rows={6}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Trigger Configuration Section */}
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="p-2 bg-purple-600 rounded-lg mr-3">
+                        <ApperIcon name="Zap" size={20} className="text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-purple-900">Trigger Configuration</h3>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Trigger Type
+                        </label>
+                        <select
+                          value={builderState.trigger.type}
+                          onChange={(e) => setBuilderState(prev => ({ 
+                            ...prev, 
+                            trigger: { ...prev.trigger, type: e.target.value }
+                          }))}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                          {triggerTypes.map(trigger => (
+                            <option key={trigger.type} value={trigger.type}>
+                              {trigger.label} - {trigger.description}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Condition
+                          </label>
+                          <input
+                            type="text"
+                            value={builderState.trigger.condition}
+                            onChange={(e) => setBuilderState(prev => ({ 
+                              ...prev, 
+                              trigger: { ...prev.trigger, condition: e.target.value }
+                            }))}
+                            placeholder="Enter condition..."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Value
+                          </label>
+                          <input
+                            type="text"
+                            value={builderState.trigger.value}
+                            onChange={(e) => setBuilderState(prev => ({ 
+                              ...prev, 
+                              trigger: { ...prev.trigger, value: e.target.value }
+                            }))}
+                            placeholder="Enter value..."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Configuration Section */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        <div className="p-2 bg-green-600 rounded-lg mr-3">
+                          <ApperIcon name="Play" size={20} className="text-white" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-green-900">Actions Configuration</h3>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          setBuilderState(prev => ({
+                            ...prev,
+                            actions: [...prev.actions, {
+                              type: 'send_email',
+                              delay: 0,
+                              conditions: [],
+                              template: '',
+                              message: ''
+                            }]
+                          }));
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <ApperIcon name="Plus" size={16} />
+                        Add Action
+                      </Button>
+                    </div>
+                    
+                    {builderState.actions.length === 0 ? (
+                      <div className="text-center py-8 border-2 border-dashed border-green-300 rounded-lg">
+                        <ApperIcon name="Play" size={48} className="text-green-400 mx-auto mb-4" />
+                        <h4 className="text-lg font-medium text-green-800 mb-2">No Actions Yet</h4>
+                        <p className="text-green-600 mb-4">Add actions to define what happens when this workflow triggers</p>
+                        <Button
+                          onClick={() => {
+                            setBuilderState(prev => ({
+                              ...prev,
+                              actions: [{
+                                type: 'send_email',
+                                delay: 0,
+                                conditions: [],
+                                template: '',
+                                message: ''
+                              }]
+                            }));
+                          }}
+                          variant="primary"
+                          size="sm"
+                        >
+                          <ApperIcon name="Plus" size={16} className="mr-2" />
+                          Add First Action
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {builderState.actions.map((action, index) => (
+                          <div key={index} className="bg-white border border-green-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 bg-green-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                  {index + 1}
+                                </div>
+                                <span className="font-medium text-green-900">Action {index + 1}</span>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setBuilderState(prev => ({
+                                    ...prev,
+                                    actions: prev.actions.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                                className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded"
+                                title="Remove action"
+                              >
+                                <ApperIcon name="Trash2" size={16} />
+                              </button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                  Action Type
+                                </label>
+                                <select
+                                  value={action.type}
+                                  onChange={(e) => {
+                                    const newActions = [...builderState.actions];
+                                    newActions[index].type = e.target.value;
+                                    setBuilderState(prev => ({ ...prev, actions: newActions }));
+                                  }}
+                                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                >
+                                  {actionTypes.map(actionType => (
+                                    <option key={actionType.type} value={actionType.type}>
+                                      {actionType.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                  Delay (minutes)
+                                </label>
+                                <input
+                                  type="number"
+                                  value={action.delay}
+                                  onChange={(e) => {
+                                    const newActions = [...builderState.actions];
+                                    newActions[index].delay = parseInt(e.target.value) || 0;
+                                    setBuilderState(prev => ({ ...prev, actions: newActions }));
+                                  }}
+                                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  placeholder="0"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tags Section */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="p-2 bg-gray-600 rounded-lg mr-3">
+                        <ApperIcon name="Tag" size={20} className="text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Tags</h3>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Add tags to organize and categorize this workflow
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Enter tags separated by commas..."
+                        value={builderState.tags.join(', ')}
+                        onChange={(e) => {
+                          const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                          setBuilderState(prev => ({ ...prev, tags }));
+                        }}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                      />
+                      {builderState.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {builderState.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-200 text-gray-800"
+                            >
+                              {tag}
+                              <button
+                                onClick={() => {
+                                  setBuilderState(prev => ({
+                                    ...prev,
+                                    tags: prev.tags.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                                className="ml-2 text-gray-500 hover:text-gray-700"
+                              >
+                                <ApperIcon name="X" size={12} />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sticky Footer with Cancel and Save Buttons */}
+              <div className="sticky bottom-0 z-10 bg-white border-t border-gray-200 rounded-b-lg px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-500">
+                    {currentWorkflow ? 'Editing existing workflow' : 'Creating new workflow'}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={() => setIsBuilderOpen(false)}
+                      variant="outline"
+                      className="px-6 py-2"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        // TODO: Implement save workflow functionality
+                        console.log('Saving workflow:', builderState);
+                        
+                        if (currentWorkflow) {
+                          // Update existing workflow
+                          const updatedWorkflows = workflows.map(w => 
+                            w.Id === currentWorkflow.Id 
+                              ? { ...w, ...builderState, lastRun: new Date().toISOString() }
+                              : w
+                          );
+                          setWorkflows(updatedWorkflows);
+                        } else {
+                          // Create new workflow
+                          const newWorkflow = {
+                            Id: workflows.length + 1,
+                            ...builderState,
+                            isActive: true,
+                            executions: 0,
+                            successRate: 0,
+                            lastRun: null,
+                            createdBy: 'Current User',
+                            createdAt: new Date().toISOString()
+                          };
+                          setWorkflows([...workflows, newWorkflow]);
+                        }
+                        
+                        setIsBuilderOpen(false);
+                      }}
+                      variant="primary"
+                      className="px-6 py-2"
+                      disabled={!builderState.name || !builderState.description}
+                    >
+                      <ApperIcon name="Save" size={16} className="mr-2" />
+                      {currentWorkflow ? 'Update Workflow' : 'Create Workflow'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

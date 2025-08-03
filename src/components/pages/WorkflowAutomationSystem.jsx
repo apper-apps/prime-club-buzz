@@ -346,7 +346,7 @@ const [workflows, setWorkflows] = useState([
     }
   };
 
-  const triggerTypes = [
+const triggerTypes = [
     {
       type: "lead_created",
       label: "Lead Created",
@@ -362,11 +362,53 @@ const [workflows, setWorkflows] = useState([
       category: "scoring"
     },
     {
-      type: "time_delay",
-      label: "Time Delay",
-      icon: "Clock",
-      description: "Triggers after specified time period of inactivity",
-      category: "time_based"
+      type: "lead_stage_change",
+      label: "Lead Stage Change",
+      icon: "GitBranch",
+      description: "Triggers when lead moves to a specific stage in the funnel",
+      category: "lead_events"
+    },
+    {
+      type: "deal_created",
+      label: "Deal Created",
+      icon: "DollarSign",
+      description: "Triggers when a new deal is created in the pipeline",
+      category: "deal_events"
+    },
+    {
+      type: "deal_stage_change",
+      label: "Deal Stage Change",
+      icon: "ArrowRight",
+      description: "Triggers when deal moves between pipeline stages",
+      category: "deal_events"
+    },
+    {
+      type: "deal_value_threshold",
+      label: "Deal Value Threshold",
+      icon: "Target",
+      description: "Triggers when deal value reaches specified amount",
+      category: "deal_events"
+    },
+    {
+      type: "deal_won",
+      label: "Deal Won",
+      icon: "Trophy",
+      description: "Triggers when a deal is marked as won",
+      category: "deal_events"
+    },
+    {
+      type: "deal_lost",
+      label: "Deal Lost",
+      icon: "X",
+      description: "Triggers when a deal is marked as lost",
+      category: "deal_events"
+    },
+    {
+      type: "contact_engagement",
+      label: "Contact Engagement",
+      icon: "Activity",
+      description: "Triggers based on contact interaction frequency",
+      category: "engagement"
     },
     {
       type: "email_opened",
@@ -376,8 +418,15 @@ const [workflows, setWorkflows] = useState([
       category: "engagement"
     },
     {
-      type: "page_visited",
-      label: "Page Visited",
+      type: "email_clicked",
+      label: "Email Link Clicked",
+      icon: "MousePointer",
+      description: "Triggers when prospect clicks link in email",
+      category: "engagement"
+    },
+    {
+      type: "website_visit",
+      label: "Website Visit",
       icon: "Globe",
       description: "Triggers when prospect visits specific website pages",
       category: "website_activity"
@@ -402,16 +451,93 @@ const [workflows, setWorkflows] = useState([
       icon: "Calendar",
       description: "Triggers when prospect schedules a meeting",
       category: "sales_activity"
+    },
+    {
+      type: "meeting_attended",
+      label: "Meeting Attended",
+      icon: "Video",
+      description: "Triggers when prospect attends a scheduled meeting",
+      category: "sales_activity"
+    },
+    {
+      type: "no_activity",
+      label: "No Activity",
+      icon: "Clock",
+      description: "Triggers after specified period of inactivity",
+      category: "time_based"
+    },
+    {
+      type: "birthday",
+      label: "Contact Birthday",
+      icon: "Gift",
+      description: "Triggers on contact's birthday",
+      category: "time_based"
+    },
+    {
+      type: "contract_expiry",
+      label: "Contract Expiry",
+      icon: "AlertTriangle",
+      description: "Triggers before contract expiration date",
+      category: "time_based"
+    },
+    {
+      type: "territory_assignment",
+      label: "Territory Assignment",
+      icon: "Map",
+      description: "Triggers when lead enters specific territory",
+      category: "lead_events"
+    },
+    {
+      type: "competitor_mention",
+      label: "Competitor Mention",
+      icon: "Shield",
+      description: "Triggers when competitor is mentioned in communications",
+      category: "competitive"
+    },
+    {
+      type: "support_ticket",
+      label: "Support Ticket Created",
+      icon: "HelpCircle",
+      description: "Triggers when customer creates support ticket",
+      category: "customer_service"
     }
   ];
 
   // Comprehensive action types with icons and descriptions
-  const actionTypes = [
+const actionTypes = [
     {
       type: "assign_lead",
-      label: "Assign Lead",
+      label: "Assign Lead to Rep",
       icon: "UserCheck",
       description: "Assign lead to specific sales rep or team",
+      category: "lead_management"
+    },
+    {
+      type: "assign_territory",
+      label: "Assign Territory",
+      icon: "Map",
+      description: "Assign lead to specific territory or region",
+      category: "lead_management"
+    },
+    {
+      type: "change_lead_stage",
+      label: "Change Lead Stage",
+      icon: "GitBranch",
+      description: "Move lead to specific stage in funnel",
+      category: "lead_management"
+    },
+    {
+      type: "update_lead_score",
+      label: "Update Lead Score",
+      icon: "Target",
+      description: "Increase or decrease lead score by specified amount",
+      category: "scoring"
+    },
+    {
+      type: "set_lead_priority",
+      label: "Set Lead Priority",
+      icon: "Flag",
+      description: "Mark lead as high, medium, or low priority",
       category: "lead_management"
     },
     {
@@ -419,6 +545,13 @@ const [workflows, setWorkflows] = useState([
       label: "Send Email",
       icon: "Mail",
       description: "Send personalized email from template",
+      category: "communication"
+    },
+    {
+      type: "send_email_sequence",
+      label: "Start Email Sequence",
+      icon: "MailIcon",
+      description: "Begin automated email drip campaign",
       category: "communication"
     },
     {
@@ -443,6 +576,13 @@ const [workflows, setWorkflows] = useState([
       category: "sales_activity"
     },
     {
+      type: "schedule_meeting",
+      label: "Schedule Meeting",
+      icon: "Calendar",
+      description: "Book meeting with prospect automatically",
+      category: "sales_activity"
+    },
+    {
       type: "create_task",
       label: "Create Task",
       icon: "CheckSquare",
@@ -450,25 +590,11 @@ const [workflows, setWorkflows] = useState([
       category: "task_management"
     },
     {
-      type: "update_lead_score",
-      label: "Update Lead Score",
-      icon: "Target",
-      description: "Modify lead score based on actions",
-      category: "scoring"
-    },
-    {
-      type: "add_to_list",
-      label: "Add to List",
-      icon: "List",
-      description: "Add prospect to specific marketing list",
-      category: "list_management"
-    },
-    {
-      type: "send_slack_notification",
-      label: "Send Slack Alert",
+      type: "create_reminder",
+      label: "Create Reminder",
       icon: "Bell",
-      description: "Send notification to Slack channel",
-      category: "notifications"
+      description: "Set reminder for sales rep",
+      category: "task_management"
     },
     {
       type: "create_deal",
@@ -476,8 +602,170 @@ const [workflows, setWorkflows] = useState([
       icon: "DollarSign",
       description: "Automatically create deal in pipeline",
       category: "sales_pipeline"
+    },
+    {
+      type: "update_deal_stage",
+      label: "Update Deal Stage",
+      icon: "ArrowRight",
+      description: "Move deal to next stage in pipeline",
+      category: "sales_pipeline"
+    },
+    {
+      type: "update_deal_value",
+      label: "Update Deal Value",
+      icon: "TrendingUp",
+      description: "Modify deal value based on criteria",
+      category: "sales_pipeline"
+    },
+    {
+      type: "add_to_list",
+      label: "Add to Marketing List",
+      icon: "List",
+      description: "Add prospect to specific marketing list",
+      category: "list_management"
+    },
+    {
+      type: "remove_from_list",
+      label: "Remove from List",
+      icon: "ListX",
+      description: "Remove prospect from marketing list",
+      category: "list_management"
+    },
+    {
+      type: "add_tag",
+      label: "Add Tag",
+      icon: "Tag",
+      description: "Add specific tag to contact record",
+      category: "data_management"
+    },
+    {
+      type: "update_contact_field",
+      label: "Update Contact Field",
+      icon: "Edit",
+      description: "Update specific field in contact record",
+      category: "data_management"
+    },
+    {
+      type: "send_slack_notification",
+      label: "Send Slack Notification",
+      icon: "Slack",
+      description: "Send notification to Slack channel",
+      category: "notifications"
+    },
+    {
+      type: "send_teams_notification",
+      label: "Send Teams Notification",
+      icon: "Users",
+      description: "Send notification to Microsoft Teams",
+      category: "notifications"
+    },
+    {
+      type: "webhook_trigger",
+      label: "Trigger Webhook",
+      icon: "Zap",
+      description: "Send data to external system via webhook",
+      category: "integrations"
+    },
+    {
+      type: "update_crm_field",
+      label: "Update CRM Field",
+      icon: "Database",
+      description: "Update field in connected CRM system",
+      category: "integrations"
+    },
+    {
+      type: "create_calendar_event",
+      label: "Create Calendar Event",
+      icon: "CalendarPlus",
+      description: "Add event to sales rep's calendar",
+      category: "sales_activity"
     }
   ];
+
+  // Condition options based on trigger type
+  const getConditionOptions = (triggerType) => {
+    const baseConditions = [
+      { value: "equals", label: "Equals" },
+      { value: "not_equals", label: "Does Not Equal" },
+      { value: "contains", label: "Contains" },
+      { value: "not_contains", label: "Does Not Contain" }
+    ];
+
+    const numericConditions = [
+      { value: "greater_than", label: "Greater Than" },
+      { value: "less_than", label: "Less Than" },
+      { value: "greater_equal", label: "Greater Than or Equal" },
+      { value: "less_equal", label: "Less Than or Equal" },
+      { value: "between", label: "Between" }
+    ];
+
+    const timeConditions = [
+      { value: "within_days", label: "Within X Days" },
+      { value: "after_days", label: "After X Days" },
+      { value: "before_date", label: "Before Date" },
+      { value: "after_date", label: "After Date" }
+    ];
+
+    switch (triggerType) {
+      case 'lead_score_change':
+      case 'deal_value_threshold':
+        return [...baseConditions, ...numericConditions];
+      case 'time_delay':
+      case 'no_activity':
+      case 'contract_expiry':
+      case 'birthday':
+        return [...baseConditions, ...timeConditions];
+      case 'lead_stage_change':
+      case 'deal_stage_change':
+        return [
+          { value: "moved_to", label: "Moved To Stage" },
+          { value: "moved_from", label: "Moved From Stage" },
+          { value: "stayed_in", label: "Stayed in Stage For" }
+        ];
+      case 'website_visit':
+        return [
+          { value: "visited_page", label: "Visited Specific Page" },
+          { value: "time_on_page", label: "Time on Page Greater Than" },
+          { value: "page_views", label: "Number of Page Views" }
+        ];
+      case 'email_opened':
+      case 'email_clicked':
+        return [
+          { value: "campaign_name", label: "Campaign Name" },
+          { value: "email_subject", label: "Email Subject Contains" },
+          { value: "open_count", label: "Number of Opens" }
+        ];
+      default:
+        return baseConditions;
+    }
+  };
+
+  // Value options based on condition
+  const getValueOptions = (triggerType, condition) => {
+    if (triggerType === 'lead_stage_change' || triggerType === 'deal_stage_change') {
+      return [
+        { value: "new", label: "New" },
+        { value: "qualified", label: "Qualified" },
+        { value: "proposal", label: "Proposal" },
+        { value: "negotiation", label: "Negotiation" },
+        { value: "closed_won", label: "Closed Won" },
+        { value: "closed_lost", label: "Closed Lost" }
+      ];
+    }
+    
+    if (condition === 'within_days' || condition === 'after_days') {
+      return [
+        { value: "1", label: "1 Day" },
+        { value: "3", label: "3 Days" },
+        { value: "7", label: "1 Week" },
+        { value: "14", label: "2 Weeks" },
+        { value: "30", label: "1 Month" },
+        { value: "90", label: "3 Months" }
+      ];
+    }
+
+    return [];
+  };
 
 // Categories for workflow filtering
   const categories = [
@@ -1721,37 +2009,85 @@ const [workflows, setWorkflows] = useState([
                         </select>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Condition
+                            Condition Type
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={builderState.trigger.condition}
                             onChange={(e) => setBuilderState(prev => ({ 
                               ...prev, 
-                              trigger: { ...prev.trigger, condition: e.target.value }
+                              trigger: { ...prev.trigger, condition: e.target.value, value: '' }
                             }))}
-                            placeholder="Enter condition..."
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          />
+                          >
+                            <option value="">Select condition...</option>
+                            {getConditionOptions(builderState.trigger.type).map(condition => (
+                              <option key={condition.value} value={condition.value}>
+                                {condition.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                         
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Value
                           </label>
-                          <input
-                            type="text"
-                            value={builderState.trigger.value}
+                          {getValueOptions(builderState.trigger.type, builderState.trigger.condition).length > 0 ? (
+                            <select
+                              value={builderState.trigger.value}
+                              onChange={(e) => setBuilderState(prev => ({ 
+                                ...prev, 
+                                trigger: { ...prev.trigger, value: e.target.value }
+                              }))}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            >
+                              <option value="">Select value...</option>
+                              {getValueOptions(builderState.trigger.type, builderState.trigger.condition).map(value => (
+                                <option key={value.value} value={value.value}>
+                                  {value.label}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              type={builderState.trigger.condition?.includes('than') || builderState.trigger.condition?.includes('equal') ? 'number' : 'text'}
+                              value={builderState.trigger.value}
+                              onChange={(e) => setBuilderState(prev => ({ 
+                                ...prev, 
+                                trigger: { ...prev.trigger, value: e.target.value }
+                              }))}
+                              placeholder={
+                                builderState.trigger.condition?.includes('than') || builderState.trigger.condition?.includes('equal') 
+                                  ? 'Enter number...' 
+                                  : builderState.trigger.condition?.includes('date')
+                                    ? 'YYYY-MM-DD'
+                                    : 'Enter value...'
+                              }
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Priority Level
+                          </label>
+                          <select
+                            value={builderState.trigger.priority || 'medium'}
                             onChange={(e) => setBuilderState(prev => ({ 
                               ...prev, 
-                              trigger: { ...prev.trigger, value: e.target.value }
+                              trigger: { ...prev.trigger, priority: e.target.value }
                             }))}
-                            placeholder="Enter value..."
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                          />
+                          >
+                            <option value="low">Low Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="high">High Priority</option>
+                            <option value="urgent">Urgent</option>
+                          </select>
                         </div>
                       </div>
                     </div>

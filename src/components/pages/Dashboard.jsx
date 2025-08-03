@@ -347,7 +347,7 @@ useEffect(() => {
 </div>
 {dailyUrls.slice(0, 10).map((url, index) => (
                   <motion.div
-                    key={`daily-url-${url?.websiteUrl || 'unknown'}-${url?.status || 'no-status'}-${url?.createdAt || 'no-date'}-${index}`}
+                    key={`daily-url-${index}-${url?.websiteUrl?.replace(/[^a-zA-Z0-9]/g, '') || 'unknown'}-${Date.now()}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}

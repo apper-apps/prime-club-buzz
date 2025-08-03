@@ -10,7 +10,7 @@ import Pipeline from "@/components/pages/Pipeline";
 import Dashboard from "@/components/pages/Dashboard";
 import Leads from "@/components/pages/Leads";
 import Hotlist from "@/components/pages/Hotlist";
-
+import WorkflowAutomationSystem from "@/components/pages/WorkflowAutomationSystem";
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -187,7 +187,7 @@ animate={{ opacity: 1, y: 0 }}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+transition={{ duration: 0.3 }}
             >
               <Calendar />
             </motion.div>
@@ -199,6 +199,15 @@ animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
               <Leaderboard />
+            </motion.div>
+          } />
+          <Route path="/workflow-automation" element={
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <WorkflowAutomationSystem />
             </motion.div>
           } />
         </Routes>

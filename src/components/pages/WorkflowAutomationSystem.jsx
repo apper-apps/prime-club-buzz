@@ -398,32 +398,281 @@ const WorkflowAutomationSystem = () => {
 
       {/* Content Area */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           {activeTab === 'workflows' && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Workflows</h2>
-              <p className="text-gray-600">Workflow management interface will be implemented here.</p>
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 lg:mb-0">Workflow Automation</h2>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative">
+                    <ApperIcon name="Search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                    <input
+                      type="text"
+                      placeholder="Search workflows..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-64"
+                    />
+                  </div>
+                  <select
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  >
+                    {categories.map(category => (
+                      <option key={category.value} value={category.value}>
+                        {category.label} ({category.count})
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {categories.map(category => (
+                  <button
+                    key={category.value}
+                    onClick={() => setFilterCategory(category.value)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      filterCategory === category.value
+                        ? 'bg-primary-100 text-primary-700 border border-primary-200'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
+                    }`}
+                  >
+                    {category.label} ({category.count})
+                  </button>
+                ))}
+              </div>
+
+              {/* Workflows Grid */}
+              <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
+                {workflows
+                  .filter(workflow => {
+                    const matchesSearch = workflow.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                        workflow.description.toLowerCase().includes(searchTerm.toLowerCase());
+                    const matchesCategory = filterCategory === 'all' || workflow.category === filterCategory;
+                    const matchesStatus = filterStatus === 'all' || 
+                                        (filterStatus === 'active' && workflow.isActive) ||
+                                        (filterStatus === 'inactive' && !workflow.isActive);
+                    return matchesSearch && matchesCategory && matchesStatus;
+                  })
+                  .map(workflow => (
+                    <div key={workflow.Id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{workflow.name}</h3>
+                            <div className="flex items-center gap-2">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                workflow.isActive 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                <span className={`w-2 h-2 rounded-full mr-1.5 ${
+                                  workflow.isActive ? 'bg-green-500' : 'bg-gray-400'
+                                }`}></span>
+                                {workflow.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                workflow.priority === 'high' ? 'bg-red-100 text-red-800' :
+                                workflow.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-blue-100 text-blue-800'
+                              }`}>
+                                {workflow.priority}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-gray-600 text-sm mb-4">{workflow.description}</p>
+                        </div>
+                        <div className="flex items-center gap-2 ml-4">
+                          <button
+                            onClick={() => {
+                              const updatedWorkflows = workflows.map(w => 
+                                w.Id === workflow.Id ? { ...w, isActive: !w.isActive } : w
+                              );
+                              setWorkflows(updatedWorkflows);
+                            }}
+                            className={`p-2 rounded-lg transition-colors ${
+                              workflow.isActive 
+                                ? 'text-green-600 hover:bg-green-50' 
+                                : 'text-gray-400 hover:bg-gray-50'
+                            }`}
+                            title={workflow.isActive ? 'Deactivate workflow' : 'Activate workflow'}
+                          >
+                            <ApperIcon name="Power" size={16} />
+                          </button>
+                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                            <ApperIcon name="Edit" size={16} />
+                          </button>
+                          <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <ApperIcon name="Trash2" size={16} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Trigger Section */}
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                          <ApperIcon name="Zap" size={14} className="text-primary-600" />
+                          Trigger
+                        </h4>
+                        <div className="bg-primary-50 border border-primary-100 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1">
+                            <ApperIcon 
+                              name={triggerTypes.find(t => t.type === workflow.trigger.type)?.icon || 'Circle'} 
+                              size={14} 
+                              className="text-primary-600" 
+                            />
+                            <span className="text-sm font-medium text-primary-800">
+                              {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
+                            </span>
+                          </div>
+                          <p className="text-xs text-primary-700">
+                            {triggerTypes.find(t => t.type === workflow.trigger.type)?.description}
+                          </p>
+                          {workflow.trigger.additionalConditions && workflow.trigger.additionalConditions.length > 0 && (
+                            <div className="mt-2 text-xs text-primary-600">
+                              +{workflow.trigger.additionalConditions.length} additional conditions
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions Section */}
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                          <ApperIcon name="Play" size={14} className="text-blue-600" />
+                          Actions ({workflow.actions.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {workflow.actions.slice(0, 3).map((action, index) => (
+                            <div key={index} className="flex items-center gap-3 p-2 bg-blue-50 border border-blue-100 rounded-lg">
+                              <div className="flex items-center gap-2 flex-1">
+                                <ApperIcon 
+                                  name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
+                                  size={14} 
+                                  className="text-blue-600" 
+                                />
+                                <span className="text-sm font-medium text-blue-800">
+                                  {actionTypes.find(a => a.type === action.type)?.label || action.type}
+                                </span>
+                              </div>
+                              {action.delay > 0 && (
+                                <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                                  {action.delay < 60 ? `${action.delay}m` : 
+                                   action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
+                                   `${Math.floor(action.delay / 1440)}d`}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                          {workflow.actions.length > 3 && (
+                            <div className="text-xs text-gray-500 text-center py-1">
+                              +{workflow.actions.length - 3} more actions
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="mb-4">
+                        <div className="flex flex-wrap gap-1">
+                          {workflow.tags.map((tag, index) => (
+                            <span 
+                              key={index} 
+                              className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Performance Metrics */}
+                      <div className="border-t border-gray-100 pt-4 grid grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-lg font-semibold text-gray-900">{workflow.executions.toLocaleString()}</div>
+                          <div className="text-xs text-gray-500">Executions</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-semibold text-green-600">{workflow.successRate}%</div>
+                          <div className="text-xs text-gray-500">Success Rate</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-semibold text-gray-900">
+                            {new Date(workflow.lastRun).toLocaleDateString()}
+                          </div>
+                          <div className="text-xs text-gray-500">Last Run</div>
+                        </div>
+                      </div>
+
+                      {/* Created By Info */}
+                      <div className="border-t border-gray-100 pt-3 mt-3 flex items-center justify-between text-xs text-gray-500">
+                        <span>Created by {workflow.createdBy}</span>
+                        <span>{new Date(workflow.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {workflows.filter(workflow => {
+                const matchesSearch = workflow.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    workflow.description.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesCategory = filterCategory === 'all' || workflow.category === filterCategory;
+                const matchesStatus = filterStatus === 'all' || 
+                                    (filterStatus === 'active' && workflow.isActive) ||
+                                    (filterStatus === 'inactive' && !workflow.isActive);
+                return matchesSearch && matchesCategory && matchesStatus;
+              }).length === 0 && (
+                <div className="text-center py-12">
+                  <ApperIcon name="Search" size={48} className="text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No workflows found</h3>
+                  <p className="text-gray-500">Try adjusting your search terms or filters.</p>
+                </div>
+              )}
             </div>
           )}
           
           {activeTab === 'execution-history' && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Execution History</h2>
-              <p className="text-gray-600">Workflow execution history will be displayed here.</p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                <ApperIcon name="History" size={48} className="text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Execution History</h3>
+                <p className="text-gray-600">Detailed workflow execution logs and history will be available here.</p>
+              </div>
             </div>
           )}
           
           {activeTab === 'lead-scoring' && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Lead Scoring</h2>
-              <p className="text-gray-600">Lead scoring configuration and metrics will be shown here.</p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                <ApperIcon name="Target" size={48} className="text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Lead Scoring Configuration</h3>
+                <p className="text-gray-600">Configure lead scoring rules and view scoring analytics here.</p>
+              </div>
             </div>
           )}
           
           {activeTab === 'analytics' && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Analytics</h2>
-              <p className="text-gray-600">Workflow analytics and performance metrics will be displayed here.</p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                <ApperIcon name="BarChart3" size={48} className="text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Workflow Analytics</h3>
+                <p className="text-gray-600">Comprehensive workflow performance metrics and analytics will be displayed here.</p>
+              </div>
             </div>
           )}
         </div>

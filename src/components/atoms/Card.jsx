@@ -21,7 +21,7 @@ const Card = forwardRef(({ className, children, variant = 'default', ...props },
       {...props}
     >
       {children}
-    </div>
+</div>
 )
 })
 

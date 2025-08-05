@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
+import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -167,9 +168,11 @@ const [selectedLeads, setSelectedLeads] = useState(new Set())
 // State for categories
   const [categoryOptions, setCategoryOptions] = useState([])
   
+  // State for sales reps
+  const [salesReps, setSalesReps] = useState([])
+  
 // State for timeouts and debouncing
 const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
-  
   // Load custom columns
   async function loadCustomColumns() {
     try {
@@ -238,11 +241,23 @@ async function loadLeads() {
     setLoading(false);
   }
 }
+
+  // Load sales reps data
+  async function loadSalesReps() {
+    try {
+      const reps = await getSalesReps()
+      setSalesReps(reps)
+    } catch (error) {
+      console.error('Failed to load sales reps:', error)
+      toast.error('Failed to load sales representatives')
+    }
+  }
   
   // Load data on component mount
 useEffect(() => {
    loadCustomColumns()
    loadLeads()
+   loadSalesReps()
  }, [])
 
 // State for timeouts and debouncing

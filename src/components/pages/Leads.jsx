@@ -11,136 +11,142 @@ import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Hotlist from "@/components/pages/Hotlist";
 import Badge from "@/components/atoms/Badge";
-import { Input } from "@/components/atoms/Input";
+import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
-function Leads() {
-  const navigate = useNavigate()
-  
-  // State management
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedLeads, setSelectedLeads] = useState([])
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [editingLead, setEditingLead] = useState(null)
-  const [showAddModal, setShowAddModal] = useState(false)
-const [customColumns, setCustomColumns] = useState([])
-  const [emptyRows, setEmptyRows] = useState([])
-  const [nextTempId, setNextTempId] = useState(-1)
-  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  // Filters
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [fundingFilter, setFundingFilter] = useState('all')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const [teamSizeFilter, setTeamSizeFilter] = useState('all')
-  
-  // Sorting
-  const [sortBy, setSortBy] = useState('createdAt')
-  const [sortOrder, setSortOrder] = useState('desc')
-  
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(25)
-  
-  // View states
-  const [viewMode, setViewMode] = useState('table')
-  const [showHotlist, setShowHotlist] = useState(false)
-
-  // Debounce timeout storage
-  const [updateTimeouts, setUpdateTimeouts] = useState({})
 // Utility functions
 const getFieldNameForColumn = (column) => {
-    const fieldMap = {
-      'Website URL': 'websiteUrl',
-      'Company Name': 'name',
-      'Status': 'status',
-      'Product Name': 'productName',
-      'Team Size': 'teamSize',
-      'ARR': 'arr',
-      'Category': 'category',
-      'LinkedIn': 'linkedinUrl',
-      'Funding Type': 'fundingType',
-      'Follow-up Date': 'followUpDate',
-      'Email': 'email',
-      'WhatsApp Number': 'whatsappNumber'
-    }
-    return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '')
-  }
+  const fieldMap = {
+    'Website URL': 'websiteUrl',
+    'Company Name': 'name',
+    'Status': 'status',
+    'Product Name': 'productName',
+    'Team Size': 'teamSize',
+    'ARR': 'arr',
+    'Category': 'category',
+    'LinkedIn': 'linkedinUrl',
+    'Funding Type': 'fundingType',
+    'Follow-up Date': 'followUpDate',
+    'Email': 'email',
+    'Phone': 'phone'
+  };
+  return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
+};
 
-  const getDefaultValueForType = (type) => {
-    switch (type) {
-      case 'text':
-      case 'email':
-      case 'url':
-        return ''
-      case 'number':
-        return 0
-      case 'boolean':
-        return false
-      case 'date':
-        return null
-      case 'select':
-        return ''
-      default:
-        return ''
-    }
+const getDefaultValueForType = (type) => {
+  switch (type) {
+    case 'number':
+      return 0;
+    case 'boolean':
+      return false;
+    case 'date':
+      return '';
+    case 'select':
+      return '';
+    default:
+      return '';
   }
+};
 
-  const getStatusColor = (status) => {
-    const colors = {
-      'New Lead': 'info',
-      'Contacted': 'primary',
-      'Keep an Eye': 'info',
-      'Proposal Sent': 'warning',
-      'Meeting Booked': 'primary',
-      'Meeting Done': 'success',
-      'Commercials Sent': 'warning',
-      'Negotiation': 'accent',
-      'Hotlist': 'primary',
-      'Temporarily on hold': 'default',
-      'Closed Won': 'success',
-      'Closed Lost': 'danger'
-    }
-    return colors[status] || 'default'
-  }
+const getStatusColor = (status) => {
+  const colors = {
+    'New Lead': 'info',
+    'Contacted': 'primary',
+    'Keep an Eye': 'info',
+    'Proposal Sent': 'warning',
+    'Meeting Booked': 'primary',
+    'Meeting Done': 'success',
+    'Commercials Sent': 'warning',
+    'Negotiation': 'accent',
+    'Hotlist': 'primary',
+    'Temporarily on Hold': 'default',
+    'Closed Won': 'success',
+    'Closed Lost': 'danger'
+  };
+  return colors[status] || 'default';
+};
 
-// Load functions
-  const loadCustomColumns = async () => {
+const parseMultipleUrls = (input) => {
+  if (!input) return [];
+  
+  const lines = input.split('\n').filter(line => line.trim());
+  const urls = [];
+  
+  lines.forEach(line => {
+    const wordsInLine = line.split(/\s+/);
+    wordsInLine.forEach(word => {
+      const trimmedWord = word.trim();
+      if (trimmedWord) {
+        let cleanUrl = trimmedWord;
+        if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+          cleanUrl = 'https://' + cleanUrl;
+        }
+        urls.push(cleanUrl);
+      }
+    });
+  });
+  
+  const uniqueUrls = [...new Set(urls)];
+  return uniqueUrls;
+};
+
+const Leads = () => {
+  const navigate = useNavigate();
+  
+  // State declarations
+  const [data, setData] = useState([]);
+  const [emptyRows, setEmptyRows] = useState([]);
+  const [customColumns, setCustomColumns] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([
+    'Technology', 'Healthcare', 'Finance', 'Education', 'Retail', 'Manufacturing', 'Real Estate', 'Other'
+  ]);
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [fundingFilter, setFundingFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [teamSizeFilter, setTeamSizeFilter] = useState('');
+  const [selectedLeads, setSelectedLeads] = useState(new Set());
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
+  const [editingLead, setEditingLead] = useState(null);
+  const [sortField, setSortField] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
+  const [showHotlist, setShowHotlist] = useState(false);
+  const [debounceTimeouts, setDebounceTimeouts] = useState({});
+  const [nextTempId, setNextTempId] = useState(-1);
+// Additional constants and options
+  const teamSizeOptions = ["1-3", "4-10", "11-50", "51-100", "101-500", "500+"];
+// Load data functions
+const loadCustomColumns = async () => {
     try {
-      const columns = await getVisibleColumns()
-      setCustomColumns(columns)
+      const columns = await getVisibleColumns();
+      setCustomColumns(columns);
     } catch (error) {
-      console.error('Error loading custom columns:', error)
-      toast.error('Failed to load custom columns')
+      console.error('Error loading custom columns:', error);
+      toast.error('Failed to load column configuration');
     }
-  }
+  };
 
   const loadLeads = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const leadsData = await getLeads()
-      setData(leadsData)
+      setLoading(true);
+      const leadsData = await getLeads();
+      setData(leadsData);
     } catch (error) {
-      console.error('Error loading leads:', error)
-      setError('Failed to load leads')
-      toast.error('Failed to load leads')
+      console.error('Error loading leads:', error);
+      setError('Failed to load leads');
+      toast.error('Failed to load leads');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-}
-  useEffect(() => {
-    loadLeads()
-    loadCustomColumns()
-  }, [])
+  };
 
-  // Status update handler
-// Status update handler
   const handleStatusChange = async (leadId, newStatus) => {
     try {
       const updatedLead = await updateLead(leadId, { status: newStatus })
@@ -202,129 +208,53 @@ const getFieldNameForColumn = (column) => {
     }
   }
 
-  // Delete lead handler
-  const handleDelete = async (leadId) => {
-    try {
-      await deleteLead(leadId)
-      setData(prevData => prevData.filter(lead => lead.Id !== leadId))
-      setSelectedLeads(prevSelected => prevSelected.filter(id => id !== leadId))
-      toast.success("Lead deleted successfully!")
-    } catch (err) {
-      console.error('Error deleting lead:', err)
-      toast.error("Failed to delete lead")
-    }
-  }
-
-  const handleBulkDelete = async () => {
-    if (selectedLeads.length === 0) return;
-    
-    try {
-      let successCount = 0;
-      let failCount = 0;
-      
-      for (const leadId of selectedLeads) {
-        try {
-          await deleteLead(leadId);
-          successCount++;
-        } catch (err) {
-          failCount++;
-        }
-      }
-      
-      // Update the data by removing successfully deleted leads
-      setData(prevData => prevData.filter(lead => !selectedLeads.includes(lead.Id)));
-      setSelectedLeads([]);
-      setShowBulkDeleteDialog(false);
-      
-      if (successCount > 0 && failCount === 0) {
-        toast.success(`Successfully deleted ${successCount} lead${successCount > 1 ? 's' : ''}`);
-      } else if (successCount > 0 && failCount > 0) {
-        toast.warning(`Deleted ${successCount} lead${successCount > 1 ? 's' : ''}, failed to delete ${failCount}`);
-      } else {
-        toast.error("Failed to delete selected leads");
-      }
-    } catch (err) {
-      toast.error("Failed to delete leads");
-      setShowBulkDeleteDialog(false);
-    }
-  };
-
-  const handleAddLead = async (leadData) => {
-    try {
-      const newLead = await createLead(leadData);
-      setData(prevData => [newLead, ...prevData]);
-      setShowAddForm(false);
-toast.success("Lead added successfully!");
-    } catch (err) {
-      console.error('Error adding lead:', err);
-      toast.error("Failed to add lead");
-    }
-  };
-
-  const handleUpdateLead = async (leadId, leadData) => {
-    try {
-      const updatedLead = await updateLead(leadId, leadData);
-      setData(prevData => 
-        prevData.map(lead => 
-          lead.Id === leadId ? updatedLead : lead
-        )
-      );
-      setEditingLead(null);
-      toast.success("Lead updated successfully!");
-    } catch (err) {
-      console.error('Error updating lead:', err);
-      toast.error("Failed to update lead");
-    }
-  };
-
   // Field update handlers
   const handleFieldUpdate = async (leadId, field, value) => {
     try {
-      const processedValue = field === 'arr' ? Number(value) : value
-      const updates = { [field]: processedValue }
-      const updatedLead = await updateLead(leadId, updates)
+      const processedValue = field === 'arr' && value !== '' ? Number(value) : value;
+      const updates = { [field]: processedValue };
+      const updatedLead = await updateLead(leadId, updates);
       
       setData(prevData => prevData.map(item => 
         item.Id === leadId ? updatedLead : item
-      ))
-      
-      toast.success('Field updated successfully')
+      ));
     } catch (error) {
-      console.error('Error updating field:', error)
-      toast.error('Failed to update field')
+      console.error('Error updating lead field:', error);
+      toast.error('Failed to update lead');
     }
-  }
+  };
 
   const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
-    const timeoutKey = `${leadId}-${field}`
+    const timeoutKey = `${leadId}-${field}`;
     
-    // Clear existing timeout
-    if (updateTimeouts[timeoutKey]) {
-      clearTimeout(updateTimeouts[timeoutKey])
+    if (debounceTimeouts[timeoutKey]) {
+      clearTimeout(debounceTimeouts[timeoutKey]);
     }
     
-    // Set new timeout
     const timeoutId = setTimeout(() => {
-      handleFieldUpdate(leadId, field, value)
-      setUpdateTimeouts(prev => {
-        const newTimeouts = { ...prev }
-        delete newTimeouts[timeoutKey]
-        return newTimeouts
-      })
-    }, 1000)
+      handleFieldUpdate(leadId, field, value);
+      setDebounceTimeouts(prev => {
+        const newTimeouts = { ...prev };
+        delete newTimeouts[timeoutKey];
+        return newTimeouts;
+      });
+    }, 500);
     
-    setUpdateTimeouts(prev => ({ ...prev, [timeoutKey]: timeoutId }))
-  }, [updateTimeouts])
+    setDebounceTimeouts(prev => ({
+      ...prev,
+      [timeoutKey]: timeoutId
+    }));
+  }, [debounceTimeouts]);
 
-  // Empty row management
+  // Empty row handlers
   const addEmptyRow = () => {
     const newEmptyRow = {
       Id: nextTempId,
       isEmptyRow: true
-    }
-    setEmptyRows(prev => [...prev, newEmptyRow])
-    setNextTempId(prev => prev - 1)
-  }
+    };
+    setEmptyRows(prev => [...prev, newEmptyRow]);
+    setNextTempId(prev => prev - 1);
+  };
 
   const handleEmptyRowUpdate = async (tempId, field, value) => {
     try {
@@ -383,92 +313,139 @@ toast.success("Lead added successfully!");
     }
   }
 
+  // Category handlers
   const handleCreateCategory = (newCategory) => {
-    // For now, just add to local state - in real app would call API
-    toast.success(`Category "${newCategory}" created successfully`)
-  }
-
-// Handle multiple URL parsing
-  const parseMultipleUrls = (input) => {
-    if (!input || !input.trim()) return [];
-    
-    // Split by newlines first, then by spaces to handle various paste formats
-    const lines = input.split(/\r?\n/).filter(line => line.trim());
-    const urls = [];
-    
-    lines.forEach(line => {
-      // Split each line by spaces and filter out empty strings
-      const wordsInLine = line.split(/\s+/).filter(word => word.trim());
-      wordsInLine.forEach(word => {
-        const trimmedWord = word.trim();
-        if (trimmedWord) {
-          // Clean up common URL prefixes and suffixes
-          let cleanUrl = trimmedWord.replace(/^https?:\/\//, '').replace(/\/$/, '');
-          // Add https:// prefix if not present
-          if (!cleanUrl.includes('://')) {
-            cleanUrl = 'https://' + cleanUrl;
-          }
-          urls.push(cleanUrl);
-        }
-      });
-    });
-    
-    // Remove duplicates and filter out invalid URLs
-    const uniqueUrls = [...new Set(urls)].filter(url => {
-      try {
-        new URL(url);
-        return url.includes('.') && url.length > 4; // Basic URL validation
-      } catch {
-        return false;
-      }
-    });
-    
-    return uniqueUrls;
+    if (newCategory && !categoryOptions.includes(newCategory)) {
+      setCategoryOptions(prev => [...prev, newCategory]);
+      return newCategory;
+    }
+    return null;
   };
-// Selection functions
+
+  // CRUD operations
+  const handleDelete = async (leadId) => {
+    try {
+      await deleteLead(leadId);
+      setData(prevData => prevData.filter(item => item.Id !== leadId));
+      setSelectedLeads(prev => {
+        const newSelection = new Set(prev);
+        newSelection.delete(leadId);
+        return newSelection;
+      });
+      toast.success('Lead deleted successfully');
+    } catch (error) {
+      console.error('Error deleting lead:', error);
+      toast.error('Failed to delete lead');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      let successCount = 0;
+      let failCount = 0;
+      
+      for (const leadId of selectedLeads) {
+        try {
+          await deleteLead(leadId);
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to delete lead ${leadId}:`, error);
+          failCount++;
+        }
+      }
+      
+      setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
+      setSelectedLeads(new Set());
+      setShowBulkDeleteModal(false);
+      
+      if (successCount > 0) {
+        toast.success(`Successfully deleted ${successCount} lead(s)`);
+      }
+      if (failCount > 0) {
+        toast.error(`Failed to delete ${failCount} lead(s)`);
+      }
+    } catch (error) {
+      console.error('Error in bulk delete:', error);
+      toast.error('Failed to delete leads');
+    }
+  };
+
+  const handleAddLead = async (leadData) => {
+    try {
+      const newLead = await createLead(leadData);
+      setData(prev => [newLead, ...prev]);
+      setShowAddLeadModal(false);
+      toast.success('Lead added successfully');
+    } catch (error) {
+      console.error('Error adding lead:', error);
+      toast.error('Failed to add lead');
+    }
+  };
+
+  const handleUpdateLead = async (leadId, leadData) => {
+    try {
+      const updatedLead = await updateLead(leadId, leadData);
+      setData(prevData => prevData.map(item => 
+        item.Id === leadId ? updatedLead : item
+      ));
+      setEditingLead(null);
+      toast.success('Lead updated successfully');
+    } catch (error) {
+      console.error('Error updating lead:', error);
+      toast.error('Failed to update lead');
+    }
+  };
+
+  // Selection handlers
   const toggleLeadSelection = (leadId) => {
-    setSelectedLeads(prev => 
-      prev.includes(leadId) 
-        ? prev.filter(id => id !== leadId)
-        : [...prev, leadId]
-    );
+    setSelectedLeads(prev => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(leadId)) {
+        newSelection.delete(leadId);
+      } else {
+        newSelection.add(leadId);
+      }
+      return newSelection;
+    });
   };
 
   const toggleSelectAll = () => {
-    setSelectedLeads(prev => 
-      prev.length === filteredAndSortedData.length ? [] : filteredAndSortedData.map(lead => lead.Id)
-    );
+    if (selectedLeads.size === data.length) {
+      setSelectedLeads(new Set());
+    } else {
+      setSelectedLeads(new Set(data.map(lead => lead.Id)));
+    }
   };
 
   const clearSelection = () => {
-    setSelectedLeads([]);
+    setSelectedLeads(new Set());
   };
-const teamSizeOptions = ["1-3", "4-10", "11-50", "51-100", "101-500", "500+"];
-  
-  const [categoryOptions, setCategoryOptions] = useState([
-    "Website Contact Form",
-    "Website Chatbot", 
-    "Product Inquiry Page",
-    "Customer Referral",
-    "Partner Referral",
-    "Facebook",
-    "YouTube",
-    "Google PPC",
-    "Google My Business",
-    "Organic SEO Traffic",
-    "WhatsApp",
-    "Events",
-    "Cold Calling",
-    "IVR Inbound Call",
-    "IVR Campaign Response",
-    "99acres",
-    "MagicBricks",
-    "Justdial",
-    "IndiaMART",
-    "CRM API Integration Lead",
-    "Field Sales",
-    "Channel Partner"
-  ]);
+
+  // Pagination and sorting
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(Number(newPageSize));
+    setCurrentPage(1);
+  };
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Initialize data
+  useEffect(() => {
+    loadCustomColumns();
+    loadLeads();
+  }, []);
+// Filtering and sorting
 const filteredAndSortedData = data
     .filter(lead => {
       const matchesSearch = !searchTerm || 
@@ -478,39 +455,40 @@ const filteredAndSortedData = data
         lead.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.teamSize?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
-      const matchesFunding = fundingFilter === "all" || lead.fundingType === fundingFilter;
-      const matchesCategory = categoryFilter === "all" || lead.category === categoryFilter;
-      const matchesTeamSize = teamSizeFilter === "all" || lead.teamSize === teamSizeFilter;
+      const matchesStatus = statusFilter === "" || lead.status === statusFilter;
+      const matchesFunding = fundingFilter === "" || lead.fundingType === fundingFilter;
+      const matchesCategory = categoryFilter === "" || lead.category === categoryFilter;
+      const matchesTeamSize = teamSizeFilter === "" || lead.teamSize === teamSizeFilter;
       
       return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
     })
     .sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
+      let aValue = a[sortField];
+      let bValue = b[sortField];
       
-      if (sortBy === "arr") {
+      if (sortField === "arr") {
         aValue = Number(aValue);
         bValue = Number(bValue);
       }
       
-      if (sortBy === "createdAt") {
+      if (sortField === "createdAt") {
         aValue = new Date(aValue);
         bValue = new Date(bValue);
       }
       
-      if (sortBy === "websiteUrl") {
+      if (sortField === "websiteUrl") {
         // Sort websiteUrl by creation date (newest first) instead of alphabetical
         aValue = new Date(a.createdAt);
         bValue = new Date(b.createdAt);
       }
       
-      if (sortOrder === "asc") {
+      if (sortDirection === "asc") {
         return aValue > bValue ? 1 : -1;
       } else {
         return aValue < bValue ? 1 : -1;
       }
     });
+
   // Pagination logic
   const totalItems = filteredAndSortedData.length;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -518,33 +496,16 @@ const filteredAndSortedData = data
   const endIndex = startIndex + pageSize;
   const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
 
-// Reset to first page when filters change
+  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handlePageSizeChange = (newPageSize) => {
-    setPageSize(newPageSize);
-setCurrentPage(1);
-  };
-
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("asc");
-    }
-  };
 // Always maintain one empty row at the top
   useEffect(() => {
     if (!loading && emptyRows.length === 0) {
       addEmptyRow();
     }
-}, [loading, emptyRows.length]);
+  }, [loading, emptyRows.length]);
 
 
   if (loading) return <Loading />;
@@ -579,7 +540,7 @@ setCurrentPage(1);
                 <span className="whitespace-nowrap">Manage Columns</span>
             </Button>
             <Button
-                onClick={() => setShowAddForm(true)}
+onClick={() => setShowAddLeadModal(true)}
                 variant="outline"
                 className="w-full sm:w-auto">
                 <ApperIcon name="Plus" size={16} className="mr-2" />
@@ -597,7 +558,7 @@ setCurrentPage(1);
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <select
-                    value={statusFilter}
+<option value="">All Statuses</option>
                     onChange={e => setStatusFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Statuses</option>
@@ -618,7 +579,7 @@ setCurrentPage(1);
                     <option value="Closed Lost">Closed Lost</option>
                 </select>
                 <select
-                    value={fundingFilter}
+<option value="">All Funding Types</option>
                     onChange={e => setFundingFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Funding Types</option>
@@ -631,7 +592,7 @@ setCurrentPage(1);
                     <option value="Series C">Series C</option>
                 </select>
                 <select
-                    value={categoryFilter}
+<option value="">All Categories</option>
                     onChange={e => setCategoryFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Categories</option>
@@ -640,7 +601,7 @@ setCurrentPage(1);
                     ))}
                 </select>
                 <select
-                    value={teamSizeFilter}
+<option value="">All Team Sizes</option>
                     onChange={e => setTeamSizeFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
                     <option value="all">All Team Sizes</option>
@@ -654,10 +615,9 @@ setCurrentPage(1);
     {/* Leads Table */}
     <Card className="overflow-hidden">
         {filteredAndSortedData.length === 0 ? <Empty
-            title="No leads found"
+onAction={() => setShowAddLeadModal(true)}
             description="Add your first lead to get started with lead management"
             actionText="Add Lead"
-            onAction={() => setShowAddForm(true)}
 icon="Building2" /> : <div className="relative">
             <div 
               className="overflow-x-auto"
@@ -849,27 +809,27 @@ icon="Building2" /> : <div className="relative">
               className="text-primary-600 border-primary-300 hover:bg-primary-100"
             >
               Clear Selection
-            </Button>
-            <Button
+<Button
               variant="outline"
               size="sm"
-              onClick={() => setShowBulkDeleteDialog(true)}
+              onClick={() => setShowBulkDeleteModal(true)}
               className="text-red-600 border-red-300 hover:bg-red-50"
             >
               <ApperIcon name="Trash2" size={16} className="mr-2" />
               Delete Selected
             </Button>
           </div>
+          </div>
         </div>
       </Card>
     )}
-    
-    {/* Add Lead Modal */}
-    {showAddForm && <AddLeadModal
-      onClose={() => setShowAddForm(false)} 
+{/* Add Lead Modal */}
+    {showAddLeadModal && <AddLeadModal
+      onClose={() => setShowAddLeadModal(false)} 
       onSubmit={handleAddLead}
       categoryOptions={categoryOptions}
       onCreateCategory={handleCreateCategory}
+    />}
     />}
     {/* Edit Lead Modal */}
     {editingLead && <EditLeadModal
@@ -878,14 +838,14 @@ icon="Building2" /> : <div className="relative">
         onSubmit={handleUpdateLead}
         categoryOptions={categoryOptions}
         onCreateCategory={handleCreateCategory}
-    />}
-    {/* Bulk Delete Confirmation Dialog */}
-    {showBulkDeleteDialog && (
+{/* Bulk Delete Confirmation Dialog */}
+    {showBulkDeleteModal && (
       <BulkDeleteConfirmationDialog
-        selectedCount={selectedLeads.length}
+        selectedCount={selectedLeads.size}
         onConfirm={handleBulkDelete}
-        onCancel={() => setShowBulkDeleteDialog(false)}
+        onCancel={() => setShowBulkDeleteModal(false)}
       />
+    )}
     )}
 </motion.div>
   );
@@ -1620,7 +1580,6 @@ return (
                     className="w-full"
                 />
             </div>
-<div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
 <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               WhatsApp Number
@@ -1633,16 +1592,17 @@ return (
               className="w-full"
             />
           </div>
-                <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
-                    Cancel
-                </Button>
-                <Button type="submit" className="w-full sm:w-auto order-1 sm:order-2">
-                    Update Lead
-                </Button>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
+              Cancel
+            </Button>
+            <Button type="submit" className="w-full sm:w-auto order-1 sm:order-2">
+              Update Lead
+            </Button>
+          </div>
         </form>
+      </div>
     </div>
-</div>
   );
 };
 

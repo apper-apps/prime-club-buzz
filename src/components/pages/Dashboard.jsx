@@ -33,10 +33,6 @@ const [revenueTrends, setRevenueTrends] = useState(null);
   // Daily Leads Report state
   const [salesReps, setSalesReps] = useState([]);
   const [selectedSalesRep, setSelectedSalesRep] = useState(null);
-  const [dailyDateFilter, setDailyDateFilter] = useState('today');
-  const [customDate, setCustomDate] = useState('');
-  const [dailyUrls, setDailyUrls] = useState([]);
-  const [dailyLoading, setDailyLoading] = useState(false);
   const [showCustomDate, setShowCustomDate] = useState(false);
   const loadDashboardData = async () => {
     try {
@@ -90,73 +86,19 @@ const loadSalesReps = async () => {
     }
   };
 
-  const loadDailyData = async (repId = selectedSalesRep?.Id, dateFilter = dailyDateFilter, customDateValue = customDate) => {
-    if (!repId) return;
-    
-    try {
-      setDailyLoading(true);
-      let targetDate = '';
-      
-      if (dateFilter === 'today') {
-        targetDate = new Date().toISOString().split('T')[0];
-      } else if (dateFilter === 'yesterday') {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        targetDate = yesterday.toISOString().split('T')[0];
-      } else if (dateFilter === 'custom' && customDateValue) {
-        targetDate = customDateValue;
-      }
-      
-      const data = await getDailyWebsiteUrls(repId, targetDate);
-      setDailyUrls(data);
-      
-    } catch (err) {
-      toast.error("Failed to load daily data");
-      setDailyUrls([]);
-    } finally {
-      setDailyLoading(false);
-    }
-  };
-
-  const handleSalesRepChange = (rep) => {
-    setSelectedSalesRep(rep);
-    loadDailyData(rep.Id, dailyDateFilter, customDate);
-  };
-
-  const handleDateFilterChange = (filter) => {
-    setDailyDateFilter(filter);
-    setShowCustomDate(filter === 'custom');
-    if (filter !== 'custom') {
-      loadDailyData(selectedSalesRep?.Id, filter, customDate);
-    }
-  };
-
-  const handleCustomDateChange = (date) => {
-    setCustomDate(date);
-    if (date) {
-      loadDailyData(selectedSalesRep?.Id, 'custom', date);
-    }
-};
-
-  const handleYearChange = async (year) => {
-    setSelectedYear(year);
+const handleYearChange = async (year) => {
     try {
       const newRevenueTrends = await getRevenueTrendsData(year);
       setRevenueTrends(newRevenueTrends);
     } catch (err) {
-      toast.error("Failed to load revenue data for selected year");
+      toast.error("Failed to load revenue trends");
     }
   };
-useEffect(() => {
+
+  useEffect(() => {
     loadDashboardData();
     loadSalesReps();
   }, []);
-
-  useEffect(() => {
-    if (selectedSalesRep) {
-      loadDailyData();
-    }
-  }, [selectedSalesRep]);
 
   if (loading) return <Loading type="cards" />;
   if (error) return <Error message={error} onRetry={loadDashboardData} />;
@@ -187,10 +129,6 @@ useEffect(() => {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Sales Reports & Analytics</h2>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/website-url-report')}>
-            <ApperIcon name="FileText" size={16} className="mr-2" />
-            URL Report
-          </Button>
           <Button variant="outline" onClick={() => navigate('/analytics')}>
             <ApperIcon name="BarChart3" size={16} className="mr-2" />
             Analytics
@@ -265,128 +203,7 @@ useEffect(() => {
           </div>
         </Card>
 
-        <Card className={`p-6 border-2 transition-colors ${
-          dailyUrls.length >= 10 ? 'border-green-500' : 'border-red-500'
-        }`}>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">Daily Leads Report</h3>
-              <p className="text-sm text-gray-600">Website URLs added by sales rep</p>
-            </div>
-            <ApperIcon name="FileText" size={20} className="text-primary-600" />
-          </div>
-          
-          {/* Sales Rep Selector */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sales Representative
-            </label>
-            <div className="relative">
-              <select
-                value={selectedSalesRep?.Id || ''}
-                onChange={(e) => {
-                  const rep = salesReps.find(r => r.Id === parseInt(e.target.value));
-                  if (rep) handleSalesRepChange(rep);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-{salesReps.map((rep, index) => (
-                  <option key={`sales-rep-${rep.Id || index}-${index}`} value={rep.Id}>{rep.name || 'Unknown Rep'}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Date Filter */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date Filter
-            </label>
-            <div className="flex flex-wrap gap-2 mb-3">
-              {['today', 'yesterday', 'custom'].map((filter) => (
-                <Button
-                  key={filter}
-                  variant={dailyDateFilter === filter ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleDateFilterChange(filter)}
-                  className="text-xs"
-                >
-                  {filter === 'today' ? 'Today' : 
-                   filter === 'yesterday' ? 'Yesterday' : 'Custom Date'}
-                </Button>
-              ))}
-            </div>
-            
-            {showCustomDate && (
-              <input
-                type="date"
-                value={customDate}
-                onChange={(e) => handleCustomDateChange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            )}
-          </div>
-
-          {/* Website URLs List */}
-          <div className="space-y-3 max-h-80 overflow-y-auto">
-            {dailyLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-              </div>
-            ) : dailyUrls.length > 0 ? (
-              <>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-gray-700">
-                    {dailyUrls.length} website URLs found
-                  </span>
-                  <span className={`text-sm font-medium ${
-                    dailyUrls.length >= 10 ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {dailyUrls.length >= 10 ? 'Target Met' : 'Below Target'}
-                  </span>
 </div>
-{dailyUrls.slice(0, 10).map((url, index) => (
-                  <motion.div
-                    key={`daily-url-${index}-${url?.id || `fallback-${index}`}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900 text-sm">
-                        {url?.websiteUrl ? url.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "") : 'Unknown URL'}
-                      </div>
-                      <div className="text-xs text-gray-500">{url?.category || 'No category'}</div>
-                    </div>
-                    <div className="text-right space-y-1">
-                      <Badge 
-                        variant={
-                          url?.status === 'Connected' || url?.status === 'Meeting Done' ? 'success' :
-                          url?.status === 'Meeting Booked' ? 'warning' :
-                          url?.status === 'Rejected' ? 'error' : 'default'
-                        }
-                        size="sm"
-                        className="text-xs"
-                      >
-                        {url?.status || 'Unknown'}
-                      </Badge>
-                      <div className="text-xs text-gray-500">
-                        {url?.createdAt ? new Date(url.createdAt).toLocaleDateString() : 'No date'}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </>
-            ) : (
-              <div className="text-center text-gray-500 py-8">
-                <ApperIcon name="FileText" size={48} className="mx-auto mb-3 text-gray-300" />
-                <p>No website URLs for selected date</p>
-              </div>
-            )}
-          </div>
-        </Card>
-      </div>
 
       {/* Revenue Trends - Full Width */}
 {/* Revenue Trends - Full Width */}
@@ -481,8 +298,8 @@ useEffect(() => {
                 className="p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-all">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900 text-sm">
-                      {followUp.websiteUrl?.replace(/^https?:\/\//, "")?.replace(/\/$/, "") || 'No URL'}
+<div className="font-medium text-gray-900 text-sm">
+                      {followUp.name || 'No Company'}
                     </div>
                     <div className="text-xs text-gray-500">{followUp.category || 'No Category'}</div>
                   </div>

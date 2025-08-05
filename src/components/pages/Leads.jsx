@@ -6,6 +6,7 @@ import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/colu
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import { getSalesReps, getSalesRepsFromReport } from "@/services/api/reportService";
+import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -41,12 +42,7 @@ const nameMap = {
     'Company Name': 'name',
     'Contact Name': 'contactName',
     'Email': 'email',
-    'Website URL': 'websiteUrl',
-    'LinkedIn': 'linkedinUrl',
-    'Category': 'category',
-    'Response Rate': 'responseRate',
-    'Deal Potential': 'dealPotential',
-    'Added By': 'addedByName',
+'Category': 'category',
     'Created Date': 'createdAt',
     'IVR Number': 'ivrNumber',
     'DID Number': 'didNumber',
@@ -81,28 +77,6 @@ const formatDate = (dateString) => {
 };
 
 // Get engagement level color
-const getEngagementColor = (level) => {
-  const colors = {
-    'Very High': 'bg-green-100 text-green-800',
-    'High': 'bg-blue-100 text-blue-800',
-    'Medium': 'bg-yellow-100 text-yellow-800',
-    'Low': 'bg-orange-100 text-orange-800',
-    'Very Low': 'bg-red-100 text-red-800'
-  };
-  return colors[level] || 'bg-gray-100 text-gray-800';
-};
-
-// Get deal potential color
-const getDealPotentialColor = (potential) => {
-  const colors = {
-    'Very High': 'bg-emerald-100 text-emerald-800',
-    'High': 'bg-green-100 text-green-800',
-    'Medium': 'bg-yellow-100 text-yellow-800',
-    'Low': 'bg-orange-100 text-orange-800',
-    'Very Low': 'bg-red-100 text-red-800'
-  };
-  return colors[potential] || 'bg-gray-100 text-gray-800';
-};
 
 const getDefaultValueForType = (type) => {
   switch (type) {
@@ -143,9 +117,7 @@ const navigate = useNavigate();
   // State for filters and search
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [fundingFilter, setFundingFilter] = useState('all')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const [teamSizeFilter, setTeamSizeFilter] = useState('all')
+const [categoryFilter, setCategoryFilter] = useState('all')
   const [sortField, setSortField] = useState('')
   const [sortDirection, setSortDirection] = useState('asc')
   const [currentPage, setCurrentPage] = useState(1)
@@ -167,7 +139,6 @@ const navigate = useNavigate();
   const [salesReps, setSalesReps] = useState([])
   
   // State for timeouts and debouncing
-const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
   // Load custom columns
   async function loadCustomColumns() {
     try {
@@ -448,8 +419,8 @@ const handleFieldUpdate = async (leadId, field, value) => {
         return (
           <div className="flex items-center">
             <div>
-              <div className="text-sm font-medium text-gray-900">{lead.name}</div>
-              <div className="text-sm text-gray-500">{lead.websiteUrl}</div>
+<div className="text-sm font-medium text-gray-900">{lead.name}</div>
+              <div className="text-sm text-gray-500">{lead.email}</div>
             </div>
           </div>
         );
@@ -473,13 +444,7 @@ const handleFieldUpdate = async (leadId, field, value) => {
         );
       case 'ARR':
         return <span className="text-sm text-gray-900">{formatCurrency(lead.arr)}</span>;
-      case 'Engagement Level':
-        return (
-          <Badge variant={getEngagementColor(lead.engagementLevel)}>
-            {lead.engagementLevel}
-          </Badge>
-        );
-      case 'Creation Date & Time':
+case 'Creation Date & Time':
         return (
           <span className="text-sm text-gray-900">
             {lead.creationDateTime ? new Date(lead.creationDateTime).toLocaleString('en-US', {
@@ -519,7 +484,7 @@ const handleFieldUpdate = async (leadId, field, value) => {
       ));
 
       // Check if this empty row has enough data to create a lead
-      const requiredFields = ['Website URL', 'Company Name'];
+const requiredFields = ['Company Name'];
       const hasRequiredData = requiredFields.every(fieldName => {
         const fieldKey = getFieldNameForColumn({ name: fieldName });
         return (emptyRow[fieldKey] || (field === fieldKey && value))?.trim();
@@ -696,15 +661,12 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
     let filtered = data.filter(lead => {
       const matchesSearch = searchTerm === '' || 
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase());
+lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
-      const matchesFunding = fundingFilter === 'all' || lead.fundingType === fundingFilter;
       const matchesCategory = categoryFilter === 'all' || lead.category === categoryFilter;
-      const matchesTeamSize = teamSizeFilter === 'all' || lead.teamSize === teamSizeFilter;
       
-      return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
+      return matchesSearch && matchesStatus && matchesCategory;
     });
 
     // Apply sorting
@@ -729,7 +691,7 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
     }
 
     return filtered;
-  }, [data, searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter, sortField, sortDirection]);
+}, [data, searchTerm, statusFilter, categoryFilter, sortField, sortDirection]);
 
   // Pagination
   const totalItems = filteredAndSortedData.length;
@@ -801,20 +763,7 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
             <option value="Closed Lost">Closed Lost</option>
           </select>
           
-          <select
-            value={fundingFilter}
-            onChange={(e) => setFundingFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
-            <option value="all">All Funding</option>
-            <option value="Bootstrapped">Bootstrapped</option>
-            <option value="Series A">Series A</option>
-            <option value="Series B">Series B</option>
-            <option value="Series C">Series C</option>
-            <option value="Y Combinator">Y Combinator</option>
-          </select>
-          
-          <select
+<select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
@@ -826,21 +775,6 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
             <option value="Events">Events</option>
             <option value="Website Chatbot">Website Chatbot</option>
             <option value="Customer Referral">Customer Referral</option>
-          </select>
-          
-          <select
-            value={teamSizeFilter}
-            onChange={(e) => setTeamSizeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
-            <option value="all">All Team Sizes</option>
-            <option value="1-3">1-3</option>
-            <option value="4-10">4-10</option>
-            <option value="11-50">11-50</option>
-            <option value="51-100">51-100</option>
-            <option value="101-500">101-500</option>
-            <option value="500+">500+</option>
-            <option value="1001+">1001+</option>
           </select>
         </div>
       </div>
@@ -951,12 +885,12 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
             <ApperIcon name="Users" size={48} className="mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No leads found</h3>
             <p className="text-gray-500 mb-4">
-              {searchTerm || statusFilter !== 'all' || fundingFilter !== 'all' || categoryFilter !== 'all' || teamSizeFilter !== 'all'
+{searchTerm || statusFilter !== 'all' || categoryFilter !== 'all'
                 ? 'Try adjusting your search criteria or filters'
                 : 'Get started by adding your first lead'
               }
             </p>
-            {(!searchTerm && statusFilter === 'all' && fundingFilter === 'all' && categoryFilter === 'all' && teamSizeFilter === 'all') && (
+            {(!searchTerm && statusFilter === 'all' && categoryFilter === 'all') && (
               <Button onClick={() => setShowAddModal(true)}>
                 <ApperIcon name="Plus" size={16} className="mr-2" />
                 Add Lead
@@ -1128,7 +1062,7 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
   };
 
   // Handle read-only display fields
-  if (['Lead Score', 'Engagement Level', 'Response Rate', 'Deal Potential', 'Added By', 'Created Date'].includes(column.name)) {
+if (['Lead Score', 'Created Date'].includes(column.name)) {
     let displayValue = value;
     
     if (column.name === 'ARR' && value) {
@@ -1146,20 +1080,6 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
           </span>
         </div>
       );
-    } else if (column.name === 'Engagement Level') {
-      displayValue = (
-        <Badge className={`${getEngagementColor(value)} border-0 font-medium`}>
-          {value || '-'}
-        </Badge>
-      );
-    } else if (column.name === 'Deal Potential') {
-      displayValue = (
-        <Badge className={`${getDealPotentialColor(value)} border-0 font-medium`}>
-          {value || '-'}
-        </Badge>
-      );
-    } else if (column.name === 'Response Rate' && value) {
-      displayValue = `${value}%`;
     } else if (column.name === 'Created Date') {
       displayValue = formatDate(value);
     }
@@ -1172,30 +1092,18 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
   }
 
   switch (column.type) {
-    case 'url':
+case 'url':
       return (
         <div className="flex items-center gap-2">
           <Input
             type="url"
             value={value}
-            detectUrlPrefix={column.name === "Website URL"}
-            urlPrefix={column.name === "Website URL" ? "https://" : undefined}
             onChange={e => handleChange(e.target.value)}
             onBlur={e => handleBlur(e.target.value)}
             onKeyDown={e => handleKeyDown(e, e.target.value)}
             placeholder={`Enter ${column.name.toLowerCase()}...`}
             className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-primary-600 font-medium placeholder-gray-400 flex-1"
           />
-          {!isEmptyRow && value && column.name === "LinkedIn" && (
-            <a
-              href={value}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-600 hover:text-primary-800 flex-shrink-0 p-1 hover:bg-gray-100 rounded"
-              title={`Visit ${column.name}`}>
-              <ApperIcon name="Linkedin" size={16} />
-            </a>
-          )}
         </div>
       );
     
@@ -1230,7 +1138,7 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
           </div>
         );
       } else if (column.name === "Category") {
-        return (
+return (
           <SearchableSelect
             value={value}
 onChange={newValue => isEmptyRow ? handleChange(newValue) : handleFieldUpdate(rowData.Id, fieldName, newValue)}
@@ -1425,14 +1333,10 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
     const initialData = {
       // Core fields that always exist
       name: "",
-      email: "",
-      websiteUrl: "",
-      teamSize: "1-3",
+email: "",
       arr: "",
       category: "",
-      linkedinUrl: "",
       status: "Keep an Eye",
-      fundingType: "Bootstrapped",
       followUpDate: "",
       edition: "Select Edition",
       productName: "",
@@ -1493,8 +1397,8 @@ const renderFormField = (column) => {
     const fieldName = getFieldNameForColumn(column);
     const isRequired = column.required;
 
-    // Skip default fields that are handled separately
-    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
+// Skip default fields that are handled separately
+    const defaultFields = ['name', 'email', 'arr', 'category', 'status', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
     if (defaultFields.includes(fieldName)) {
       return null;
     }
@@ -1672,62 +1576,20 @@ return (
               </div>
             )}
 
-            {/* Website URL */}
-            {shouldShowField({ fieldName: 'websiteUrl' }) && (
+{/* ARR Field */}
+            {shouldShowField({ fieldName: 'arr' }) && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Website URL
+                  ARR (USD)
                 </label>
                 <Input
-                  type="url"
-                  value={formData.websiteUrl}
-                  detectUrlPrefix={true}
-                  urlPrefix="https://"
-                  onChange={(e) => setFormData({...formData, websiteUrl: e.target.value})}
-                  placeholder="https://example.com"
+                  type="number"
+                  value={formData.arr}
+                  onChange={(e) => setFormData({...formData, arr: e.target.value})}
+                  placeholder="150000"
                   className="w-full"
                   required
                 />
-              </div>
-            )}
-
-            {/* Team Size and ARR Row */}
-            {(shouldShowField({ fieldName: 'teamSize' }) || shouldShowField({ fieldName: 'arr' })) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {shouldShowField({ fieldName: 'teamSize' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Team Size
-                    </label>
-                    <select
-                      value={formData.teamSize}
-                      onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                    >
-                      <option value="1-3">1-3</option>
-                      <option value="4-10">4-10</option>
-                      <option value="11-50">11-50</option>
-                      <option value="51-100">51-100</option>
-                      <option value="101-500">101-500</option>
-                      <option value="500+">500+</option>
-                    </select>
-                  </div>
-                )}
-                {shouldShowField({ fieldName: 'arr' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      ARR (USD)
-                    </label>
-                    <Input
-                      type="number"
-                      value={formData.arr}
-                      onChange={(e) => setFormData({...formData, arr: e.target.value})}
-                      placeholder="150000"
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                )}
               </div>
             )}
 
@@ -1749,76 +1611,34 @@ return (
                 </div>
               </div>
             )}
-
-            {/* LinkedIn URL */}
-            {shouldShowField({ fieldName: 'linkedinUrl' }) && (
+{/* Status Field */}
+            {shouldShowField({ fieldName: 'status' }) && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LinkedIn URL
+                  Status
                 </label>
-                <Input
-                  type="url"
-                  value={formData.linkedinUrl}
-                  onChange={(e) => setFormData({...formData, linkedinUrl: e.target.value})}
-                  placeholder="https://linkedin.com/company/example"
-                  className="w-full"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Status and Funding Type Row */}
-            {(shouldShowField({ fieldName: 'status' }) || shouldShowField({ fieldName: 'fundingType' })) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {shouldShowField({ fieldName: 'status' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
-                    </label>
-                    <select
-                      value={formData.status}
-                      onChange={(e) => setFormData({...formData, status: e.target.value})}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                    >
-                      <option value="New Lead">New Lead</option>
-                      <option value="Contacted">Contacted</option>
-                      <option value="Keep an Eye">Keep an Eye</option>
-                      <option value="Proposal Sent">Proposal Sent</option>
-                      <option value="Meeting Booked">Meeting Booked</option>
-                      <option value="Meeting Done">Meeting Done</option>
-                      <option value="Commercials Sent">Commercials Sent</option>
-                      <option value="Negotiation">Negotiation</option>
-                      <option value="Hotlist">Hotlist</option>
-                      <option value="Temporarily on hold">Temporarily on hold</option>
-                      <option value="Out of League">Out of League</option>
-                      <option value="Outdated">Outdated</option>
-                      <option value="Rejected">Rejected</option>
-                      <option value="Closed Won">Closed Won</option>
-                      <option value="Closed Lost">Closed Lost</option>
-                    </select>
-                  </div>
-                )}
-                {shouldShowField({ fieldName: 'fundingType' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Funding Type
-                    </label>
-                    <select
-                      value={formData.fundingType}
-                      onChange={(e) => setFormData({...formData, fundingType: e.target.value})}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                    >
-                      <option value="Bootstrapped">Bootstrapped</option>
-                      <option value="Pre-seed">Pre-seed</option>
-                      <option value="Y Combinator">Y Combinator</option>
-                      <option value="Angel">Angel</option>
-                      <option value="Series A">Series A</option>
-                      <option value="Series B">Series B</option>
-                      <option value="Series C">Series C</option>
-                    </select>
-                  </div>
-                )}
-              </div>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                >
+                  <option value="New Lead">New Lead</option>
+                  <option value="Contacted">Contacted</option>
+                  <option value="Keep an Eye">Keep an Eye</option>
+                  <option value="Proposal Sent">Proposal Sent</option>
+                  <option value="Meeting Booked">Meeting Booked</option>
+                  <option value="Meeting Done">Meeting Done</option>
+                  <option value="Commercials Sent">Commercials Sent</option>
+                  <option value="Negotiation">Negotiation</option>
+                  <option value="Hotlist">Hotlist</option>
+                  <option value="Temporarily on hold">Temporarily on hold</option>
+                  <option value="Out of League">Out of League</option>
+                  <option value="Outdated">Outdated</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Closed Won">Closed Won</option>
+                  <option value="Closed Lost">Closed Lost</option>
+                </select>
+</div>
             )}
 
             {/* Follow-up Date */}
@@ -1991,13 +1811,9 @@ const initializeFormData = () => {
       // Core fields
       name: lead?.name || '',
       email: lead?.email || '',
-      websiteUrl: lead?.websiteUrl || '',
-      teamSize: lead?.teamSize || '1-3',
-      arr: lead?.arr ? lead.arr.toString() : '',
+arr: lead?.arr ? lead.arr.toString() : '',
       category: lead?.category || '',
-      linkedinUrl: lead?.linkedinUrl || '',
       status: lead?.status || 'New Lead',
-      fundingType: lead?.fundingType || 'Bootstrapped',
       followUpDate: lead?.followUpDate || '',
       edition: lead?.edition || "Select Edition",
       productName: lead?.productName || "",
@@ -2058,8 +1874,8 @@ const renderFormField = (column) => {
     const fieldName = getFieldNameForColumn(column);
     const isRequired = column.required;
 
-    // Skip default fields that are handled separately
-    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
+// Skip default fields that are handled separately
+    const defaultFields = ['name', 'email', 'arr', 'category', 'status', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
     if (defaultFields.includes(fieldName)) {
       return null;
     }
@@ -2237,60 +2053,19 @@ return (
               </div>
             )}
 
-            {/* Website URL */}
-            {shouldShowField({ fieldName: 'websiteUrl' }) && (
+{/* ARR Field */}
+            {shouldShowField({ fieldName: 'arr' }) && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">ARR</label>
                 <Input
-                  type="url"
-                  value={formData.websiteUrl}
-                  detectUrlPrefix={true}
-                  urlPrefix="https://"
+                  type="number"
+                  value={formData.arr}
                   onChange={e => setFormData({
                     ...formData,
-                    websiteUrl: e.target.value
+                    arr: e.target.value
                   })}
-                  className="w-full"
-                  required />
-              </div>
-            )}
-
-            {/* Team Size and ARR Row */}
-            {(shouldShowField({ fieldName: 'teamSize' }) || shouldShowField({ fieldName: 'arr' })) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {shouldShowField({ fieldName: 'teamSize' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
-                    <select
-                      value={formData.teamSize}
-                      onChange={e => setFormData({
-                        ...formData,
-                        teamSize: e.target.value
-                      })}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                      <option value="1-3">1-3</option>
-                      <option value="4-10">4-10</option>
-                      <option value="11-50">11-50</option>
-                      <option value="51-100">51-100</option>
-                      <option value="101-500">101-500</option>
-                      <option value="500+">500+</option>
-                    </select>
-                  </div>
-                )}
-                {shouldShowField({ fieldName: 'arr' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">ARR (USD)</label>
-                    <Input
-                      type="number"
-                      value={formData.arr}
-                      onChange={e => setFormData({
-                        ...formData,
-                        arr: e.target.value
-                      })}
-                      className="w-full"
-                      required />
-                  </div>
-                )}
+                  placeholder="1000000"
+                  className="w-full" />
               </div>
             )}
 
@@ -2308,79 +2083,38 @@ return (
                     options={categoryOptions}
                     placeholder="Select category..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    onCreateCategory={onCreateCategory}
-                  />
+onCreateCategory={onCreateCategory} />
                 </div>
               </div>
             )}
 
-            {/* LinkedIn URL */}
-            {shouldShowField({ fieldName: 'linkedinUrl' }) && (
+            {/* Status Field */}
+            {shouldShowField({ fieldName: 'status' }) && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
-                <Input
-                  type="url"
-                  value={formData.linkedinUrl}
-                  onChange={e => setFormData({
+                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <select
+                  value={formData.status}
+onChange={e => setFormData({
                     ...formData,
-                    linkedinUrl: e.target.value
+                    status: e.target.value
                   })}
-                  className="w-full"
-                  required />
-              </div>
-            )}
-
-            {/* Status and Funding Type Row */}
-            {(shouldShowField({ fieldName: 'status' }) || shouldShowField({ fieldName: 'fundingType' })) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {shouldShowField({ fieldName: 'status' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select
-                      value={formData.status}
-                      onChange={e => setFormData({
-                        ...formData,
-                        status: e.target.value
-                      })}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                      <option value="New Lead">New Lead</option>
-                      <option value="Contacted">Contacted</option>
-                      <option value="Keep an Eye">Keep an Eye</option>
-                      <option value="Proposal Sent">Proposal Sent</option>
-                      <option value="Meeting Booked">Meeting Booked</option>
-                      <option value="Meeting Done">Meeting Done</option>
-                      <option value="Commercials Sent">Commercials Sent</option>
-                      <option value="Negotiation">Negotiation</option>
-                      <option value="Hotlist">Hotlist</option>
-                      <option value="Temporarily on hold">Temporarily on hold</option>
-                      <option value="Out of League">Out of League</option>
-                      <option value="Outdated">Outdated</option>
-                      <option value="Rejected">Rejected</option>
-                      <option value="Closed Won">Closed Won</option>
-                      <option value="Closed Lost">Closed Lost</option>
-                    </select>
-                  </div>
-                )}
-                {shouldShowField({ fieldName: 'fundingType' }) && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Funding Type</label>
-                    <select
-                      value={formData.fundingType}
-                      onChange={e => setFormData({
-                        ...formData,
-                        fundingType: e.target.value
-                      })}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                      <option value="Bootstrapped">Bootstrapped</option>
-                      <option value="Pre-seed">Pre-seed</option>
-                      <option value="Y Combinator">Y Combinator</option>
-                      <option value="Angel">Angel</option>
-                      <option value="Series A">Series A</option>
-                      <option value="Series B">Series B</option>
-                      <option value="Series C">Series C</option>
-                    </select>
-                  </div>
-                )}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                  <option value="New Lead">New Lead</option>
+                  <option value="Contacted">Contacted</option>
+                  <option value="Keep an Eye">Keep an Eye</option>
+                  <option value="Proposal Sent">Proposal Sent</option>
+                  <option value="Meeting Booked">Meeting Booked</option>
+                  <option value="Meeting Done">Meeting Done</option>
+                  <option value="Commercials Sent">Commercials Sent</option>
+                  <option value="Negotiation">Negotiation</option>
+                  <option value="Hotlist">Hotlist</option>
+                  <option value="Temporarily on hold">Temporarily on hold</option>
+                  <option value="Out of League">Out of League</option>
+                  <option value="Outdated">Outdated</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Closed Won">Closed Won</option>
+                  <option value="Closed Lost">Closed Lost</option>
+                </select>
               </div>
             )}
 

@@ -354,12 +354,12 @@ useEffect(() => {
               filteredLeads.slice(0, 10).map((lead) => (
                 <div key={lead.Id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">
-                      {lead.websiteUrl?.replace(/^https?:\/\//, '') || 'Unknown URL'}
+<p className="font-medium text-gray-900 truncate">
+                      {lead.name || 'Unknown Company'}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-gray-500">
-                        {lead.addedByName || 'Unknown'}
+                        {lead.email || 'No email'}
                       </span>
                       <span className="text-xs text-gray-400">•</span>
                       <span className="text-xs text-gray-500">

@@ -1,5 +1,5 @@
-import leadsData from "@/services/mockData/leads.json";
 import salesRepData from "@/services/mockData/salesReps.json";
+import leadsData from "@/services/mockData/leads.json";
 
 // Initialize data from JSON files
 const leads = [...leadsData];
@@ -26,12 +26,12 @@ const customColumns = [
     isDefault: true,
     order: 2,
     createdAt: new Date().toISOString()
-  },
+},
   {
     Id: 3,
     name: "Website URL",
     type: "url",
-    required: true,
+    required: false,
     defaultValue: "",
     isDefault: true,
     order: 3,
@@ -70,11 +70,10 @@ const customColumns = [
   },
   {
     Id: 7,
-    name: "Team Size",
-    type: "select",
+    name: "Phone",
+    type: "tel",
     required: false,
     defaultValue: "",
-    selectOptions: ["1-3", "4-10", "11-50", "51-100", "101-500", "501-1000", "1001+"],
     isDefault: true,
     order: 7,
     createdAt: new Date().toISOString()
@@ -91,67 +90,6 @@ const customColumns = [
     createdAt: new Date().toISOString()
   },
   {
-    Id: 9,
-    name: "Engagement Level",
-    type: "readonly",
-    required: false,
-    defaultValue: "",
-    isDefault: true,
-    order: 9,
-    createdAt: new Date().toISOString()
-  },
-  {
-    Id: 10,
-    name: "Deal Potential",
-    type: "readonly",
-    required: false,
-    defaultValue: "",
-    isDefault: true,
-    order: 10,
-    createdAt: new Date().toISOString()
-  },
-  {
-    Id: 11,
-    name: "Funding Type",
-    type: "select",
-    required: false,
-    defaultValue: "",
-    selectOptions: ["Bootstrapped", "Pre-seed", "Y Combinator", "Angel", "Series A", "Series B", "Series C"],
-    isDefault: true,
-    order: 11,
-    createdAt: new Date().toISOString()
-  },
-  {
-    Id: 12,
-    name: "LinkedIn",
-    type: "url",
-    required: false,
-    defaultValue: "",
-    isDefault: true,
-    order: 12,
-    createdAt: new Date().toISOString()
-  },
-  {
-    Id: 13,
-    name: "Response Rate",
-    type: "readonly",
-    required: false,
-    defaultValue: "",
-    isDefault: true,
-    order: 13,
-    createdAt: new Date().toISOString()
-  },
-  {
-    Id: 14,
-    name: "Added By",
-    type: "readonly",
-    required: false,
-    defaultValue: "",
-    isDefault: true,
-    order: 14,
-    createdAt: new Date().toISOString()
-  },
-{
     Id: 15,
     name: "Created Date",
     type: "readonly",
@@ -214,17 +152,17 @@ const customColumns = [
   },
   {
     Id: 21,
-    name: "Assign Number",
+name: "Assign Number",
     type: "number",
-required: false,
+    required: false,
     defaultValue: "",
     isDefault: true,
     order: 21,
     createdAt: new Date().toISOString()
   },
-  {
+{
     Id: 22,
-name: "Notes",
+    name: "Notes",
     type: "textarea", 
     required: false,
     defaultValue: "",
@@ -298,8 +236,6 @@ export async function createLead(leadData) {
       ...leadData,
       Id: newId,
       createdAt: new Date().toISOString(),
-      addedBy: 1, // Default user
-      addedByName: "Current User"
     };
     
     leads.push(newLead);
@@ -442,13 +378,12 @@ export async function deleteCustomColumn(id) {
       throw new Error('Column not found');
     }
     
-    const column = customColumns[index];
+const column = customColumns[index];
     // Only prevent deletion of core required columns
-    const protectedColumns = ['Company Name', 'Email', 'Website URL'];
+    const protectedColumns = ['Company Name', 'Email'];
     if (column.isDefault && protectedColumns.includes(column.name)) {
       throw new Error(`Cannot delete core column: ${column.name}`);
     }
-    
     const deletedColumn = customColumns.splice(index, 1)[0];
     return deletedColumn;
   } catch (error) {
@@ -558,8 +493,8 @@ export async function getDailyLeadsReport() {
       leads: todayLeads,
       date: today.toISOString()
     };
-  } catch (error) {
+} catch (error) {
     console.error('Error getting daily leads report:', error);
-throw new Error('Failed to get daily leads report');
+    throw new Error('Failed to get daily leads report');
   }
 }

@@ -4,6 +4,41 @@ import salesRepData from "@/services/mockData/salesReps.json";
 let leads = [...leadsData];
 let salesReps = [...salesRepData];
 
+// Custom columns storage
+let customColumns = [
+  {
+    Id: 1,
+    name: "Website URL",
+    type: "url",
+    required: true,
+    defaultValue: "",
+    isDefault: true,
+    order: 1,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 2,
+    name: "Company Name",
+    type: "text",
+    required: true,
+    defaultValue: "",
+    isDefault: true,
+    order: 2,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 3,
+    name: "Status",
+    type: "select",
+    required: true,
+    defaultValue: "New Lead",
+    selectOptions: ["New Lead", "Contacted", "Meeting Booked", "Closed Won", "Closed Lost"],
+    isDefault: true,
+    order: 3,
+    createdAt: new Date().toISOString()
+  }
+];
+
 // Track all URLs that have ever been added to the system (for fresh lead detection)
 const leadHistoryTracker = new Map();
 
@@ -221,5 +256,103 @@ const wasUrlPreviouslyAdded = (normalizedUrl, currentDate) => {
            new Date(lead.createdAt) < currentDate;
   });
   
-  return existingLeads.length > 0;
+return existingLeads.length > 0;
+};
+
+// Custom Columns Management
+export const getCustomColumns = async () => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return [...customColumns].sort((a, b) => a.order - b.order);
+};
+
+export const createCustomColumn = async (columnData) => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  if (!columnData.name || !columnData.name.trim()) {
+    throw new Error("Column name is required");
+  }
+  
+  if (!columnData.type) {
+    throw new Error("Column type is required");
+  }
+  
+  // Check for duplicate names
+  const existingColumn = customColumns.find(col => 
+    col.name.toLowerCase() === columnData.name.toLowerCase()
+  );
+  
+  if (existingColumn) {
+    throw new Error(`A column with name "${columnData.name}" already exists`);
+  }
+  
+  const maxId = Math.max(...customColumns.map(c => c.Id), 0);
+  const maxOrder = Math.max(...customColumns.map(c => c.order), 0);
+  
+  const newColumn = {
+    Id: maxId + 1,
+    name: columnData.name,
+    type: columnData.type,
+    required: columnData.required || false,
+    defaultValue: columnData.defaultValue || "",
+    selectOptions: columnData.selectOptions || [],
+    isDefault: false,
+    order: maxOrder + 1,
+    createdAt: new Date().toISOString()
+  };
+  
+  customColumns.push(newColumn);
+  return newColumn;
+};
+
+export const updateCustomColumn = async (id, updates) => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  const index = customColumns.findIndex(c => c.Id === id);
+  if (index === -1) {
+    throw new Error("Column not found");
+  }
+  
+  // Check for duplicate names (excluding current column)
+  if (updates.name) {
+    const duplicateColumn = customColumns.find(col => 
+      col.Id !== id && col.name.toLowerCase() === updates.name.toLowerCase()
+    );
+    
+    if (duplicateColumn) {
+      throw new Error(`A column with name "${updates.name}" already exists`);
+    }
+  }
+  
+  customColumns[index] = { ...customColumns[index], ...updates };
+  return { ...customColumns[index] };
+};
+
+export const deleteCustomColumn = async (id) => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  const index = customColumns.findIndex(c => c.Id === id);
+  if (index === -1) {
+    throw new Error("Column not found");
+  }
+  
+  const column = customColumns[index];
+  if (column.isDefault) {
+    throw new Error("Default columns cannot be deleted");
+  }
+  
+  customColumns.splice(index, 1);
+  return { success: true };
+};
+
+export const reorderCustomColumns = async (columnIds) => {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  columnIds.forEach((id, index) => {
+    const column = customColumns.find(c => c.Id === id);
+    if (column) {
+      column.order = index + 1;
+    }
+  });
+  
+  return customColumns.sort((a, b) => a.order - b.order);
 };

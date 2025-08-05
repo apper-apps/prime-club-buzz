@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createLead, deleteLead, getLeads, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
@@ -32,7 +33,8 @@ const [emptyRows, setEmptyRows] = useState([]);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+const [pageSize, setPageSize] = useState(25);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadLeads();
@@ -589,7 +591,14 @@ const handleSort = (field) => {
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Leads</h1>
             <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your lead pipeline and track opportunities</p>
         </div>
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex space-x-2">
+            <Button
+                onClick={() => navigate('/leads/custom-columns')}
+                variant="outline"
+                className="w-full sm:w-auto">
+                <ApperIcon name="Settings" size={16} className="mr-2" />
+                <span className="whitespace-nowrap">Manage Columns</span>
+            </Button>
             <Button
                 onClick={() => setShowAddForm(true)}
                 variant="outline"

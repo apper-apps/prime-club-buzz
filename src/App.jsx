@@ -15,7 +15,7 @@ import Leads from '@/components/pages/Leads';
 import Calendar from '@/components/pages/Calendar';
 import Teams from '@/components/pages/Teams';
 import Contacts from '@/components/pages/Contacts';
-
+import CustomColumns from '@/components/pages/CustomColumns';
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -58,7 +58,7 @@ const MainApp = () => {
                   <Dashboard />
                 </motion.div>
               } 
-            />
+/>
             <Route 
               path="/leads" 
               element={
@@ -68,6 +68,14 @@ const MainApp = () => {
               } 
             />
             <Route 
+              path="/leads/custom-columns" 
+              element={
+                <motion.div {...pageTransition}>
+                  <CustomColumns />
+                </motion.div>
+              } 
+            />
+            <Route
               path="/hotlist" 
               element={
                 <motion.div {...pageTransition}>

@@ -271,10 +271,48 @@ export async function deleteLead(id) {
 
 export async function getVisibleColumns() {
   try {
-    return customColumns.sort((a, b) => a.order - b.order);
+    return customColumns.filter(col => col.isVisible !== false).sort((a, b) => a.order - b.order);
   } catch (error) {
     console.error('Error getting visible columns:', error);
     throw new Error('Failed to get columns');
+  }
+}
+
+export async function toggleColumnVisibility(id, isVisible) {
+  try {
+    const index = customColumns.findIndex(c => c.Id === parseInt(id));
+    if (index === -1) {
+      throw new Error('Column not found');
+    }
+    
+    customColumns[index] = { 
+      ...customColumns[index], 
+      isVisible: isVisible 
+    };
+    return customColumns[index];
+  } catch (error) {
+    console.error('Error toggling column visibility:', error);
+    throw new Error('Failed to toggle column visibility');
+  }
+}
+
+export async function bulkToggleColumns(columnIds, isVisible) {
+  try {
+    const updatedColumns = [];
+    for (const id of columnIds) {
+      const index = customColumns.findIndex(c => c.Id === parseInt(id));
+      if (index !== -1) {
+        customColumns[index] = { 
+          ...customColumns[index], 
+          isVisible: isVisible 
+        };
+        updatedColumns.push(customColumns[index]);
+      }
+    }
+    return updatedColumns;
+  } catch (error) {
+    console.error('Error bulk toggling columns:', error);
+    throw new Error('Failed to bulk toggle columns');
   }
 }
 
@@ -295,6 +333,7 @@ export async function createCustomColumn(columnData) {
       Id: newId,
       createdAt: new Date().toISOString(),
       order: customColumns.length + 1,
+      isVisible: true,
       conditionalRules: columnData.conditionalRules || []
     };
     
@@ -332,11 +371,35 @@ export async function deleteCustomColumn(id) {
       throw new Error('Column not found');
     }
     
+    if (customColumns[index].isDefault) {
+      throw new Error('Cannot delete default columns');
+    }
+    
     const deletedColumn = customColumns.splice(index, 1)[0];
     return deletedColumn;
   } catch (error) {
     console.error('Error deleting custom column:', error);
     throw new Error('Failed to delete custom column');
+  }
+}
+
+export async function bulkDeleteColumns(columnIds) {
+  try {
+    const deletedColumns = [];
+    // Sort IDs in descending order to avoid index shifting issues
+    const sortedIds = columnIds.sort((a, b) => b - a);
+    
+    for (const id of sortedIds) {
+      const index = customColumns.findIndex(c => c.Id === parseInt(id));
+      if (index !== -1 && !customColumns[index].isDefault) {
+        const deletedColumn = customColumns.splice(index, 1)[0];
+        deletedColumns.push(deletedColumn);
+      }
+    }
+    return deletedColumns;
+  } catch (error) {
+    console.error('Error bulk deleting columns:', error);
+    throw new Error('Failed to bulk delete columns');
   }
 }
 

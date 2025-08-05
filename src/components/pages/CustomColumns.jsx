@@ -206,6 +206,7 @@ const getTypeIcon = (type) => {
       text: "Type",
       number: "Hash",
       date: "Calendar",
+      datetime: "Clock",
       select: "ChevronDown",
       boolean: "ToggleLeft",
       url: "Link",
@@ -219,6 +220,7 @@ const getTypeColor = (type) => {
       text: "info",
       number: "primary",
       date: "warning",
+      datetime: "warning",
       select: "accent",
       boolean: "success",
       url: "default",
@@ -226,7 +228,6 @@ const getTypeColor = (type) => {
     };
     return colors[type] || "default";
   };
-
   return (
     <motion.div
       layout
@@ -320,6 +321,7 @@ const columnTypes = [
     { value: "text", label: "Text", icon: "Type" },
     { value: "number", label: "Number", icon: "Hash" },
     { value: "date", label: "Date", icon: "Calendar" },
+    { value: "datetime", label: "Date with Time", icon: "Clock" },
     { value: "select", label: "Select/Dropdown", icon: "ChevronDown" },
     { value: "boolean", label: "True/False", icon: "ToggleLeft" },
     { value: "url", label: "URL/Link", icon: "Link" },
@@ -401,11 +403,12 @@ const columnTypes = [
               </label>
               <select
 value={formData.type}
-                onChange={(e) => setFormData(prev => ({ 
+onChange={(e) => setFormData(prev => ({ 
                   ...prev, 
                   type: e.target.value,
                   selectOptions: e.target.value === "select" ? prev.selectOptions : [],
-                  conditionalRules: e.target.value === "conditional" ? prev.conditionalRules : []
+                  conditionalRules: e.target.value === "conditional" ? prev.conditionalRules : [],
+                  defaultValue: ""
                 }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 disabled={column?.isDefault}
@@ -501,11 +504,19 @@ value={formData.type}
                     ))}
                   </select>
                 ) : (
-                  <Input
-                    type={formData.type === "date" ? "date" : formData.type === "number" ? "number" : "text"}
+<Input
+                    type={
+                      formData.type === "date" ? "date" : 
+                      formData.type === "datetime" ? "datetime-local" :
+                      formData.type === "number" ? "number" : 
+                      "text"
+                    }
                     value={formData.defaultValue}
                     onChange={(e) => setFormData(prev => ({ ...prev, defaultValue: e.target.value }))}
-                    placeholder={`Default ${formData.type} value`}
+                    placeholder={
+                      formData.type === "datetime" ? "Default date and time value" :
+                      `Default ${formData.type} value`
+                    }
                   />
                 )}
               </div>

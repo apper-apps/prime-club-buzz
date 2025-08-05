@@ -2441,8 +2441,9 @@ return (
                 </div>
               </div>
             </div>
-)}
 </div>
+          )}
+        </div>
       </div>
 
       {/* Enhanced Workflow Builder Modal */}
@@ -2901,8 +2902,8 @@ return (
             </div>
           </div>
         </div>
+</div>
       )}
-    </div>
     </div>
   );
 };

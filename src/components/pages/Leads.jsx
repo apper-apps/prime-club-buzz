@@ -135,29 +135,54 @@ const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
   }
   
   // Load leads data
-  async function loadLeads() {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const leadsData = await getLeads();
-      
-      // Process leads data to match expected format
-      const leads = leadsData.data || leadsData || [];
-      
-      setData(leads);
-      
-      // Extract unique categories
-      const categories = [...new Set(leads.map(lead => lead.category).filter(Boolean))];
-      setCategoryOptions(categories);
-    } catch (error) {
-      console.error('Error loading leads:', error);
-      setError('Failed to load leads');
-      toast.error('Failed to load leads');
-    } finally {
-      setLoading(false);
+async function loadLeads() {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    const leadsResponse = await getLeads();
+    
+    // Process leads data from service response - getLeads returns { leads: [...], deduplicationResult: ... }
+    let leads = [];
+    if (leadsResponse && typeof leadsResponse === 'object') {
+      // Handle service response structure: { leads: [], deduplicationResult: null }
+      if (Array.isArray(leadsResponse.leads)) {
+        leads = leadsResponse.leads;
+      } else if (Array.isArray(leadsResponse.data)) {
+        // Fallback for data property
+        leads = leadsResponse.data;
+      } else if (Array.isArray(leadsResponse)) {
+        // Direct array response
+        leads = leadsResponse;
+      }
+    } else if (Array.isArray(leadsResponse)) {
+      // Direct array response
+      leads = leadsResponse;
     }
+    
+    // Validate leads is an array
+    if (!Array.isArray(leads)) {
+      console.error('Invalid leads data format:', leadsResponse);
+      throw new Error('Invalid leads data format received from service');
+    }
+    
+    setData(leads);
+    
+    // Extract unique categories with proper null checks
+    const categories = [...new Set(
+      leads
+        .map(lead => lead && lead.category)
+        .filter(category => category && typeof category === 'string')
+    )];
+    setCategoryOptions(categories);
+  } catch (error) {
+    console.error('Error loading leads:', error);
+    setError('Failed to load leads');
+    toast.error('Failed to load leads');
+  } finally {
+    setLoading(false);
   }
+}
   
   // Load data on component mount
   useEffect(() => {

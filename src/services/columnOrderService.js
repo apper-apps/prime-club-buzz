@@ -14,10 +14,15 @@ export function getGlobalColumnOrder() {
   }
 }
 
-// Save column order to localStorage
+// Save column order to localStorage and trigger sync event
 export function saveGlobalColumnOrder(columnOrder) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(columnOrder));
+    const orderArray = Array.isArray(columnOrder) ? columnOrder : [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(orderArray));
+// Trigger a custom event to notify other components of the change
+    const event = new Event('columnOrderChanged');
+    event.detail = { columnOrder: orderArray };
+    window.dispatchEvent(event);
     return true;
   } catch (error) {
     console.error('Error saving column order to localStorage:', error);
@@ -27,13 +32,23 @@ export function saveGlobalColumnOrder(columnOrder) {
 
 // Apply global column order to a list of columns
 export function applyGlobalColumnOrder(columns) {
+  if (!Array.isArray(columns) || columns.length === 0) {
+    return columns;
+  }
+
   const globalOrder = getGlobalColumnOrder();
-  if (!globalOrder) return columns;
+  if (!globalOrder || !Array.isArray(globalOrder)) {
+    return columns;
+  }
 
   try {
     // Create a map of column ID to column for quick lookup
     const columnMap = new Map();
-    columns.forEach(col => columnMap.set(col.Id, col));
+    columns.forEach(col => {
+      if (col && col.Id !== undefined) {
+        columnMap.set(col.Id, col);
+      }
+    });
 
     // Apply the global order
     const orderedColumns = [];
@@ -56,6 +71,10 @@ export function applyGlobalColumnOrder(columns) {
 
 // Update global column order with new arrangement
 export function updateGlobalColumnOrder(newColumnIds) {
+  if (!Array.isArray(newColumnIds)) {
+    console.warn('updateGlobalColumnOrder expects an array of column IDs');
+    return false;
+  }
   return saveGlobalColumnOrder(newColumnIds);
 }
 
@@ -63,6 +82,10 @@ export function updateGlobalColumnOrder(newColumnIds) {
 export function resetGlobalColumnOrder() {
   try {
     localStorage.removeItem(STORAGE_KEY);
+// Trigger sync event
+    const event = new Event('columnOrderChanged');
+    event.detail = { columnOrder: null };
+    window.dispatchEvent(event);
     return true;
   } catch (error) {
     console.error('Error resetting column order:', error);
@@ -79,4 +102,12 @@ export function getTableColumnOrder(tableId) {
 // Save column order for a specific table (future extensibility)
 export function saveTableColumnOrder(tableId, columnOrder) {
   return saveGlobalColumnOrder(columnOrder);
+}
+
+// Force sync across all components
+export function triggerColumnSync() {
+const currentOrder = getGlobalColumnOrder();
+  const event = new Event('columnOrderChanged');
+  event.detail = { columnOrder: currentOrder };
+  window.dispatchEvent(event);
 }

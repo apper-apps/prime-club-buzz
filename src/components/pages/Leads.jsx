@@ -37,12 +37,12 @@ const getStatusColor = (status) => {
 const getFieldNameForColumn = (column) => {
   if (!column || !column.name) return '';
   
-  const nameMap = {
+const nameMap = {
     'Company Name': 'name',
     'Contact Name': 'contactName',
     'Email': 'email',
     'Website URL': 'websiteUrl',
-'LinkedIn': 'linkedinUrl',
+    'LinkedIn': 'linkedinUrl',
     'Category': 'category',
     'Response Rate': 'responseRate',
     'Deal Potential': 'dealPotential',
@@ -53,7 +53,8 @@ const getFieldNameForColumn = (column) => {
     'Creation Date & Time': 'creationDateTime',
     'Follow-up Date': 'followUpDate',
     'Assigned To': 'assignedTo',
-    'Assign Number': 'assignNumber'
+    'Assign Number': 'assignNumber',
+    'Notes': 'notes'
   };
   
   return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
@@ -119,7 +120,7 @@ const getDefaultValueForType = (type) => {
 };
 
 function Leads() {
-  const navigate = useNavigate()
+const navigate = useNavigate();
   
   // State for columns data
   const [columns, setColumns] = useState([])
@@ -247,11 +248,23 @@ async function loadLeads() {
   }
 
   // Load data on component mount
+useEffect(() => {
+    loadCustomColumns();
+    loadLeads();
+    loadSalesReps();
+  }, []);
+
+  // Listen for column order changes and reload columns
   useEffect(() => {
-    loadCustomColumns()
-    loadLeads()
-    loadSalesReps()
-  }, [])
+    const handleStorageChange = (e) => {
+      if (e.key === 'prime_club_column_order') {
+        loadCustomColumns();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 // State for timeouts and debouncing
 const [updateTimeouts, setUpdateTimeouts] = useState({});
 const [nextTempId, setNextTempId] = useState(-1);
@@ -1220,7 +1233,7 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
         return (
           <SearchableSelect
             value={value}
-            onChange={newValue => isEmptyRow ? handleChange(newValue) : handleFieldUpdate(rowData.Id, fieldName, newValue)}
+onChange={newValue => isEmptyRow ? handleChange(newValue) : handleFieldUpdate(rowData.Id, fieldName, newValue)}
             options={categoryOptions}
             placeholder="Select category..."
             className={isEmptyRow ? "text-gray-500" : ""}

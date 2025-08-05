@@ -27,10 +27,12 @@ function Leads() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [editingLead, setEditingLead] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
-  const [customColumns, setCustomColumns] = useState([])
+const [customColumns, setCustomColumns] = useState([])
   const [emptyRows, setEmptyRows] = useState([])
   const [nextTempId, setNextTempId] = useState(-1)
-  
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   // Filters
   const [statusFilter, setStatusFilter] = useState('all')
   const [fundingFilter, setFundingFilter] = useState('all')
@@ -120,47 +122,38 @@ function Leads() {
     return colors[status] || 'default'
   }
 
-  // Load functions
+// Load functions
   const loadCustomColumns = async () => {
     try {
       const columns = await getVisibleColumns()
       setCustomColumns(columns)
     } catch (error) {
-        "Negotiation": "Negotiation",
-        "Closed Won": "Won",
-        "Closed Lost": "Lost"
-      };
-      
-      // Check if status maps to a pipeline stage
-      const targetStage = statusToStageMap[newStatus];
-      
-      if (targetStage) {
-        try {
-          // Get current deals to check if one exists for this lead
-          const currentDeals = await getDeals();
-          const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString());
-          
-if (existingDeal) {
-            // Update existing deal to the new stage
-            await updateDeal(existingDeal.Id, { stage: targetStage });
-            toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
-          } else {
-} catch (error) {
+      console.error('Error loading custom columns:', error)
+      toast.error('Failed to load custom columns')
+    }
+  }
+
+  const loadLeads = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const leadsData = await getLeads()
+      setData(leadsData)
+    } catch (error) {
       console.error('Error loading leads:', error)
       setError('Failed to load leads')
       toast.error('Failed to load leads')
     } finally {
       setLoading(false)
     }
-  }
-
-  // Load data on component mount
+}
   useEffect(() => {
     loadLeads()
     loadCustomColumns()
   }, [])
 
   // Status update handler
+// Status update handler
   const handleStatusChange = async (leadId, newStatus) => {
     try {
       const updatedLead = await updateLead(leadId, { status: newStatus })
@@ -182,14 +175,58 @@ if (existingDeal) {
       
       const targetStage = statusToStageMap[newStatus]
       if (targetStage) {
-      await deleteLead(leadId);
-      setData(prevData => prevData.filter(lead => lead.Id !== leadId));
-      setSelectedLeads(prevSelected => prevSelected.filter(id => id !== leadId));
-      toast.success("Lead deleted successfully!");
-    } catch (err) {
-      toast.error("Failed to delete lead");
+        try {
+          // Get current deals to check if one exists for this lead
+          const currentDeals = await getDeals()
+          const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString())
+          
+          if (existingDeal) {
+            // Update existing deal to the new stage
+            await updateDeal(existingDeal.Id, { stage: targetStage })
+            toast.success(`Lead status updated and deal moved to ${targetStage} stage!`)
+          } else {
+            // Create new deal for this lead
+            const leadData = data.find(lead => lead.Id === leadId)
+            if (leadData) {
+              await createDeal({
+                leadId: leadId.toString(),
+                companyName: leadData.name,
+                email: leadData.email,
+                websiteUrl: leadData.websiteUrl,
+                stage: targetStage,
+                value: leadData.arr || 0,
+                probability: 50,
+                expectedCloseDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                assignedTo: leadData.addedBy || 1
+              })
+              toast.success(`Lead status updated and new deal created in ${targetStage} stage!`)
+            }
+          }
+        } catch (dealError) {
+          console.error('Error handling deal operations:', dealError)
+          toast.warning(`Lead status updated, but failed to sync with deals pipeline`)
+        }
+      } else {
+        toast.success('Lead status updated successfully!')
+      }
+    } catch (error) {
+      console.error('Error updating lead status:', error)
+      toast.error('Failed to update lead status')
     }
-  };
+  }
+
+  // Delete lead handler
+  const handleDelete = async (leadId) => {
+    try {
+      await deleteLead(leadId)
+      setData(prevData => prevData.filter(lead => lead.Id !== leadId))
+      setSelectedLeads(prevSelected => prevSelected.filter(id => id !== leadId))
+      toast.success("Lead deleted successfully!")
+    } catch (err) {
+      console.error('Error deleting lead:', err)
+      toast.error("Failed to delete lead")
+    }
+  }
 
   const handleBulkDelete = async () => {
     if (selectedLeads.length === 0) return;
@@ -230,8 +267,30 @@ if (existingDeal) {
       const newLead = await createLead(leadData);
       setData(prevData => [newLead, ...prevData]);
       setShowAddForm(false);
-      toast.success("Lead added successfully!");
-// Field update handlers
+toast.success("Lead added successfully!");
+    } catch (err) {
+      console.error('Error adding lead:', err);
+      toast.error("Failed to add lead");
+    }
+  };
+
+  const handleUpdateLead = async (leadId, leadData) => {
+    try {
+      const updatedLead = await updateLead(leadId, leadData);
+      setData(prevData => 
+        prevData.map(lead => 
+          lead.Id === leadId ? updatedLead : lead
+        )
+      );
+      setEditingLead(null);
+      toast.success("Lead updated successfully!");
+    } catch (err) {
+      console.error('Error updating lead:', err);
+      toast.error("Failed to update lead");
+    }
+  };
+
+  // Field update handlers
   const handleFieldUpdate = async (leadId, field, value) => {
     try {
       const processedValue = field === 'arr' ? Number(value) : value
@@ -342,231 +401,66 @@ if (existingDeal) {
     toast.success(`Category "${newCategory}" created successfully`)
   }
 
-  // Handle multiple URL parsing
+// Handle multiple URL parsing
   const parseMultipleUrls = (input) => {
-        prevData.map(lead => 
-          lead.Id === leadId ? updatedLead : lead
-        )
-      );
-      toast.success("Lead updated successfully!");
-    } catch (err) {
-      toast.error("Failed to update lead");
-    }
-  };
-
-  // Debounced version for real-time updates
-  const handleFieldUpdateDebounced = (leadId, field, value) => {
-    // Clear any existing timeout
-    const timeoutKey = `${leadId}-${field}`;
-    if (window.fieldUpdateTimeouts) {
-      clearTimeout(window.fieldUpdateTimeouts[timeoutKey]);
-    } else {
-      window.fieldUpdateTimeouts = {};
-    }
+    if (!input || !input.trim()) return [];
     
-    // Set new timeout
-    window.fieldUpdateTimeouts[timeoutKey] = setTimeout(() => {
-      handleFieldUpdate(leadId, field, value);
-    }, 1000);
-  };
-
-// Add empty row for new data entry
-const addEmptyRow = () => {
-    const newEmptyRow = {
-      Id: nextTempId,
-      isEmptyRow: true
-    };
+    // Split by newlines first, then by spaces to handle various paste formats
+    const lines = input.split(/\r?\n/).filter(line => line.trim());
+    const urls = [];
     
-    // Initialize fields based on custom columns
-    customColumns.forEach(column => {
-      const fieldName = getFieldNameForColumn(column);
-      newEmptyRow[fieldName] = column.defaultValue || getDefaultValueForType(column.type);
-    });
-    
-    setEmptyRows(prev => [...prev, newEmptyRow]);
-    setNextTempId(prev => prev - 1);
-  };
-
-  // Helper function to get field name for column
-  const getFieldNameForColumn = (column) => {
-    const fieldMap = {
-      "Website URL": "websiteUrl",
-      "Company Name": "name", 
-      "Status": "status",
-      "Product Name": "productName",
-      "Team Size": "teamSize",
-      "ARR": "arr",
-      "Category": "category",
-      "LinkedIn": "linkedinUrl",
-      "Funding Type": "fundingType",
-      "Follow-up Date": "followUpDate",
-      "Email": "email"
-    };
-    return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
-  };
-
-  // Helper function to get default value for column type
-  const getDefaultValueForType = (type) => {
-    switch (type) {
-      case 'number': return 0;
-      case 'boolean': return false;
-      case 'date': return "";
-      case 'select': return "";
-      default: return "";
-    }
-  };
-
-// Utility function to parse multiple URLs from input
-const parseMultipleUrls = (input) => {
-  if (!input || !input.trim()) return [];
-  
-  // Split by newlines first, then by spaces to handle various paste formats
-  const lines = input.split(/\r?\n/).filter(line => line.trim());
-  const urls = [];
-  
-  lines.forEach(line => {
-    // Split each line by spaces and filter out empty strings
-    const wordsInLine = line.split(/\s+/).filter(word => word.trim());
-    wordsInLine.forEach(word => {
-      const trimmedWord = word.trim();
-      if (trimmedWord) {
-        // Clean up common URL prefixes and suffixes
-        let cleanUrl = trimmedWord.replace(/^https?:\/\//, '').replace(/\/$/, '');
-        // Add https:// prefix if not present
-        if (!cleanUrl.includes('://')) {
-          cleanUrl = 'https://' + cleanUrl;
+    lines.forEach(line => {
+      // Split each line by spaces and filter out empty strings
+      const wordsInLine = line.split(/\s+/).filter(word => word.trim());
+      wordsInLine.forEach(word => {
+        const trimmedWord = word.trim();
+        if (trimmedWord) {
+          // Clean up common URL prefixes and suffixes
+          let cleanUrl = trimmedWord.replace(/^https?:\/\//, '').replace(/\/$/, '');
+          // Add https:// prefix if not present
+          if (!cleanUrl.includes('://')) {
+            cleanUrl = 'https://' + cleanUrl;
+          }
+          urls.push(cleanUrl);
         }
-        urls.push(cleanUrl);
-      }
+      });
     });
-  });
-  
-  // Remove duplicates and filter out invalid URLs
-  const uniqueUrls = [...new Set(urls)].filter(url => {
-    try {
-      new URL(url);
-      return url.includes('.') && url.length > 4; // Basic URL validation
-    } catch {
-      return false;
-    }
-  });
-  
-  return uniqueUrls;
-};
-
-// Handle updates to empty rows
-const handleEmptyRowUpdate = async (tempId, field, value) => {
-  setEmptyRows(prev => 
-    prev.map(row => 
-      row.Id === tempId ? { ...row, [field]: field === 'arr' ? Number(value) : value } : row
-    )
-  );
-
-  // If websiteUrl is provided, create lead(s)
-  if (field === 'websiteUrl' && value.trim()) {
-    const emptyRow = emptyRows.find(row => row.Id === tempId);
-    if (emptyRow) {
+    
+    // Remove duplicates and filter out invalid URLs
+    const uniqueUrls = [...new Set(urls)].filter(url => {
       try {
-        // Parse multiple URLs from the input
-        const urls = parseMultipleUrls(value);
-        
-        if (urls.length === 0) {
-          toast.error("No valid URLs found in the input");
-          return;
-        }
-        
-        if (urls.length === 1) {
-          // Single URL - create lead data from custom columns
-          const leadData = {};
-          customColumns.forEach(column => {
-            const fieldName = getFieldNameForColumn(column);
-            leadData[fieldName] = emptyRow[fieldName];
-          });
-          
-          // Ensure websiteUrl is set to the parsed URL
-          leadData.websiteUrl = urls[0];
-          
-          // Auto-generate LinkedIn URL if not provided
-          if (!leadData.linkedinUrl && leadData.websiteUrl) {
-            leadData.linkedinUrl = `https://linkedin.com/company/${urls[0].replace(/^https?:\/\//, '').replace(/\/$/, '')}`;
-          }
-          
-          const newLead = await createLead(leadData);
-          setData(prevData => [newLead, ...prevData]);
-          
-          // Remove the empty row that was converted
-          setEmptyRows(prev => prev.filter(row => row.Id !== tempId));
-          
-          toast.success("Lead created successfully!");
-        } else {
-          // Multiple URLs - create separate leads for each
-          const successfulLeads = [];
-          const failedUrls = [];
-          
-          for (const url of urls) {
-            try {
-              const leadData = {};
-              customColumns.forEach(column => {
-                const fieldName = getFieldNameForColumn(column);
-                leadData[fieldName] = emptyRow[fieldName];
-              });
-              
-              // Set specific URL for this lead
-              leadData.websiteUrl = url;
-              
-              // Auto-generate LinkedIn URL if not provided
-              if (!leadData.linkedinUrl) {
-                leadData.linkedinUrl = `https://linkedin.com/company/${url.replace(/^https?:\/\//, '').replace(/\/$/, '')}`;
-              }
-              
-              const newLead = await createLead(leadData);
-              successfulLeads.push(newLead);
-            } catch (err) {
-              failedUrls.push({ url, error: err.message });
-            }
-          }
-          
-          // Update the data with all successful leads
-          if (successfulLeads.length > 0) {
-            setData(prevData => [...successfulLeads, ...prevData]);
-          }
-          
-          // Remove the empty row that was converted
-          setEmptyRows(prev => prev.filter(row => row.Id !== tempId));
-          
-          // Provide feedback to user
-          if (successfulLeads.length > 0 && failedUrls.length === 0) {
-            toast.success(`Successfully created ${successfulLeads.length} leads from ${urls.length} URLs!`);
-          } else if (successfulLeads.length > 0 && failedUrls.length > 0) {
-            toast.success(`Created ${successfulLeads.length} leads successfully`);
-            toast.warning(`Failed to create ${failedUrls.length} leads (duplicates or invalid URLs)`);
-          } else {
-            toast.error("Failed to create any leads - all URLs were duplicates or invalid");
-          }
-        }
-      } catch (err) {
-        toast.error("Failed to create lead: " + err.message);
+        new URL(url);
+        return url.includes('.') && url.length > 4; // Basic URL validation
+      } catch {
+        return false;
       }
-    }
-  }
-};
-
-  // Debounced version for non-submission updates
-  const handleEmptyRowUpdateDebounced = (tempId, field, value) => {
-    // Update UI immediately for non-websiteUrl fields
-    if (field !== 'websiteUrl') {
-      setEmptyRows(prev => 
-        prev.map(row => 
-          row.Id === tempId ? { ...row, [field]: field === 'arr' ? Number(value) : value } : row
-        )
-      );
-    }
+    });
+    
+    return uniqueUrls;
+  };
+// Selection functions
+  const toggleLeadSelection = (leadId) => {
+    setSelectedLeads(prev => 
+      prev.includes(leadId) 
+        ? prev.filter(id => id !== leadId)
+        : [...prev, leadId]
+    );
   };
 
+  const toggleSelectAll = () => {
+    setSelectedLeads(prev => 
+      prev.length === filteredAndSortedData.length ? [] : filteredAndSortedData.map(lead => lead.Id)
+    );
+  };
+
+  const clearSelection = () => {
+    setSelectedLeads([]);
+  };
 const teamSizeOptions = ["1-3", "4-10", "11-50", "51-100", "101-500", "500+"];
-const [categoryOptions, setCategoryOptions] = useState([
+  
+  const [categoryOptions, setCategoryOptions] = useState([
     "Website Contact Form",
-    "Website Chatbot",
+    "Website Chatbot", 
     "Product Inquiry Page",
     "Customer Referral",
     "Partner Referral",
@@ -588,51 +482,17 @@ const [categoryOptions, setCategoryOptions] = useState([
     "Field Sales",
     "Channel Partner"
   ]);
-const statusOptions = [
-    "New Lead", "Contacted", "Keep an Eye", "Proposal Sent", "Meeting Booked", 
-    "Meeting Done", "Commercials Sent", "Negotiation", "Hotlist", "Temporarily on hold", 
-    "Out of League", "Outdated", "Rejected", "Closed Won", "Closed Lost"
-  ];
-  const fundingTypeOptions = ["Bootstrapped", "Pre-seed", "Y Combinator", "Angel", "Series A", "Series B", "Series C"];
-
-  const handleCreateCategory = (newCategory) => {
-    if (newCategory.trim() && !categoryOptions.includes(newCategory.trim())) {
-      setCategoryOptions(prev => [...prev, newCategory.trim()]);
-      toast.success(`Category "${newCategory.trim()}" created successfully!`);
-      return newCategory.trim();
-    }
-    return null;
-  };
-const getStatusColor = (status) => {
-    const colors = {
-      "New Lead": "info",
-      "Contacted": "primary",
-      "Keep an Eye": "info",
-      "Proposal Sent": "warning",
-      "Meeting Booked": "primary",
-      "Meeting Done": "success",
-      "Commercials Sent": "warning",
-      "Negotiation": "accent",
-      "Hotlist": "primary",
-      "Temporarily on hold": "default",
-      "Out of League": "error",
-      "Outdated": "default",
-      "Rejected": "error",
-      "Closed Won": "success",
-      "Closed Lost": "error"
-    };
-    return colors[status] || "default";
-  };
-
 const filteredAndSortedData = data
     .filter(lead => {
-const matchesSearch = !searchTerm || 
-        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.websiteUrl.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.teamSize.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = !searchTerm || 
+        lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.teamSize?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
+(lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
       const matchesFunding = fundingFilter === "all" || lead.fundingType === fundingFilter;
       const matchesCategory = categoryFilter === "all" || lead.category === categoryFilter;
@@ -640,7 +500,8 @@ const matchesSearch = !searchTerm ||
       
       return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
     })
-.sort((a, b) => {
+})
+    .sort((a, b) => {
       let aValue = a[sortBy];
       let bValue = b[sortBy];
       
@@ -665,8 +526,7 @@ const matchesSearch = !searchTerm ||
       } else {
         return aValue < bValue ? 1 : -1;
       }
-});
-
+    });
   // Pagination logic
   const totalItems = filteredAndSortedData.length;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -674,28 +534,27 @@ const matchesSearch = !searchTerm ||
   const endIndex = startIndex + pageSize;
   const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
 
-  // Reset to first page when filters change
-React.useEffect(() => {
-setCurrentPage(1);
-}, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
-
+// Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handlePageSizeChange = (newPageSize) => {
     setPageSize(newPageSize);
-    setCurrentPage(1);
+setCurrentPage(1);
   };
-const handleSort = (field) => {
+
+  const handleSort = (field) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
       setSortOrder("asc");
     }
-};
-
+  };
 // Always maintain one empty row at the top
   useEffect(() => {
     if (!loading && emptyRows.length === 0) {

@@ -31,8 +31,9 @@ function Leads() {
   // State for modals and selection
   const [showAddLeadModal, setShowAddLeadModal] = useState(false)
   const [editingLead, setEditingLead] = useState(null)
-  const [selectedLeads, setSelectedLeads] = useState(new Set())
+const [selectedLeads, setSelectedLeads] = useState(new Set())
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false)
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false)
   const [showHotlist, setShowHotlist] = useState(false)
   
   // State for filters and search
@@ -265,9 +266,9 @@ const handleFieldUpdate = async (leadId, field, value) => {
       })
 
       if (hasRequiredData) {
-        // Create lead data from empty row
+// Create lead data from empty row
         const leadData = {}
-        customColumns.forEach(column => {
+        columns.forEach(column => {
           const fieldName = getFieldNameForColumn(column)
           const fieldValue = field === fieldName ? value : emptyRow[fieldName]
           if (fieldValue !== undefined && fieldValue !== '') {
@@ -666,9 +667,9 @@ icon="Building2" /> : <div className="relative">
 checked={selectedLeads.size === filteredAndSortedData.length && filteredAndSortedData.length > 0}
                                     onChange={toggleSelectAll}
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                                />
+/>
                             </th>
-{(columns || customColumns || []).map(column => (
+{(columns || []).map(column => (
                                 <th key={column.Id || column.name} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                     <button
                                         onClick={() => handleSort(getFieldNameForColumn(column))}
@@ -692,9 +693,9 @@ checked={selectedLeads.size === filteredAndSortedData.length && filteredAndSorte
                                         type="checkbox"
                                         disabled
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 opacity-50"
-                                    />
+/>
                                 </td>
-{(columns || customColumns || []).map(column => (
+{(columns || []).map(column => (
                                     <td key={column.Id || column.name} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
                                         {renderColumnInput(column, emptyRow, true, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)}
                                     </td>
@@ -720,9 +721,9 @@ checked={selectedLeads.size === filteredAndSortedData.length && filteredAndSorte
 checked={selectedLeads.has(lead.Id)}
                                         onChange={() => toggleLeadSelection(lead.Id)}
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                                    />
+/>
                                 </td>
-{(columns || customColumns || []).map(column => (
+{(columns || []).map(column => (
                                     <td key={column.Id || column.name} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
                                         {renderColumnInput(column, lead, false, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)}
                                     </td>

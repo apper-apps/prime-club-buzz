@@ -478,8 +478,9 @@ value={formData.type}
             </div>
 
             {formData.type === "conditional" && (
-              <ConditionalRulesBuilder
+<ConditionalRulesBuilder
                 rules={formData.conditionalRules}
+                columnType={formData.type}
                 onChange={(rules) => setFormData(prev => ({ ...prev, conditionalRules: rules }))}
               />
             )}
@@ -576,7 +577,7 @@ const DeleteConfirmationModal = ({ column, onClose, onConfirm }) => {
   );
 };
 
-const ConditionalRulesBuilder = ({ rules, onChange }) => {
+const ConditionalRulesBuilder = ({ rules, columnType, onChange }) => {
   const [newRule, setNewRule] = useState({
     condition: { field: "", operator: "", value: "" },
     thenAction: { type: "setValue", value: "" },
@@ -833,7 +834,7 @@ const ConditionalRulesBuilder = ({ rules, onChange }) => {
         </div>
       </div>
 
-      {formData.type === "conditional" && rules.length === 0 && (
+{columnType === "conditional" && rules.length === 0 && (
         <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
           <div className="flex items-center space-x-2">
             <ApperIcon name="AlertCircle" size={16} />

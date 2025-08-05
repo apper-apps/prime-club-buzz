@@ -1083,20 +1083,31 @@ const actionTypes = [
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200">
-<div className="px-6 py-8">
+<div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 border-b border-gray-200">
+        <div className="px-6 py-12">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Workflow Automation Hub
-                </h1>
-                <p className="text-lg text-gray-600 max-w-4xl">
-                  Orchestrate intelligent, multi-channel workflows that nurture leads and automate your entire sales process
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                    <ApperIcon name="Zap" size={28} className="text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
+                      Workflow Automation Hub
+                    </h1>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <ApperIcon name="Sparkles" size={16} className="text-purple-500" />
+                      <span>Intelligent Process Automation</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xl text-gray-700 max-w-4xl leading-relaxed">
+                  Orchestrate intelligent, multi-channel workflows that nurture leads and automate your entire sales process with powerful automation tools
                 </p>
               </div>
               <div className="flex-shrink-0">
-<Button
+                <Button
                   onClick={() => {
                     setCurrentWorkflow(null);
                     setBuilderState({
@@ -1115,44 +1126,52 @@ const actionTypes = [
                     });
                     setIsBuilderOpen(true);
                   }}
-                  className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+                  className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
                 >
-                  <ApperIcon name="Plus" size={20} />
-                  Create Workflow
+                  <ApperIcon name="Plus" size={24} />
+                  <span className="text-lg">Create Workflow</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
         {/* Navigation Tabs */}
         <div className="px-6">
           <div className="max-w-7xl mx-auto">
-            <nav className="flex space-x-8" aria-label="Tabs">
+<nav className="flex space-x-2" aria-label="Tabs">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200
+                    relative flex items-center space-x-3 py-4 px-6 font-semibold text-sm transition-all duration-300 rounded-t-xl
                     ${activeTab === tab.id
-                      ? 'border-blue-500 text-blue-700 bg-blue-50'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-white text-blue-700 shadow-lg border-t-4 border-blue-500 -mb-px'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 border-t-4 border-transparent'
                     }
                   `}
                 >
-                  <ApperIcon name={tab.icon} size={16} />
+                  <ApperIcon 
+                    name={tab.icon} 
+                    size={18} 
+                    className={activeTab === tab.id ? 'text-blue-600' : 'text-gray-500'}
+                  />
                   <span>{tab.label}</span>
+                  {activeTab === tab.id && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
+                  )}
                 </button>
               ))}
             </nav>
           </div>
-        </div>
+</div>
       </div>
 
       {/* Content Area */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           {activeTab === 'workflows' && (
             <div>
               <div className="mb-6">
@@ -1274,52 +1293,70 @@ const actionTypes = [
                     return matchesSearch && matchesCategory && matchesStatus;
                   })
                   .map(workflow => (
-<div key={workflow.Id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+<div key={workflow.Id} className="group bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/50 rounded-2xl shadow-sm hover:shadow-xl hover:border-blue-200/50 transition-all duration-300 p-8 hover:scale-[1.02] transform">
                       {/* Header with Name, Status, and Priority Badges */}
-                      <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start justify-between mb-6">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900">{workflow.name}</h3>
-                            <div className="flex items-center gap-2">
-                              {/* Status Badge */}
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          <div className="flex items-center gap-4 mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 rounded-xl shadow-sm ${
                                 workflow.isActive 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-gray-100 text-gray-800'
+                                  ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
+                                  : 'bg-gradient-to-br from-gray-400 to-gray-500'
                               }`}>
-                                <span className={`w-2 h-2 rounded-full mr-1.5 ${
-                                  workflow.isActive ? 'bg-green-500' : 'bg-gray-400'
+                                <ApperIcon name="Zap" size={18} className="text-white" />
+                              </div>
+                              <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-900 transition-colors">
+                                {workflow.name}
+                              </h3>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              {/* Status Badge */}
+                              <span className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm ${
+                                workflow.isActive 
+                                  ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200' 
+                                  : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border border-gray-300'
+                              }`}>
+                                <span className={`w-2.5 h-2.5 rounded-full mr-2 ${
+                                  workflow.isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
                                 }`}></span>
                                 {workflow.isActive ? 'Active' : 'Inactive'}
                               </span>
                               
                               {/* Priority Badge */}
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                workflow.priority === 'high' ? 'bg-red-100 text-red-800' :
-                                workflow.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-green-100 text-green-800'
+                              <span className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm border ${
+                                workflow.priority === 'high' ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-red-200' :
+                                workflow.priority === 'medium' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-800 border-orange-200' :
+                                'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800 border-blue-200'
                               }`}>
-                                {workflow.priority.charAt(0).toUpperCase() + workflow.priority.slice(1)}
+                                <ApperIcon 
+                                  name={workflow.priority === 'high' ? 'AlertTriangle' : workflow.priority === 'medium' ? 'AlertCircle' : 'Info'} 
+                                  size={12} 
+                                  className="mr-1" 
+                                />
+                                {workflow.priority.charAt(0).toUpperCase() + workflow.priority.slice(1)} Priority
                               </span>
                               
                               {/* Category Badge */}
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 border border-purple-200 shadow-sm">
+                                <ApperIcon name="Tag" size={12} className="mr-1" />
                                 {workflow.category?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'General'}
                               </span>
                             </div>
                           </div>
                           
                           {/* Description */}
-                          <p className="text-gray-600 text-sm mb-4">{workflow.description}</p>
+                          <p className="text-gray-700 text-base mb-5 leading-relaxed">{workflow.description}</p>
                           
                           {/* Tags */}
                           {workflow.tags && workflow.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-4">
+                            <div className="flex flex-wrap gap-2 mb-5">
                               {workflow.tags.map((tag, index) => (
                                 <span 
                                   key={index} 
-                                  className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                                  className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 hover:from-gray-200 hover:to-gray-300 transition-all duration-200 shadow-sm border border-gray-300"
                                 >
+                                  <ApperIcon name="Hash" size={10} className="mr-1" />
                                   {tag}
                                 </span>
                               ))}
@@ -1327,8 +1364,8 @@ const actionTypes = [
                           )}
                         </div>
                         
-{/* Action Buttons */}
-                        <div className="flex items-center gap-1 ml-4">
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 ml-6">
                           {/* Expand/Collapse Button */}
                           <button
                             onClick={() => {
@@ -1336,12 +1373,12 @@ const actionTypes = [
                                 expandedWorkflow === workflow.Id ? null : workflow.Id
                               );
                             }}
-                            className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            className="p-3 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all duration-200 shadow-sm border border-gray-200 hover:border-purple-200"
                             title={expandedWorkflow === workflow.Id ? 'Collapse details' : 'Expand details'}
                           >
                             <ApperIcon 
                               name={expandedWorkflow === workflow.Id ? "ChevronDown" : "ChevronRight"} 
-                              size={16} 
+                              size={18} 
                             />
                           </button>
 
@@ -1351,25 +1388,26 @@ const actionTypes = [
                               // Add duplicate functionality
                               console.log('Duplicating workflow:', workflow.name);
                             }}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 shadow-sm border border-gray-200 hover:border-blue-200"
                             title="Duplicate workflow"
                           >
-                            <ApperIcon name="Copy" size={16} />
+                            <ApperIcon name="Copy" size={18} />
                           </button>
                           
-{/* Pause/Play Button */}
+                          {/* Pause/Play Button */}
                           <button
                             onClick={() => toggleWorkflow(workflow.Id)}
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-3 rounded-xl transition-all duration-200 shadow-sm border ${
                               workflow.isActive 
-                                ? 'text-orange-600 hover:bg-orange-50' 
-                                : 'text-green-600 hover:bg-green-50'
+                                ? 'text-orange-600 hover:bg-orange-50 border-orange-200 hover:border-orange-300' 
+                                : 'text-green-600 hover:bg-green-50 border-green-200 hover:border-green-300'
                             }`}
                             title={workflow.isActive ? 'Pause workflow' : 'Activate workflow'}
                           >
-                            <ApperIcon name={workflow.isActive ? "Pause" : "Play"} size={16} />
+                            <ApperIcon name={workflow.isActive ? "Pause" : "Play"} size={18} />
                           </button>
-{/* Edit Button */}
+
+                          {/* Edit Button */}
                           <button 
                             onClick={() => {
                               setCurrentWorkflow(workflow);
@@ -1377,120 +1415,142 @@ const actionTypes = [
                               setIsBuilderOpen(true);
                               toast.info(`Editing workflow: ${workflow.name}`);
                             }}
-                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 shadow-sm border border-gray-200 hover:border-blue-200"
                             title="Edit workflow"
                           >
-                            <ApperIcon name="Edit" size={16} />
+                            <ApperIcon name="Edit" size={18} />
                           </button>
                           
-{/* Delete Button */}
+                          {/* Delete Button */}
                           <button 
                             onClick={() => {
                               deleteWorkflow(workflow.Id);
                             }}
-                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 shadow-sm border border-gray-200 hover:border-red-200"
                             title="Delete workflow"
                           >
-                            <ApperIcon name="Trash2" size={16} />
+                            <ApperIcon name="Trash2" size={18} />
                           </button>
                         </div>
                       </div>
 
-                      {/* Stats Row */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-t border-gray-100">
+                      {/* Enhanced Stats Row */}
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-6 mb-6 bg-gradient-to-r from-gray-50/50 to-blue-50/30 rounded-2xl border border-gray-100">
                         <div className="text-center">
-                          <div className="flex items-center justify-center mb-1">
-                            <ApperIcon name="Activity" size={14} className="text-blue-600 mr-1" />
-                            <div className="text-lg font-semibold text-gray-900">{workflow.executions?.toLocaleString() || '0'}</div>
+                          <div className="flex flex-col items-center">
+                            <div className="p-3 bg-blue-100 rounded-xl mb-2 shadow-sm">
+                              <ApperIcon name="Activity" size={20} className="text-blue-600" />
+                            </div>
+                            <div className="text-2xl font-bold text-gray-900 mb-1">{workflow.executions?.toLocaleString() || '0'}</div>
+                            <div className="text-sm text-gray-600 font-medium">Total Executions</div>
                           </div>
-                          <div className="text-xs text-gray-500">Executions</div>
                         </div>
                         <div className="text-center">
-                          <div className="flex items-center justify-center mb-1">
-                            <ApperIcon name="TrendingUp" size={14} className="text-green-600 mr-1" />
-                            <div className="text-lg font-semibold text-green-600">{workflow.successRate || '0'}%</div>
+                          <div className="flex flex-col items-center">
+                            <div className="p-3 bg-green-100 rounded-xl mb-2 shadow-sm">
+                              <ApperIcon name="TrendingUp" size={20} className="text-green-600" />
+                            </div>
+                            <div className="text-2xl font-bold text-green-600 mb-1">{workflow.successRate || '0'}%</div>
+                            <div className="text-sm text-gray-600 font-medium">Success Rate</div>
                           </div>
-                          <div className="text-xs text-gray-500">Success Rate</div>
                         </div>
                         <div className="text-center">
-                          <div className="flex items-center justify-center mb-1">
-                            <ApperIcon name="Clock" size={14} className="text-gray-600 mr-1" />
-                            <div className="text-lg font-semibold text-gray-900">
+                          <div className="flex flex-col items-center">
+                            <div className="p-3 bg-orange-100 rounded-xl mb-2 shadow-sm">
+                              <ApperIcon name="Clock" size={20} className="text-orange-600" />
+                            </div>
+                            <div className="text-sm font-bold text-gray-900 mb-1">
                               {workflow.lastRun ? new Date(workflow.lastRun).toLocaleDateString() : 'Never'}
                             </div>
+                            <div className="text-sm text-gray-600 font-medium">Last Execution</div>
                           </div>
-                          <div className="text-xs text-gray-500">Last Run</div>
                         </div>
                         <div className="text-center">
-                          <div className="flex items-center justify-center mb-1">
-                            <ApperIcon name="User" size={14} className="text-purple-600 mr-1" />
-                            <div className="text-lg font-semibold text-gray-900">{workflow.createdBy || 'Unknown'}</div>
+                          <div className="flex flex-col items-center">
+                            <div className="p-3 bg-purple-100 rounded-xl mb-2 shadow-sm">
+                              <ApperIcon name="User" size={20} className="text-purple-600" />
+                            </div>
+                            <div className="text-sm font-bold text-gray-900 mb-1">{workflow.createdBy || 'Unknown'}</div>
+                            <div className="text-sm text-gray-600 font-medium">Created By</div>
                           </div>
-                          <div className="text-xs text-gray-500">Created By</div>
                         </div>
-</div>
+                      </div>
 
-                      {/* Workflow Visualization Section */}
-                      <div className="mt-6 pt-4 border-t border-gray-100">
-                        <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                          <ApperIcon name="GitBranch" size={14} className="text-gray-600" />
-                          Workflow Visualization
+                      {/* Enhanced Workflow Visualization Section */}
+                      <div className="mb-6">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-3">
+                          <div className="p-2 bg-indigo-100 rounded-lg">
+                            <ApperIcon name="GitBranch" size={18} className="text-indigo-600" />
+                          </div>
+                          Workflow Flow
                         </h4>
                         
-                        <div className="overflow-x-auto pb-2">
-                          <div className="flex items-center gap-3 min-w-max">
-                            {/* Trigger Box */}
-                            <div className="flex-shrink-0 min-w-[200px]">
-                              <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-3 shadow-sm">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <ApperIcon 
-                                    name={renderTriggerIcon(workflow.trigger.type)} 
-                                    size={16} 
-                                    className="text-white" 
-                                  />
-                                  <span className="text-sm font-medium">
-                                    {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
-                                  </span>
+                        <div className="overflow-x-auto pb-4">
+                          <div className="flex items-center gap-4 min-w-max p-4 bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-2xl border border-blue-100">
+                            {/* Enhanced Trigger Box */}
+                            <div className="flex-shrink-0 min-w-[240px]">
+                              <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white rounded-2xl p-4 shadow-lg border border-blue-400">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="p-2 bg-white/20 rounded-lg">
+                                    <ApperIcon 
+                                      name={renderTriggerIcon(workflow.trigger.type)} 
+                                      size={20} 
+                                      className="text-white" 
+                                    />
+                                  </div>
+                                  <div>
+                                    <span className="text-sm font-bold block">TRIGGER</span>
+                                    <span className="text-xs text-blue-100 block">
+                                      {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
+                                    </span>
+                                  </div>
                                 </div>
-                                <p className="text-xs text-blue-100 leading-relaxed">
+                                <p className="text-sm text-blue-100 leading-relaxed">
                                   {triggerTypes.find(t => t.type === workflow.trigger.type)?.description}
                                 </p>
                                 {workflow.trigger.additionalConditions && workflow.trigger.additionalConditions.length > 0 && (
-                                  <div className="mt-2 text-xs text-blue-200">
+                                  <div className="mt-3 text-xs text-blue-200 bg-blue-600/30 px-3 py-1 rounded-lg">
                                     +{workflow.trigger.additionalConditions.length} conditions
                                   </div>
                                 )}
                               </div>
                             </div>
 
-                            {/* Arrow Connector */}
+                            {/* Enhanced Arrow Connector */}
                             <div className="flex-shrink-0 flex items-center">
-                              <div className="w-6 h-0.5 bg-gray-300"></div>
-                              <ApperIcon name="ChevronRight" size={16} className="text-gray-400 mx-1" />
-                              <div className="w-6 h-0.5 bg-gray-300"></div>
+                              <div className="w-8 h-1 bg-gradient-to-r from-blue-400 to-green-400 rounded-full"></div>
+                              <div className="p-1 bg-gray-100 rounded-full mx-2">
+                                <ApperIcon name="ChevronRight" size={16} className="text-gray-600" />
+                              </div>
+                              <div className="w-8 h-1 bg-gradient-to-r from-blue-400 to-green-400 rounded-full"></div>
                             </div>
 
-                            {/* Action Boxes */}
-                            <div className="flex items-center gap-3">
+                            {/* Enhanced Action Boxes */}
+                            <div className="flex items-center gap-4">
                               {workflow.actions.slice(0, 3).map((action, index) => (
-                                <div key={index} className="flex items-center gap-3">
-                                  <div className="flex-shrink-0 min-w-[180px]">
-                                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-3 shadow-sm">
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <ApperIcon 
-                                          name={renderActionIcon(action.type)} 
-                                          size={16} 
-                                          className="text-white" 
-                                        />
-                                        <span className="text-sm font-medium">
-                                          {actionTypes.find(a => a.type === action.type)?.label || action.type}
-                                        </span>
+                                <div key={index} className="flex items-center gap-4">
+                                  <div className="flex-shrink-0 min-w-[220px]">
+                                    <div className="bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 text-white rounded-2xl p-4 shadow-lg border border-green-400">
+                                      <div className="flex items-center gap-3 mb-3">
+                                        <div className="p-2 bg-white/20 rounded-lg">
+                                          <ApperIcon 
+                                            name={renderActionIcon(action.type)} 
+                                            size={20} 
+                                            className="text-white" 
+                                          />
+                                        </div>
+                                        <div>
+                                          <span className="text-sm font-bold block">ACTION {index + 1}</span>
+                                          <span className="text-xs text-green-100 block">
+                                            {actionTypes.find(a => a.type === action.type)?.label || action.type}
+                                          </span>
+                                        </div>
                                       </div>
-                                      <p className="text-xs text-green-100 leading-relaxed">
+                                      <p className="text-sm text-green-100 leading-relaxed">
                                         {actionTypes.find(a => a.type === action.type)?.description}
                                       </p>
                                       {action.delay > 0 && (
-                                        <div className="mt-2 text-xs text-green-200 bg-green-600 bg-opacity-50 px-2 py-1 rounded">
+                                        <div className="mt-3 text-xs text-green-200 bg-green-600/30 px-3 py-1 rounded-lg">
                                           Delay: {action.delay < 60 ? `${action.delay}m` : 
                                                  action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
                                                  `${Math.floor(action.delay / 1440)}d`}
@@ -1499,29 +1559,33 @@ const actionTypes = [
                                     </div>
                                   </div>
 
-                                  {/* Arrow between actions (except after last shown action) */}
+                                  {/* Enhanced Arrow between actions */}
                                   {index < Math.min(workflow.actions.length, 3) - 1 && (
                                     <div className="flex-shrink-0 flex items-center">
-                                      <div className="w-4 h-0.5 bg-gray-300"></div>
-                                      <ApperIcon name="ChevronRight" size={14} className="text-gray-400 mx-1" />
-                                      <div className="w-4 h-0.5 bg-gray-300"></div>
+                                      <div className="w-6 h-1 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
+                                      <div className="p-1 bg-gray-100 rounded-full mx-2">
+                                        <ApperIcon name="ChevronRight" size={14} className="text-gray-600" />
+                                      </div>
+                                      <div className="w-6 h-1 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></div>
                                     </div>
                                   )}
                                 </div>
                               ))}
 
-                              {/* Show +X more indicator */}
+                              {/* Enhanced +X more indicator */}
                               {workflow.actions.length > 3 && (
-                                <div className="flex items-center gap-2">
-                                  <div className="w-4 h-0.5 bg-gray-300"></div>
-                                  <ApperIcon name="ChevronRight" size={14} className="text-gray-400" />
-                                  <div className="flex-shrink-0 min-w-[120px]">
-                                    <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-3 text-center">
-                                      <ApperIcon name="MoreHorizontal" size={16} className="text-gray-500 mx-auto mb-1" />
-                                      <span className="text-xs font-medium text-gray-600">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-6 h-1 bg-gradient-to-r from-green-400 to-gray-400 rounded-full"></div>
+                                  <div className="p-1 bg-gray-100 rounded-full">
+                                    <ApperIcon name="ChevronRight" size={14} className="text-gray-600" />
+                                  </div>
+                                  <div className="flex-shrink-0 min-w-[140px]">
+                                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-400 rounded-2xl p-4 text-center">
+                                      <ApperIcon name="MoreHorizontal" size={20} className="text-gray-600 mx-auto mb-2" />
+                                      <span className="text-sm font-bold text-gray-700 block">
                                         +{workflow.actions.length - 3} more
                                       </span>
-                                      <p className="text-xs text-gray-500 mt-1">
+                                      <p className="text-xs text-gray-600 mt-1">
                                         actions
                                       </p>
                                     </div>
@@ -1533,78 +1597,54 @@ const actionTypes = [
                         </div>
                       </div>
 
-                      {/* Legacy Trigger Section (kept for backwards compatibility) */}
-                      <div className="mb-4 mt-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                          <ApperIcon name="Zap" size={14} className="text-primary-600" />
-                          Trigger Details
-                        </h4>
-                        <div className="bg-primary-50 border border-primary-100 rounded-lg p-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <ApperIcon 
-                              name={triggerTypes.find(t => t.type === workflow.trigger.type)?.icon || 'Circle'} 
-                              size={14} 
-                              className="text-primary-600" 
-                            />
-                            <span className="text-sm font-medium text-primary-800">
-                              {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
-                            </span>
-                          </div>
-                          <p className="text-xs text-primary-700">
-                            {triggerTypes.find(t => t.type === workflow.trigger.type)?.description}
-                          </p>
-                          {workflow.trigger.additionalConditions && workflow.trigger.additionalConditions.length > 0 && (
-                            <div className="mt-2 text-xs text-primary-600">
-                              +{workflow.trigger.additionalConditions.length} additional conditions
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-{/* Expandable Detailed View */}
+                      {/* Enhanced Expandable Detailed View */}
                       <div 
-                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        className={`overflow-hidden transition-all duration-500 ease-in-out ${
                           expandedWorkflow === workflow.Id 
                             ? 'max-h-screen opacity-100' 
                             : 'max-h-0 opacity-0'
                         }`}
                       >
                         {expandedWorkflow === workflow.Id && (
-                          <div className="mt-4 pt-4 border-t border-gray-200">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                              {/* Left Column - Trigger Details */}
-                              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <h4 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
-                                  <ApperIcon name="Zap" size={16} className="text-blue-600" />
-                                  Trigger Details
+                          <div className="pt-6 border-t border-gray-200">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                              {/* Enhanced Left Column - Trigger Details */}
+                              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl p-6 shadow-sm">
+                                <h4 className="text-lg font-bold text-blue-900 mb-4 flex items-center gap-3">
+                                  <div className="p-2 bg-blue-600 rounded-xl">
+                                    <ApperIcon name="Zap" size={20} className="text-white" />
+                                  </div>
+                                  Trigger Configuration
                                 </h4>
                                 
-                                <div className="space-y-3">
-                                  {/* Trigger Type */}
-                                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
-                                    <ApperIcon 
-                                      name={triggerTypes.find(t => t.type === workflow.trigger.type)?.icon || 'Circle'} 
-                                      size={20} 
-                                      className="text-blue-600" 
-                                    />
+                                <div className="space-y-4">
+                                  {/* Enhanced Trigger Type */}
+                                  <div className="flex items-center gap-4 p-4 bg-white/70 rounded-xl shadow-sm border border-blue-100">
+                                    <div className="p-3 bg-blue-100 rounded-xl">
+                                      <ApperIcon 
+                                        name={triggerTypes.find(t => t.type === workflow.trigger.type)?.icon || 'Circle'} 
+                                        size={24} 
+                                        className="text-blue-600" 
+                                      />
+                                    </div>
                                     <div>
-                                      <div className="font-medium text-blue-900">
+                                      <div className="font-bold text-blue-900 text-lg">
                                         {triggerTypes.find(t => t.type === workflow.trigger.type)?.label || workflow.trigger.type}
                                       </div>
-                                      <div className="text-xs text-blue-600">
+                                      <div className="text-sm text-blue-700 mt-1">
                                         {triggerTypes.find(t => t.type === workflow.trigger.type)?.description || 'Custom trigger'}
                                       </div>
                                     </div>
                                   </div>
 
-                                  {/* Trigger Conditions */}
+                                  {/* Enhanced Trigger Conditions */}
                                   {workflow.trigger.conditions && (
-                                    <div className="space-y-2">
-                                      <div className="text-sm font-medium text-blue-800">Conditions:</div>
+                                    <div className="space-y-3">
+                                      <div className="text-base font-bold text-blue-900">Conditions:</div>
                                       {Object.entries(workflow.trigger.conditions).map(([key, value], index) => (
-                                        <div key={index} className="flex items-center justify-between p-2 bg-white/40 rounded text-sm">
-                                          <span className="text-blue-700 capitalize">{key.replace('_', ' ')}:</span>
-                                          <span className="text-blue-900 font-medium">{value}</span>
+                                        <div key={index} className="flex items-center justify-between p-3 bg-white/50 rounded-lg border border-blue-100">
+                                          <span className="text-blue-800 capitalize font-medium">{key.replace('_', ' ')}:</span>
+                                          <span className="text-blue-900 font-bold bg-blue-100 px-3 py-1 rounded-lg">{value}</span>
                                         </div>
                                       ))}
                                     </div>
@@ -1612,34 +1652,38 @@ const actionTypes = [
                                 </div>
                               </div>
 
-                              {/* Right Column - Actions Sequence */}
-                              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                                <h4 className="text-sm font-semibold text-green-800 mb-3 flex items-center gap-2">
-                                  <ApperIcon name="Play" size={16} className="text-green-600" />
+                              {/* Enhanced Right Column - Actions Sequence */}
+                              <div className="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-6 shadow-sm">
+                                <h4 className="text-lg font-bold text-green-900 mb-4 flex items-center gap-3">
+                                  <div className="p-2 bg-green-600 rounded-xl">
+                                    <ApperIcon name="Play" size={20} className="text-white" />
+                                  </div>
                                   Actions Sequence ({workflow.actions.length})
                                 </h4>
                                 
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                   {workflow.actions.map((action, index) => (
-                                    <div key={index} className="flex gap-3 p-3 bg-white/60 rounded-lg">
-                                      {/* Step Number */}
-                                      <div className="flex-shrink-0 w-6 h-6 bg-green-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                    <div key={index} className="flex gap-4 p-4 bg-white/70 rounded-xl shadow-sm border border-green-100">
+                                      {/* Enhanced Step Number */}
+                                      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 text-white text-sm font-bold rounded-xl flex items-center justify-center shadow-sm">
                                         {index + 1}
                                       </div>
                                       
                                       <div className="flex-1">
-                                        {/* Action Header */}
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <ApperIcon 
-                                            name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
-                                            size={16} 
-                                            className="text-green-600" 
-                                          />
-                                          <span className="font-medium text-green-900">
+                                        {/* Enhanced Action Header */}
+                                        <div className="flex items-center gap-3 mb-3">
+                                          <div className="p-2 bg-green-100 rounded-lg">
+                                            <ApperIcon 
+                                              name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
+                                              size={18} 
+                                              className="text-green-600" 
+                                            />
+                                          </div>
+                                          <span className="font-bold text-green-900">
                                             {actionTypes.find(a => a.type === action.type)?.label || action.type}
                                           </span>
                                           {action.delay > 0 && (
-                                            <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                                            <span className="text-xs text-green-700 bg-green-200 px-3 py-1 rounded-lg font-semibold">
                                               {action.delay < 60 ? `${action.delay}m` : 
                                                action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
                                                `${Math.floor(action.delay / 1440)}d`} delay
@@ -1647,29 +1691,30 @@ const actionTypes = [
                                           )}
                                         </div>
 
-                                        {/* Action Details */}
-                                        <div className="space-y-1 text-sm">
+                                        {/* Enhanced Action Details */}
+                                        <div className="space-y-2 text-sm">
                                           {action.assignee && (
-                                            <div className="text-green-700">
-                                              <span className="font-medium">Assignee:</span> {action.assignee}
+                                            <div className="text-green-800 bg-green-100/50 p-2 rounded-lg">
+                                              <span className="font-semibold">Assignee:</span> {action.assignee}
                                             </div>
                                           )}
                                           {action.template && (
-                                            <div className="text-green-700">
-                                              <span className="font-medium">Template:</span> {action.template}
+                                            <div className="text-green-800 bg-green-100/50 p-2 rounded-lg">
+                                              <span className="font-semibold">Template:</span> {action.template}
                                             </div>
                                           )}
                                           {action.message && (
-                                            <div className="text-green-700">
-                                              <span className="font-medium">Message:</span> {action.message.substring(0, 60)}...
+                                            <div className="text-green-800 bg-green-100/50 p-2 rounded-lg">
+                                              <span className="font-semibold">Message:</span> {action.message.substring(0, 60)}...
                                             </div>
                                           )}
                                           {action.conditions && Object.keys(action.conditions).length > 0 && (
-                                            <div className="mt-2 p-2 bg-green-100/50 rounded text-xs">
-                                              <div className="font-medium text-green-800 mb-1">Conditions:</div>
+                                            <div className="mt-3 p-3 bg-green-200/50 rounded-lg border border-green-200">
+                                              <div className="font-semibold text-green-900 mb-2">Conditions:</div>
                                               {Object.entries(action.conditions).map(([key, value], condIndex) => (
-                                                <div key={condIndex} className="text-green-700">
-                                                  {key.replace('_', ' ')}: {value}
+                                                <div key={condIndex} className="text-green-800 flex justify-between">
+                                                  <span>{key.replace('_', ' ')}:</span>
+                                                  <span className="font-semibold">{value}</span>
                                                 </div>
                                               ))}
                                             </div>
@@ -1684,44 +1729,6 @@ const actionTypes = [
                           </div>
                         )}
                       </div>
-
-                      {/* Compact Actions Summary (shown when not expanded) */}
-                      {expandedWorkflow !== workflow.Id && (
-                        <div className="mb-4">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                            <ApperIcon name="Play" size={14} className="text-blue-600" />
-                            Actions ({workflow.actions.length})
-                          </h4>
-                          <div className="space-y-2">
-                            {workflow.actions.slice(0, 3).map((action, index) => (
-                              <div key={index} className="flex items-center gap-3 p-2 bg-blue-50 border border-blue-100 rounded-lg">
-                                <div className="flex items-center gap-2 flex-1">
-                                  <ApperIcon 
-                                    name={actionTypes.find(a => a.type === action.type)?.icon || 'Circle'} 
-                                    size={14} 
-                                    className="text-blue-600" 
-                                  />
-                                  <span className="text-sm font-medium text-blue-800">
-                                    {actionTypes.find(a => a.type === action.type)?.label || action.type}
-                                  </span>
-                                </div>
-                                {action.delay > 0 && (
-                                  <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                                    {action.delay < 60 ? `${action.delay}m` : 
-                                     action.delay < 1440 ? `${Math.floor(action.delay / 60)}h` : 
-                                     `${Math.floor(action.delay / 1440)}d`}
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                            {workflow.actions.length > 3 && (
-                              <div className="text-xs text-gray-500 text-center py-1">
-                                +{workflow.actions.length - 3} more actions
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
               </div>
@@ -2442,58 +2449,66 @@ const actionTypes = [
         </div>
 </div>
 
-      {/* Workflow Builder Modal */}
+{/* Enhanced Workflow Builder Modal */}
       {isBuilderOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          {/* Fixed Overlay with Semi-transparent Background */}
+          {/* Enhanced Overlay with Blur Effect */}
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+            className="fixed inset-0 bg-gradient-to-br from-black/60 via-blue-900/20 to-purple-900/20 backdrop-blur-sm transition-all duration-300"
             onClick={() => setIsBuilderOpen(false)}
           ></div>
           
-          {/* Centered Modal with Max Width and Height */}
-          <div className="flex min-h-full items-center justify-center p-4">
+          {/* Enhanced Centered Modal */}
+          <div className="flex min-h-full items-center justify-center p-6">
             <div 
-              className="relative bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col"
+              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col border border-gray-100"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Sticky Header with Title and Close Button */}
-              <div className="sticky top-0 z-10 bg-white border-b border-gray-200 rounded-t-lg px-6 py-4">
+              {/* Enhanced Sticky Header */}
+              <div className="sticky top-0 z-10 bg-gradient-to-r from-blue-50 via-white to-purple-50 border-b border-gray-200 rounded-t-3xl px-8 py-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      {currentWorkflow ? 'Edit Workflow' : 'Create New Workflow'}
-                    </h2>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Build intelligent automation workflows to nurture leads and streamline your sales process
-                    </p>
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
+                      <ApperIcon name="Settings" size={28} className="text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-purple-900 bg-clip-text text-transparent">
+                        {currentWorkflow ? 'Edit Workflow' : 'Create New Workflow'}
+                      </h2>
+                      <p className="text-gray-600 mt-1">
+                        Build intelligent automation workflows to nurture leads and streamline your sales process
+                      </p>
+                    </div>
                   </div>
                   <button
                     onClick={() => setIsBuilderOpen(false)}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-200 shadow-sm border border-gray-200 hover:border-red-200"
                     title="Close modal"
                   >
-                    <ApperIcon name="X" size={20} />
+                    <ApperIcon name="X" size={24} />
                   </button>
                 </div>
               </div>
 
-              {/* Scrollable Content Area */}
-              <div className="flex-1 overflow-y-auto px-6 py-6">
-                <div className="space-y-8">
-                  {/* Basic Information Section */}
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 bg-blue-600 rounded-lg mr-3">
-                        <ApperIcon name="Info" size={20} className="text-white" />
+              {/* Enhanced Scrollable Content Area */}
+              <div className="flex-1 overflow-y-auto px-8 py-8">
+                <div className="space-y-10">
+                  {/* Enhanced Basic Information Section */}
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl p-8 shadow-sm">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl mr-4 shadow-lg">
+                        <ApperIcon name="Info" size={24} className="text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-blue-900">Basic Information</h3>
+                      <div>
+                        <h3 className="text-xl font-bold text-blue-900">Basic Information</h3>
+                        <p className="text-blue-700 text-sm">Define the core details of your workflow</p>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-gray-800 mb-3">
                             Workflow Name *
                           </label>
                           <input
@@ -2501,18 +2516,18 @@ const actionTypes = [
                             value={builderState.name}
                             onChange={(e) => setBuilderState(prev => ({ ...prev, name: e.target.value }))}
                             placeholder="Enter workflow name..."
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-gray-800 mb-3">
                             Category
                           </label>
                           <select
                             value={builderState.category}
                             onChange={(e) => setBuilderState(prev => ({ ...prev, category: e.target.value }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                           >
                             <option value="lead_nurturing">Lead Nurturing</option>
                             <option value="retention">Retention</option>
@@ -2523,13 +2538,13 @@ const actionTypes = [
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-gray-800 mb-3">
                             Priority
                           </label>
                           <select
                             value={builderState.priority}
                             onChange={(e) => setBuilderState(prev => ({ ...prev, priority: e.target.value }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                           >
                             <option value="high">High Priority</option>
                             <option value="medium">Medium Priority</option>
@@ -2539,32 +2554,35 @@ const actionTypes = [
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-800 mb-3">
                           Description *
                         </label>
                         <textarea
                           value={builderState.description}
                           onChange={(e) => setBuilderState(prev => ({ ...prev, description: e.target.value }))}
                           placeholder="Describe what this workflow does and when it should be used..."
-                          rows={6}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                          rows={8}
+                          className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Trigger Configuration Section */}
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 bg-purple-600 rounded-lg mr-3">
-                        <ApperIcon name="Zap" size={20} className="text-white" />
+                  {/* Enhanced Trigger Configuration Section */}
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-100 border border-purple-200 rounded-2xl p-8 shadow-sm">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl mr-4 shadow-lg">
+                        <ApperIcon name="Zap" size={24} className="text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-purple-900">Trigger Configuration</h3>
+                      <div>
+                        <h3 className="text-xl font-bold text-purple-900">Trigger Configuration</h3>
+                        <p className="text-purple-700 text-sm">Define when this workflow should activate</p>
+                      </div>
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-800 mb-3">
                           Trigger Type
                         </label>
                         <select
@@ -2573,7 +2591,7 @@ const actionTypes = [
                             ...prev, 
                             trigger: { ...prev.trigger, type: e.target.value }
                           }))}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                         >
                           {triggerTypes.map(trigger => (
                             <option key={trigger.type} value={trigger.type}>
@@ -2583,9 +2601,9 @@ const actionTypes = [
                         </select>
                       </div>
                       
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-gray-800 mb-3">
                             Condition Type
                           </label>
                           <select
@@ -2594,7 +2612,7 @@ const actionTypes = [
                               ...prev, 
                               trigger: { ...prev.trigger, condition: e.target.value, value: '' }
                             }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                           >
                             <option value="">Select condition...</option>
                             {getConditionOptions(builderState.trigger.type).map(condition => (
@@ -2606,7 +2624,7 @@ const actionTypes = [
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-gray-800 mb-3">
                             Value
                           </label>
                           {getValueOptions(builderState.trigger.type, builderState.trigger.condition).length > 0 ? (
@@ -2616,7 +2634,7 @@ const actionTypes = [
                                 ...prev, 
                                 trigger: { ...prev.trigger, value: e.target.value }
                               }))}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                             >
                               <option value="">Select value...</option>
                               {getValueOptions(builderState.trigger.type, builderState.trigger.condition).map(value => (
@@ -2640,13 +2658,13 @@ const actionTypes = [
                                     ? 'YYYY-MM-DD'
                                     : 'Enter value...'
                               }
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                             />
                           )}
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-semibold text-gray-800 mb-3">
                             Priority Level
                           </label>
                           <select
@@ -2655,7 +2673,7 @@ const actionTypes = [
                               ...prev, 
                               trigger: { ...prev.trigger, priority: e.target.value }
                             }))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                           >
                             <option value="low">Low Priority</option>
                             <option value="medium">Medium Priority</option>
@@ -2667,14 +2685,17 @@ const actionTypes = [
                     </div>
                   </div>
 
-                  {/* Actions Configuration Section */}
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
+                  {/* Enhanced Actions Configuration Section */}
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 rounded-2xl p-8 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center">
-                        <div className="p-2 bg-green-600 rounded-lg mr-3">
-                          <ApperIcon name="Play" size={20} className="text-white" />
+                        <div className="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl mr-4 shadow-lg">
+                          <ApperIcon name="Play" size={24} className="text-white" />
                         </div>
-                        <h3 className="text-lg font-semibold text-green-900">Actions Configuration</h3>
+                        <div>
+                          <h3 className="text-xl font-bold text-green-900">Actions Configuration</h3>
+                          <p className="text-green-700 text-sm">Define the actions that will be executed</p>
+                        </div>
                       </div>
                       <Button
                         onClick={() => {
@@ -2691,18 +2712,20 @@ const actionTypes = [
                         }}
                         variant="outline"
                         size="sm"
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 px-4 py-2 border-green-300 text-green-700 hover:bg-green-100 rounded-xl transition-all duration-200"
                       >
-                        <ApperIcon name="Plus" size={16} />
+                        <ApperIcon name="Plus" size={18} />
                         Add Action
                       </Button>
                     </div>
                     
                     {builderState.actions.length === 0 ? (
-                      <div className="text-center py-8 border-2 border-dashed border-green-300 rounded-lg">
-                        <ApperIcon name="Play" size={48} className="text-green-400 mx-auto mb-4" />
-                        <h4 className="text-lg font-medium text-green-800 mb-2">No Actions Yet</h4>
-                        <p className="text-green-600 mb-4">Add actions to define what happens when this workflow triggers</p>
+                      <div className="text-center py-12 border-2 border-dashed border-green-300 rounded-2xl bg-white/50">
+                        <div className="p-4 bg-green-100 rounded-2xl w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                          <ApperIcon name="Play" size={32} className="text-green-600" />
+                        </div>
+                        <h4 className="text-xl font-bold text-green-800 mb-3">No Actions Yet</h4>
+                        <p className="text-green-600 mb-6 max-w-md mx-auto">Add actions to define what happens when this workflow triggers</p>
                         <Button
                           onClick={() => {
                             setBuilderState(prev => ({
@@ -2718,21 +2741,22 @@ const actionTypes = [
                           }}
                           variant="primary"
                           size="sm"
+                          className="px-6 py-3"
                         >
-                          <ApperIcon name="Plus" size={16} className="mr-2" />
+                          <ApperIcon name="Plus" size={18} className="mr-2" />
                           Add First Action
                         </Button>
                       </div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-6">
                         {builderState.actions.map((action, index) => (
-                          <div key={index} className="bg-white border border-green-200 rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 bg-green-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                          <div key={index} className="bg-white/80 backdrop-blur-sm border border-green-200 rounded-2xl p-6 shadow-sm">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-emerald-600 text-white text-sm font-bold rounded-xl flex items-center justify-center shadow-sm">
                                   {index + 1}
                                 </div>
-                                <span className="font-medium text-green-900">Action {index + 1}</span>
+                                <span className="font-bold text-green-900 text-lg">Action {index + 1}</span>
                               </div>
                               <button
                                 onClick={() => {
@@ -2741,16 +2765,16 @@ const actionTypes = [
                                     actions: prev.actions.filter((_, i) => i !== index)
                                   }));
                                 }}
-                                className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded"
+                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200"
                                 title="Remove action"
                               >
-                                <ApperIcon name="Trash2" size={16} />
+                                <ApperIcon name="Trash2" size={18} />
                               </button>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">
                                   Action Type
                                 </label>
                                 <select
@@ -2760,7 +2784,7 @@ const actionTypes = [
                                     newActions[index].type = e.target.value;
                                     setBuilderState(prev => ({ ...prev, actions: newActions }));
                                   }}
-                                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm bg-white transition-all duration-200"
                                 >
                                   {actionTypes.map(actionType => (
                                     <option key={actionType.type} value={actionType.type}>
@@ -2771,7 +2795,7 @@ const actionTypes = [
                               </div>
                               
                               <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">
                                   Delay (minutes)
                                 </label>
                                 <input
@@ -2782,7 +2806,7 @@ const actionTypes = [
                                     newActions[index].delay = parseInt(e.target.value) || 0;
                                     setBuilderState(prev => ({ ...prev, actions: newActions }));
                                   }}
-                                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm bg-white transition-all duration-200"
                                   placeholder="0"
                                 />
                               </div>
@@ -2793,19 +2817,19 @@ const actionTypes = [
                     )}
                   </div>
 
-                  {/* Tags Section */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 bg-gray-600 rounded-lg mr-3">
-                        <ApperIcon name="Tag" size={20} className="text-white" />
+                  {/* Enhanced Tags Section */}
+                  <div className="bg-gradient-to-br from-gray-50 to-slate-100 border border-gray-200 rounded-2xl p-8 shadow-sm">
+                    <div className="flex items-center mb-6">
+                      <div className="p-3 bg-gradient-to-br from-gray-600 to-slate-600 rounded-2xl mr-4 shadow-lg">
+                        <ApperIcon name="Tag" size={24} className="text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900">Tags</h3>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900">Tags</h3>
+                        <p className="text-gray-700 text-sm">Add tags to organize and categorize this workflow</p>
+                      </div>
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Add tags to organize and categorize this workflow
-                      </label>
                       <input
                         type="text"
                         placeholder="Enter tags separated by commas..."
@@ -2814,15 +2838,16 @@ const actionTypes = [
                           const tags = e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag);
                           setBuilderState(prev => ({ ...prev, tags }));
                         }}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                        className="w-full px-5 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-transparent shadow-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
                       />
                       {builderState.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-3">
+                        <div className="flex flex-wrap gap-3 mt-4">
                           {builderState.tags.map((tag, index) => (
                             <span
                               key={index}
-                              className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gray-200 text-gray-800"
+                              className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-gray-200 to-gray-300 text-gray-800 shadow-sm border border-gray-300"
                             >
+                              <ApperIcon name="Hash" size={14} className="mr-2" />
                               {tag}
                               <button
                                 onClick={() => {
@@ -2831,9 +2856,9 @@ const actionTypes = [
                                     tags: prev.tags.filter((_, i) => i !== index)
                                   }));
                                 }}
-                                className="ml-2 text-gray-500 hover:text-gray-700"
+                                className="ml-3 text-gray-500 hover:text-red-600 transition-colors"
                               >
-                                <ApperIcon name="X" size={12} />
+                                <ApperIcon name="X" size={14} />
                               </button>
                             </span>
                           ))}
@@ -2844,29 +2869,34 @@ const actionTypes = [
                 </div>
               </div>
 
-              {/* Sticky Footer with Cancel and Save Buttons */}
-              <div className="sticky bottom-0 z-10 bg-white border-t border-gray-200 rounded-b-lg px-6 py-4">
+              {/* Enhanced Sticky Footer */}
+              <div className="sticky bottom-0 z-10 bg-gradient-to-r from-gray-50 via-white to-gray-50 border-t border-gray-200 rounded-b-3xl px-8 py-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    {currentWorkflow ? 'Editing existing workflow' : 'Creating new workflow'}
-                  </div>
                   <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-xl">
+                      <ApperIcon name="Info" size={16} className="text-blue-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">
+                      {currentWorkflow ? 'Editing existing workflow' : 'Creating new workflow'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
                     <Button
                       onClick={() => setIsBuilderOpen(false)}
                       variant="outline"
-                      className="px-6 py-2"
+                      className="px-8 py-3 border-gray-300 text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200"
                     >
                       Cancel
                     </Button>
-<Button
+                    <Button
                       onClick={() => {
                         saveWorkflow();
                       }}
                       variant="primary"
-                      className="px-6 py-2"
+                      className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl transition-all duration-200 shadow-lg"
                       disabled={!builderState.name || !builderState.description}
                     >
-                      <ApperIcon name="Save" size={16} className="mr-2" />
+                      <ApperIcon name="Save" size={18} className="mr-2" />
                       {currentWorkflow ? 'Update Workflow' : 'Create Workflow'}
                     </Button>
                   </div>

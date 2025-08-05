@@ -6,7 +6,6 @@ import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/colu
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import { getSalesReps, getSalesRepsFromReport } from "@/services/api/reportService";
-import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";

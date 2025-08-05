@@ -490,6 +490,10 @@ export async function reorderCustomColumns(columnIds) {
       }
     });
     
+    // Import and update global column order
+    const { updateGlobalColumnOrder } = await import('@/services/columnOrderService');
+    updateGlobalColumnOrder(columnIds);
+    
     return customColumns.sort((a, b) => a.order - b.order);
   } catch (error) {
     console.error('Error reordering custom columns:', error);

@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/columnOrderService";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
-import { getSalesRepsFromReport } from "@/services/api/reportService";
-import { getSalesReps } from "@/services/api/salesRepService";
+import { getSalesReps, getSalesRepsFromReport } from "@/services/api/reportService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -16,29 +16,24 @@ import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
-
-// Utility functions - moved to top to resolve hoisting issues
+// Status color helper function
 const getStatusColor = (status) => {
   const colors = {
-    'New Lead': 'default',
-    'Contacted': 'primary',
-    'Keep an Eye': 'warning',
-    'Proposal Sent': 'info',
-    'Meeting Booked': 'info',
-    'Meeting Done': 'info',
-    'Commercials Sent': 'info',
-    'Negotiation': 'info',
-    'Hotlist': 'success',
-    'Temporarily on hold': 'secondary',
-    'Out of League': 'secondary',
-    'Outdated': 'secondary',
+    'Keep an Eye': 'secondary',
+    'Hotlist': 'warning',
+    'Connected': 'info',
+    'Meeting Booked': 'primary',
+    'Meeting Done': 'primary',
+    'Negotiation': 'warning',
+    'Launched on AppSumo': 'success',
+    'Launched on Prime Club': 'success',
+    'Out of League': 'danger',
     'Rejected': 'danger',
     'Closed Won': 'success',
     'Closed Lost': 'danger'
   };
   return colors[status] || 'default';
 };
-
 const getFieldNameForColumn = (column) => {
   if (!column || !column.name) return '';
   
@@ -47,19 +42,10 @@ const getFieldNameForColumn = (column) => {
     'Contact Name': 'contactName',
     'Email': 'email',
     'Website URL': 'websiteUrl',
-    'LinkedIn': 'linkedinUrl',
+'LinkedIn': 'linkedinUrl',
     'Category': 'category',
-    'Team Size': 'teamSize',
-    'ARR': 'arr',
-    'Status': 'status',
-    'Funding Type': 'fundingType',
-    'Follow-up Date': 'followUpDate',
-    'Edition': 'edition',
-    'Product Name': 'productName',
-    'Lead Score': 'leadScore',
-    'Engagement Level': 'engagementLevel',
     'Response Rate': 'responseRate',
-'Deal Potential': 'dealPotential',
+    'Deal Potential': 'dealPotential',
     'Added By': 'addedByName',
     'Created Date': 'createdAt',
     'IVR Number': 'ivrNumber',
@@ -72,7 +58,6 @@ const getFieldNameForColumn = (column) => {
   
   return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
 };
-
 // Format currency values
 const formatCurrency = (amount) => {
   if (!amount) return '-';
@@ -375,80 +360,196 @@ const handleFieldUpdate = async (leadId, field, value) => {
     } catch (error) {
       console.error('Error updating lead status:', error)
       toast.error('Failed to update lead status')
-      
-      // Revert optimistic update on error
+// Revert optimistic update on error
       setData(prevData => prevData.map(item => 
-        item.Id === leadId ? { ...item, Status: data.find(lead => lead.Id === leadId)?.Status || 'New Lead' } : item
-      ))
+        item.Id === leadId ? { ...item, Status: item.Status } : item
+      ));
     }
-  }
+  };
+  // Column drag and drop handlers
+  const handleColumnDragStart = (e, index) => {
+    setDragState({
+      isDragging: true,
+      dragIndex: index,
+      dragOverIndex: null
+    });
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.outerHTML);
+  };
 
+  const handleColumnDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
 
-// Empty row handlers
+  const handleColumnDrop = async (e, dropIndex) => {
+    e.preventDefault();
+    
+    if (dragState.dragIndex === null || dragState.dragIndex === dropIndex) {
+      setDragState({ isDragging: false, dragIndex: null, dragOverIndex: null });
+      return;
+    }
 
-  // Handle empty row updates and conversion to actual leads
+    try {
+      const newColumns = [...orderedColumns];
+      const draggedColumn = newColumns[dragState.dragIndex];
+      
+      // Remove from current position
+      newColumns.splice(dragState.dragIndex, 1);
+      // Insert at new position
+      newColumns.splice(dropIndex, 0, draggedColumn);
+      
+      // Update columns state
+      setColumns(newColumns);
+      
+      // Save to global column order
+      const newColumnIds = newColumns.map(col => col.Id);
+      updateGlobalColumnOrder(newColumnIds);
+      
+      toast.success('Column order updated successfully');
+    } catch (error) {
+      console.error('Error reordering columns:', error);
+      toast.error('Failed to update column order');
+    }
+
+    setDragState({ isDragging: false, dragIndex: null, dragOverIndex: null });
+  };
+
+  const handleColumnDragEnd = () => {
+    setDragState({ isDragging: false, dragIndex: null, dragOverIndex: null });
+  };
+
+  // Render column data based on column type
+  const renderColumnData = (lead, column, fieldName) => {
+    const value = lead[fieldName];
+    
+    switch (column.name) {
+      case 'Company Name':
+        return (
+          <div className="flex items-center">
+            <div>
+              <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+              <div className="text-sm text-gray-500">{lead.websiteUrl}</div>
+            </div>
+          </div>
+        );
+      case 'Status':
+        return (
+          <Badge variant={getStatusColor(lead.status)}>
+            {lead.status}
+          </Badge>
+        );
+      case 'Lead Score':
+        return (
+          <div className="flex items-center">
+            <div className="text-sm font-medium text-gray-900">{lead.leadScore}</div>
+            <div className="ml-2 w-16 bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-primary-600 h-2 rounded-full" 
+                style={{ width: `${Math.min(100, lead.leadScore)}%` }}
+              ></div>
+            </div>
+          </div>
+        );
+      case 'ARR':
+        return <span className="text-sm text-gray-900">{formatCurrency(lead.arr)}</span>;
+      case 'Engagement Level':
+        return (
+          <Badge variant={getEngagementColor(lead.engagementLevel)}>
+            {lead.engagementLevel}
+          </Badge>
+        );
+      case 'Creation Date & Time':
+        return (
+          <span className="text-sm text-gray-900">
+            {lead.creationDateTime ? new Date(lead.creationDateTime).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true
+            }) : '-'}
+          </span>
+        );
+      case 'Follow-up Date':
+        return (
+          <span className="text-sm text-gray-900">
+            {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: '2-digit'
+            }) : '-'}
+          </span>
+        );
+      default:
+        return <span className="text-sm text-gray-900">{value || '-'}</span>;
+    }
+  };
+ 
+// Handle empty row update
   const handleEmptyRowUpdate = async (tempId, field, value) => {
     try {
-      // Update the empty row data
+      const emptyRow = emptyRows.find(row => row.Id === tempId);
+      if (!emptyRow) return;
+
+      // Update the empty row
       setEmptyRows(prev => prev.map(row => 
         row.Id === tempId ? { ...row, [field]: value } : row
-      ))
-
-      // Find the updated empty row
-      const emptyRow = emptyRows.find(row => row.Id === tempId)
-      if (!emptyRow) return
+      ));
 
       // Check if this empty row has enough data to create a lead
-      const requiredFields = ['Website URL', 'Company Name']
+      const requiredFields = ['Website URL', 'Company Name'];
       const hasRequiredData = requiredFields.every(fieldName => {
-        const fieldKey = getFieldNameForColumn({ name: fieldName })
-        return (emptyRow[fieldKey] || (field === fieldKey && value))?.trim()
-      })
+        const fieldKey = getFieldNameForColumn({ name: fieldName });
+        return (emptyRow[fieldKey] || (field === fieldKey && value))?.trim();
+      });
 
       if (hasRequiredData) {
-// Create lead data from empty row
-        const leadData = {}
+        // Create lead data from empty row
+        const leadData = {};
         columns.forEach(column => {
-          const fieldName = getFieldNameForColumn(column)
-          const fieldValue = field === fieldName ? value : emptyRow[fieldName]
+          const fieldName = getFieldNameForColumn(column);
+          const fieldValue = field === fieldName ? value : emptyRow[fieldName];
           if (fieldValue !== undefined && fieldValue !== '') {
-            leadData[fieldName] = fieldValue
+            leadData[fieldName] = fieldValue;
           }
-        })
+        });
 
         // Set default values for required fields
-        leadData.Status = leadData.Status || 'New Lead'
-        leadData.createdAt = new Date().toISOString()
-        leadData.Id = Date.now() + Math.random() // Temporary ID
+        leadData.Status = leadData.Status || 'New Lead';
+        leadData.createdAt = new Date().toISOString();
+        leadData.Id = Date.now() + Math.random(); // Temporary ID
 
         try {
           // Create the lead
-          const newLead = await createLead(leadData)
+          const newLead = await createLead(leadData);
           
           // Remove the empty row and add the new lead to data
-          setEmptyRows(prev => prev.filter(row => row.Id !== tempId))
-          setData(prevData => [newLead, ...prevData])
+          setEmptyRows(prev => prev.filter(row => row.Id !== tempId));
+          setData(prevData => [newLead, ...prevData]);
           
-          toast.success(`Lead created for ${leadData['Company Name'] || 'company'}`)
+          toast.success(`Lead created for ${leadData['Company Name'] || 'company'}`);
         } catch (error) {
-          console.error('Error creating lead from empty row:', error)
-          toast.error('Failed to create lead')
+          console.error('Error creating lead from empty row:', error);
+          toast.error('Failed to create lead');
         }
       }
     } catch (error) {
-      console.error('Error updating empty row:', error)
-      toast.error('Failed to update data')
+      console.error('Error updating empty row:', error);
+      toast.error('Failed to update data');
     }
-  }
+  };
 
   // Handle category creation
   const handleCreateCategory = (newCategory) => {
     if (newCategory && !categoryOptions.includes(newCategory)) {
-      setCategoryOptions(prev => [...prev, newCategory])
-      toast.success(`Category "${newCategory}" created`)
+      setCategoryOptions(prev => [...prev, newCategory]);
+      toast.success(`Category "${newCategory}" created`);
     }
-  }
-// CRUD operations
+  };
+
+  // CRUD operations
   const handleDelete = async (leadId) => {
     try {
       await deleteLead(leadId);
@@ -464,6 +565,8 @@ const handleFieldUpdate = async (leadId, field, value) => {
       toast.error('Failed to delete lead');
     }
   };
+// Apply global column order to visible columns
+  const orderedColumns = applyGlobalColumnOrder(columns);
 
   const handleBulkDelete = async () => {
     try {
@@ -741,148 +844,41 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('name')}
-                >
-                  <div className="flex items-center gap-1">
-                    Company Name
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('email')}
-                >
-                  <div className="flex items-center gap-1">
-                    Email
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('status')}
-                >
-                  <div className="flex items-center gap-1">
-                    Status
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('leadScore')}
-                >
-                  <div className="flex items-center gap-1">
-                    Lead Score
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('arr')}
-                >
-                  <div className="flex items-center gap-1">
-                    ARR
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('teamSize')}
-                >
-                  <div className="flex items-center gap-1">
-                    Team Size
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('category')}
-                >
-                  <div className="flex items-center gap-1">
-                    Category
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('engagementLevel')}
-                >
-                  <div className="flex items-center gap-1">
-                    Engagement
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('ivrNumber')}
-                >
-                  <div className="flex items-center gap-1">
-                    IVR Number
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('didNumber')}
-                >
-                  <div className="flex items-center gap-1">
-                    DID Number
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('creationDateTime')}
-                >
-                  <div className="flex items-center gap-1">
-                    Creation Date & Time
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('followUpDate')}
-                >
-                  <div className="flex items-center gap-1">
-                    Follow-up Date
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('assignedTo')}
-                >
-                  <div className="flex items-center gap-1">
-                    Assigned To
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('assignNumber')}
-                >
-                  <div className="flex items-center gap-1">
-                    Assign Number
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('addedByName')}
-                >
-                  <div className="flex items-center gap-1">
-                    Added By
-                    <ApperIcon name="ArrowUpDown" size={12} />
-                  </div>
-                </th>
+                {orderedColumns.map((column, index) => {
+                  const fieldName = getFieldNameForColumn(column);
+                  return (
+                    <th
+                      key={column.Id}
+                      draggable
+                      onDragStart={(e) => handleColumnDragStart(e, index)}
+                      onDragOver={handleColumnDragOver}
+                      onDrop={(e) => handleColumnDrop(e, index)}
+                      onDragEnd={handleColumnDragEnd}
+                      className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none ${
+                        dragState.isDragging && dragState.dragIndex === index ? 'opacity-50 bg-blue-50' : ''
+                      } ${dragState.dragOverIndex === index ? 'bg-blue-100 border-l-4 border-blue-500' : ''}`}
+                      onClick={() => handleSort(fieldName)}
+                      title={`Drag to reorder ${column.name} column`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="cursor-move p-1 hover:bg-gray-200 rounded opacity-60 hover:opacity-100 transition-opacity">
+                          <ApperIcon name="GripVertical" size={12} />
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {column.name}
+                          <ApperIcon name="ArrowUpDown" size={12} />
+                        </div>
+                      </div>
+                    </th>
+                  );
+                })}
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
 <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedData.map((lead) => (
+{paginatedData.map((lead) => (
                 <tr key={lead.Id} className="hover:bg-gray-50">
                   <td className="px-4 py-4">
                     <input
@@ -892,63 +888,14 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
                       className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                   </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{lead.name}</div>
-                        <div className="text-sm text-gray-500">{lead.websiteUrl}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.email}</td>
-                  <td className="px-4 py-4">
-                    <Badge variant={getStatusColor(lead.status)}>
-                      {lead.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center">
-                      <div className="text-sm font-medium text-gray-900">{lead.leadScore}</div>
-                      <div className="ml-2 w-16 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-primary-600 h-2 rounded-full" 
-                          style={{ width: `${Math.min(100, lead.leadScore)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">
-                    {formatCurrency(lead.arr)}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.teamSize}</td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.category}</td>
-                  <td className="px-4 py-4">
-                    <Badge variant={getEngagementColor(lead.engagementLevel)}>
-                      {lead.engagementLevel}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.ivrNumber || '-'}</td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.didNumber || '-'}</td>
-                  <td className="px-4 py-4 text-sm text-gray-900">
-                    {lead.creationDateTime ? new Date(lead.creationDateTime).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true
-                    }) : '-'}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">
-                    {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: '2-digit'
-                    }) : '-'}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.assignedTo || '-'}</td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.assignNumber || '-'}</td>
-                  <td className="px-4 py-4 text-sm text-gray-900">{lead.addedByName}</td>
+                  {orderedColumns.map((column) => {
+                    const fieldName = getFieldNameForColumn(column);
+                    return (
+                      <td key={column.Id} className="px-4 py-4">
+                        {renderColumnData(lead, column, fieldName)}
+                      </td>
+                    );
+                  })}
                   <td className="px-4 py-4 text-right text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <Button

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { bulkDeleteColumns, bulkToggleColumns, createCustomColumn, deleteCustomColumn, getCustomColumns, reorderCustomColumns, toggleColumnVisibility, updateCustomColumn } from "@/services/api/leadsService";
+import { updateGlobalColumnOrder } from "@/services/columnOrderService";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
@@ -1215,7 +1216,7 @@ const CustomColumnsWithModals = () => {
     return column && !column.isDefault;
   }).length;
 
-  const handleReorderColumns = async (dragIndex, dropIndex) => {
+const handleReorderColumns = async (dragIndex, dropIndex) => {
     const newColumns = [...columns];
     const draggedColumn = newColumns[dragIndex];
     newColumns.splice(dragIndex, 1);
@@ -1226,7 +1227,11 @@ const CustomColumnsWithModals = () => {
     try {
       const columnIds = newColumns.map(col => col.Id);
       await reorderCustomColumns(columnIds);
-      toast.success("Column order updated");
+      
+      // Update global column order for all tables
+      updateGlobalColumnOrder(columnIds);
+      
+      toast.success("Column order updated globally");
     } catch (err) {
       toast.error("Failed to save column order");
       loadColumns();

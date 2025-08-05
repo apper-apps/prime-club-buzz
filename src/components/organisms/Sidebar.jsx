@@ -30,7 +30,7 @@ const navigation = [
             isCollapsed ? "w-16" : "w-60"
           }`}
         >
-          <div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-divider">
+<div className="flex items-center justify-center px-4 py-3 border-b border-sidebar-divider">
             {!isCollapsed && (
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
@@ -41,16 +41,11 @@ const navigation = [
                 </div>
               </div>
             )}
-<button
-              onClick={toggleSidebar}
-              className="p-2 hover:bg-sidebar-hover rounded-lg transition-colors"
-            >
-              <ApperIcon 
-                name={isCollapsed ? "ChevronRight" : "ChevronLeft"} 
-                size={20} 
-                className="text-sidebar-inactive" 
-              />
-            </button>
+            {isCollapsed && (
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+                <ApperIcon name="Zap" size={18} className="text-white" />
+              </div>
+            )}
           </div>
 
           <nav className="px-4 py-3 space-y-1">

@@ -1,11 +1,28 @@
+import React from "react";
+import ApperIcon from "@/components/ApperIcon";
 import Sidebar from "@/components/organisms/Sidebar";
 import { useSidebar } from "@/contexts/SidebarContext";
 const Layout = ({ children }) => {
-  const { isCollapsed } = useSidebar();
+  const { isCollapsed, toggleSidebar } = useSidebar();
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
       <Sidebar />
+      
+      {/* Floating Toggle Button */}
+      <button
+        onClick={toggleSidebar}
+        className={`fixed top-1/2 -translate-y-1/2 z-50 p-2 bg-white shadow-lg border border-gray-200 rounded-full hover:bg-gray-50 transition-all duration-300 ${
+          isCollapsed ? 'left-14' : 'left-58'
+        }`}
+        style={{ transform: 'translateY(-50%)' }}
+      >
+        <ApperIcon 
+          name={isCollapsed ? "ChevronRight" : "ChevronLeft"} 
+          size={16} 
+          className="text-gray-600" 
+        />
+      </button>
       
       {/* Main Content */}
       <div className={`transition-all duration-300 ${isCollapsed ? 'lg:ml-16' : 'lg:ml-60'}`}>

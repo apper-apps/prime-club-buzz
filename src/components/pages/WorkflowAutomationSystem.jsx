@@ -1165,13 +1165,13 @@ const actionTypes = [
                 </button>
               ))}
             </nav>
+</nav>
           </div>
-</div>
+        </div>
       </div>
 
       {/* Content Area */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           {activeTab === 'workflows' && (
             <div>
               <div className="mb-6">
@@ -1747,11 +1747,11 @@ const actionTypes = [
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No workflows found</h3>
                   <p className="text-gray-500">Try adjusting your search terms or filters.</p>
                 </div>
-              )}
+)}
             </div>
           )}
           
-{activeTab === 'execution-history' && (
+          {activeTab === 'execution-history' && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Execution History</h2>
               
@@ -1858,9 +1858,9 @@ const actionTypes = [
                 )}
               </div>
             </div>
-          )}
+)}
           
-{activeTab === 'lead-scoring' && (
+          {activeTab === 'lead-scoring' && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Lead Scoring Configuration</h2>
@@ -2224,9 +2224,9 @@ const actionTypes = [
                     </div>
                   </div>
                 </div>
-              </div>
+</div>
             </div>
-)}
+          )}
           
           {activeTab === 'analytics' && (
             <div className="space-y-6">
@@ -2445,11 +2445,11 @@ const actionTypes = [
                 </div>
               </div>
             </div>
-          )}
+)}
         </div>
-</div>
+      </div>
 
-{/* Enhanced Workflow Builder Modal */}
+      {/* Enhanced Workflow Builder Modal */}
       {isBuilderOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           {/* Enhanced Overlay with Blur Effect */}

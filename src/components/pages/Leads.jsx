@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import { getSalesRepsFromReport } from "@/services/api/reportService";
-import { getSalesReps, getSalesRepsFromService } from "@/services/api/salesRepService";
+import { getSalesRepsFromService } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -16,18 +16,19 @@ import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
+
 // Utility functions - moved to top to resolve hoisting issues
 const getStatusColor = (status) => {
   const colors = {
-    'New Lead': 'info',
-    'Contacted': 'success',
+    'New Lead': 'default',
+    'Contacted': 'primary',
     'Keep an Eye': 'warning',
-    'Proposal Sent': 'primary',
+    'Proposal Sent': 'info',
     'Meeting Booked': 'info',
-    'Meeting Done': 'success',
-    'Commercials Sent': 'primary',
-    'Negotiation': 'warning',
-    'Hotlist': 'danger',
+    'Meeting Done': 'info',
+    'Commercials Sent': 'info',
+    'Negotiation': 'info',
+    'Hotlist': 'success',
     'Temporarily on hold': 'secondary',
     'Out of League': 'secondary',
     'Outdated': 'secondary',
@@ -139,7 +140,8 @@ function Leads() {
   const [columns, setColumns] = useState([])
   const [columnsLoading, setColumnsLoading] = useState(true)
   const [columnsError, setColumnsError] = useState(null)
-// State for data and UI
+  
+  // State for data and UI
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -148,7 +150,7 @@ function Leads() {
   // State for modals and selection
   const [showAddLeadModal, setShowAddLeadModal] = useState(false)
   const [editingLead, setEditingLead] = useState(null)
-const [selectedLeads, setSelectedLeads] = useState(new Set())
+  const [selectedLeads, setSelectedLeads] = useState(new Set())
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false)
   const [showHotlist, setShowHotlist] = useState(false)
   
@@ -165,13 +167,13 @@ const [selectedLeads, setSelectedLeads] = useState(new Set())
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
 
-// State for categories
+  // State for categories
   const [categoryOptions, setCategoryOptions] = useState([])
   
   // State for sales reps
   const [salesReps, setSalesReps] = useState([])
   
-// State for timeouts and debouncing
+  // State for timeouts and debouncing
 const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
   // Load custom columns
   async function loadCustomColumns() {
@@ -275,11 +277,11 @@ const addEmptyRow = () => {
   setNextTempId(prev => prev - 1);
 };
 
- useEffect(() => {
+useEffect(() => {
    if (!loading && emptyRows.length === 0) {
      addEmptyRow();
    }
- }, [loading, emptyRows.length, addEmptyRow]);
+ }, [loading, emptyRows.length]);
 
   // Debounced field update with timeout management
   const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
@@ -1453,7 +1455,7 @@ const SearchableSelect = ({ value, onChange, options, placeholder = "Select...",
   );
 };
 
-const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, columns }) => {
+const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, columns, salesReps }) => {
   // Initialize form data based on visible columns
   const initializeFormData = () => {
     const initialData = {

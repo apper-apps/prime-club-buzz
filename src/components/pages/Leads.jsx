@@ -15,142 +15,102 @@ import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
-// Helper function to map column names to field names
-const getFieldNameForColumn = (column) => {
-  const fieldMap = {
-    'Company Name': 'name',
-    'Contact Name': 'contactName',
-    'Website URL': 'websiteUrl',
-    'Team Size': 'teamSize',
-    'Status': 'status',
-    'ARR': 'arr',
-    'Category': 'category',
-    'LinkedIn': 'linkedinUrl',
-    'Funding Type': 'fundingType',
-    'Follow-up Date': 'followUpDate',
-    'Email': 'email',
-    'Phone': 'phone'
-  };
-  return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
-};
-
-const getDefaultValueForType = (type) => {
-  switch (type) {
-    case 'number':
-      return 0;
-    case 'boolean':
-      return false;
-    case 'date':
-      return '';
-    case 'select':
-      return '';
-    default:
-      return '';
-  }
-};
+function Leads() {
+  const navigate = useNavigate()
+  
+  // State for columns data
+  const [columns, setColumns] = useState([])
+  const [columnsLoading, setColumnsLoading] = useState(true)
+  const [columnsError, setColumnsError] = useState(null)
+// State for data and UI
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [emptyRows, setEmptyRows] = useState([])
+  
+  // State for modals and selection
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false)
+  const [editingLead, setEditingLead] = useState(null)
+  const [selectedLeads, setSelectedLeads] = useState(new Set())
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false)
+  const [showHotlist, setShowHotlist] = useState(false)
+  
+  // State for filters and search
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [fundingFilter, setFundingFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [teamSizeFilter, setTeamSizeFilter] = useState('all')
+  
+  // State for pagination and sorting
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
+  const [sortField, setSortField] = useState('id')
+  const [sortDirection, setSortDirection] = useState('desc')
+  
+  // State for categories
+  const [categoryOptions, setCategoryOptions] = useState([])
+  
+  // State for timeouts and debouncing
 
 const getStatusColor = (status) => {
-  const colors = {
-    'New Lead': 'info',
-    'Contacted': 'primary',
-    'Keep an Eye': 'info',
-    'Proposal Sent': 'warning',
-    'Meeting Booked': 'primary',
-    'Meeting Done': 'success',
-    'Commercials Sent': 'warning',
-    'Negotiation': 'accent',
-    'Hotlist': 'primary',
-    'Temporarily on Hold': 'default',
-    'Closed Won': 'success',
-    'Closed Lost': 'danger'
+    const colors = {
+      'New Lead': 'info',
+      'Contacted': 'success',
+      'Keep an Eye': 'warning',
+      'Proposal Sent': 'primary',
+      'Meeting Booked': 'info',
+      'Meeting Done': 'success',
+      'Commercials Sent': 'primary',
+      'Negotiation': 'warning',
+      'Hotlist': 'danger',
+      'Temporarily on hold': 'secondary',
+      'Out of League': 'secondary',
+      'Outdated': 'secondary',
+      'Rejected': 'danger',
+      'Closed Won': 'success',
+      'Closed Lost': 'danger'
+    };
+    return colors[status] || 'default';
   };
-  return colors[status] || 'default';
-};
 
-const parseMultipleUrls = (input) => {
-  if (!input) return [];
+  const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
   
-  const lines = input.split('\n').filter(line => line.trim());
-  const urls = [];
-  
-  lines.forEach(line => {
-    const wordsInLine = line.split(/\s+/);
-    wordsInLine.forEach(word => {
-      const trimmedWord = word.trim();
-      if (trimmedWord) {
-        let cleanUrl = trimmedWord;
-        if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-          cleanUrl = 'https://' + cleanUrl;
-        }
-        urls.push(cleanUrl);
-      }
-    });
-  });
-  
-  const uniqueUrls = [...new Set(urls)];
-  return uniqueUrls;
-};
-
-const Leads = () => {
-  const navigate = useNavigate();
-  
-  // State declarations
-  const [data, setData] = useState([]);
-  const [emptyRows, setEmptyRows] = useState([]);
-  const [customColumns, setCustomColumns] = useState([]);
-  const [categoryOptions, setCategoryOptions] = useState([
-    'Technology', 'Healthcare', 'Finance', 'Education', 'Retail', 'Manufacturing', 'Real Estate', 'Other'
-  ]);
-  
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [fundingFilter, setFundingFilter] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [teamSizeFilter, setTeamSizeFilter] = useState('');
-  const [selectedLeads, setSelectedLeads] = useState(new Set());
-  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
-  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
-  const [editingLead, setEditingLead] = useState(null);
-  const [sortField, setSortField] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
-  const [showHotlist, setShowHotlist] = useState(false);
-  const [debounceTimeouts, setDebounceTimeouts] = useState({});
-  const [nextTempId, setNextTempId] = useState(-1);
-  const [updateTimeouts, setUpdateTimeouts] = useState({});
-
-  // Additional constants and options
-  const teamSizeOptions = ["1-3", "4-10", "11-50", "51-100", "101-500", "500+"];
-
-  // Load data functions
-  const loadCustomColumns = async () => {
+  // Load custom columns
+  async function loadCustomColumns() {
     try {
-      const columns = await getVisibleColumns();
-      setCustomColumns(columns);
+      setColumnsLoading(true);
+      setColumnsError(null);
+      const columnsData = await getVisibleColumns();
+      setColumns(columnsData || []);
+      return columnsData || [];
     } catch (error) {
       console.error('Error loading custom columns:', error);
-      toast.error('Failed to load column configuration');
+      setColumnsError('Failed to load custom columns');
+      toast.error('Failed to load custom columns');
+      setColumns([]);
+      return [];
+    } finally {
+      setColumnsLoading(false);
     }
-  };
-
-  const loadLeads = async () => {
+  }
+  
+  // Load leads data
+  async function loadLeads() {
     try {
-setLoading(true);
+      setLoading(true);
       setError(null);
+      
       const leadsData = await getLeads();
       
-      // Extract leads array from service response object
-      // getLeads() returns { leads: Array, deduplicationResult: Object }
-      const leads = Array.isArray(leadsData) ? leadsData : (leadsData?.leads || []);
+      // Process leads data to match expected format
+      const leads = leadsData.data || leadsData || [];
+      
       setData(leads);
       
-      // Log deduplication results if available
-      if (leadsData?.deduplicationResult) {
-        console.log('Deduplication completed:', leadsData.deduplicationResult);
-      }
+      // Extract unique categories
+      const categories = [...new Set(leads.map(lead => lead.category).filter(Boolean))];
+      setCategoryOptions(categories);
     } catch (error) {
       console.error('Error loading leads:', error);
       setError('Failed to load leads');
@@ -158,7 +118,18 @@ setLoading(true);
     } finally {
       setLoading(false);
     }
-  };
+  }
+  
+  // Load data on component mount
+  useEffect(() => {
+    loadCustomColumns()
+    loadLeads()
+  }, [])
+  
+// Additional state for dynamic functionality
+  const [debounceTimeouts, setDebounceTimeouts] = useState({});
+  const [nextTempId, setNextTempId] = useState(-1);
+  const [updateTimeouts, setUpdateTimeouts] = useState({});
 
   // Debounced field update with timeout management
   const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
@@ -454,47 +425,97 @@ const handleFieldUpdate = async (leadId, field, value) => {
     }
   };
 
+// Utility function to get field name for column
+  const getFieldNameForColumn = (column) => {
+    if (!column || !column.name) return '';
+    
+    const nameMap = {
+      'Company Name': 'name',
+      'Contact Name': 'contactName',
+      'Email': 'email',
+      'Website URL': 'websiteUrl',
+      'LinkedIn': 'linkedinUrl',
+      'Category': 'category',
+      'Team Size': 'teamSize',
+      'ARR': 'arr',
+      'Status': 'status',
+      'Funding Type': 'fundingType',
+      'Follow-up Date': 'followUpDate',
+      'Edition': 'edition',
+      'Product Name': 'productName'
+    };
+    
+    return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
+  };
+
+  // Utility function to get default value for column type
+  const getDefaultValueForType = (type) => {
+    switch (type) {
+      case 'number':
+        return 0;
+      case 'boolean':
+        return false;
+      case 'date':
+        return '';
+      case 'select':
+        return '';
+      default:
+        return '';
+    }
+  };
+
   // Initialize data
   useEffect(() => {
     loadCustomColumns();
     loadLeads();
   }, []);
 // Filtering and sorting - ensure data is always an array
-const filteredAndSortedData = (Array.isArray(data) ? data : [])
+  const filteredAndSortedData = (Array.isArray(data) ? data : [])
     .filter(lead => {
       const matchesSearch = !searchTerm || 
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead['Company Name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.Email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead['Website URL']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.Category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.teamSize?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesStatus = statusFilter === "" || lead.status === statusFilter;
-      const matchesFunding = fundingFilter === "" || lead.fundingType === fundingFilter;
-      const matchesCategory = categoryFilter === "" || lead.category === categoryFilter;
-      const matchesTeamSize = teamSizeFilter === "" || lead.teamSize === teamSizeFilter;
+        lead['Team Size']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (lead['Product Name'] && lead['Product Name'].toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStatus = statusFilter === "" || lead.Status === statusFilter || lead.status === statusFilter;
+      const matchesFunding = fundingFilter === "" || lead['Funding Type'] === fundingFilter || lead.fundingType === fundingFilter;
+      const matchesCategory = categoryFilter === "" || lead.Category === categoryFilter || lead.category === categoryFilter;
+      const matchesTeamSize = teamSizeFilter === "" || lead['Team Size'] === teamSizeFilter || lead.teamSize === teamSizeFilter;
       
       return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
     })
-    .sort((a, b) => {
+.sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
       
-      if (sortField === "arr") {
-        aValue = Number(aValue);
-        bValue = Number(bValue);
+      if (sortField === "ARR" || sortField === "arr") {
+        aValue = Number(a.ARR || a.arr || 0);
+        bValue = Number(b.ARR || b.arr || 0);
       }
       
       if (sortField === "createdAt") {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
+        aValue = new Date(a.createdAt || a.CreatedAt || 0);
+        bValue = new Date(b.createdAt || b.CreatedAt || 0);
       }
       
-      if (sortField === "websiteUrl") {
+      if (sortField === "websiteUrl" || sortField === "Website URL") {
         // Sort websiteUrl by creation date (newest first) instead of alphabetical
-        aValue = new Date(a.createdAt);
-        bValue = new Date(b.createdAt);
+        aValue = new Date(a.createdAt || a.CreatedAt || 0);
+        bValue = new Date(b.createdAt || b.CreatedAt || 0);
       }
+      
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
       
       if (sortDirection === "asc") {
         return aValue > bValue ? 1 : -1;
@@ -647,8 +668,8 @@ checked={selectedLeads.size === filteredAndSortedData.length && filteredAndSorte
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
                             </th>
-                            {customColumns.map(column => (
-                                <th key={column.Id} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+{(columns || customColumns || []).map(column => (
+                                <th key={column.Id || column.name} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                     <button
                                         onClick={() => handleSort(getFieldNameForColumn(column))}
                                         className="flex items-center gap-1 hover:text-gray-700">
@@ -673,8 +694,8 @@ checked={selectedLeads.size === filteredAndSortedData.length && filteredAndSorte
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 opacity-50"
                                     />
                                 </td>
-{customColumns.map(column => (
-                                    <td key={column.Id} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
+{(columns || customColumns || []).map(column => (
+                                    <td key={column.Id || column.name} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
                                         {renderColumnInput(column, emptyRow, true, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)}
                                     </td>
                                 ))}
@@ -701,8 +722,8 @@ checked={selectedLeads.has(lead.Id)}
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                     />
                                 </td>
-{customColumns.map(column => (
-                                    <td key={column.Id} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
+{(columns || customColumns || []).map(column => (
+                                    <td key={column.Id || column.name} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
                                         {renderColumnInput(column, lead, false, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)}
                                     </td>
                                 ))}
@@ -838,22 +859,22 @@ onClick={clearSelection}
       </Card>
     )}
 {/* Add Lead Modal */}
-{showAddLeadModal && <AddLeadModal
-      onClose={() => setShowAddLeadModal(false)} 
-      onSubmit={handleAddLead}
-categoryOptions={categoryOptions}
-      onCreateCategory={handleCreateCategory}
-      columns={columns}
-    />}
+{showAddLeadModal && !columnsLoading && <AddLeadModal
+          onClose={() => setShowAddLeadModal(false)} 
+          onSubmit={handleAddLead}
+          categoryOptions={categoryOptions}
+          onCreateCategory={handleCreateCategory}
+          columns={columns || []}
+        />}
     {/* Edit Lead Modal */}
-{editingLead && <EditLeadModal
-        lead={editingLead}
-        onClose={() => setEditingLead(null)}
-onSubmit={handleUpdateLead}
-        categoryOptions={categoryOptions}
-        onCreateCategory={handleCreateCategory}
-        columns={columns}
-    />}
+{editingLead && !columnsLoading && <EditLeadModal
+          lead={editingLead}
+          onClose={() => setEditingLead(null)}
+          onSubmit={handleUpdateLead}
+          categoryOptions={categoryOptions}
+          onCreateCategory={handleCreateCategory}
+          columns={columns || []}
+        />}
     {/* Bulk Delete Confirmation Dialog */}
     {showBulkDeleteModal && (
       <BulkDeleteConfirmationDialog

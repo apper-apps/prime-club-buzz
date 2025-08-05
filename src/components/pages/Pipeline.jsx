@@ -40,9 +40,40 @@ const loadDeals = async () => {
       setError("");
       
       const data = await getDeals();
-      // Ensure data is always an array to prevent filter errors
-      const dealsArray = Array.isArray(data) ? data : [];
-      setDeals(dealsArray);
+      console.log('Pipeline received data:', data, 'Type:', typeof data, 'IsArray:', Array.isArray(data));
+      
+      // Multiple layers of defensive checking
+      let dealsArray = [];
+      
+      if (Array.isArray(data)) {
+        dealsArray = data;
+      } else if (data && typeof data === 'object') {
+        // Try to extract array from object
+        if (Array.isArray(data.deals)) {
+          dealsArray = data.deals;
+        } else if (Array.isArray(data.data)) {
+          dealsArray = data.data;
+        } else if (Array.isArray(data.items)) {
+          dealsArray = data.items;
+        } else {
+          console.warn('Unexpected data structure from getDeals:', data);
+          dealsArray = [];
+        }
+      } else {
+        console.warn('getDeals returned non-object, non-array data:', data);
+        dealsArray = [];
+      }
+      
+      // Validate each deal object
+      const validDeals = dealsArray.filter(deal => 
+        deal && 
+        typeof deal === 'object' && 
+        deal.id !== undefined
+      );
+      
+      console.log('Setting deals:', validDeals.length, 'valid deals out of', dealsArray.length);
+      setDeals(validDeals);
+      
     } catch (err) {
       console.error("Failed to load deals:", err);
       setError("Failed to load deals. Please try again.");
@@ -105,12 +136,28 @@ const loadDeals = async () => {
   };
 
 const getDealsForStage = (stage) => {
-    // Defensive check to ensure deals is always an array
+    // Multi-layer defensive checks
     if (!Array.isArray(deals)) {
-      console.error("Deals is not an array:", deals);
+      console.error("Deals is not an array in getDealsForStage:", typeof deals, deals);
       return [];
     }
-    return deals.filter(deal => deal?.stage === stage);
+    
+    if (deals.length === 0) {
+      return [];
+    }
+    
+    try {
+      return deals.filter(deal => {
+        if (!deal || typeof deal !== 'object') {
+          console.warn('Invalid deal object:', deal);
+          return false;
+        }
+        return deal.stage === stage;
+      });
+    } catch (error) {
+      console.error('Error filtering deals for stage:', stage, error);
+      return [];
+    }
   };
   
   const getTotalValue = (stage) => {

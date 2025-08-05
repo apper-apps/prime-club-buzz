@@ -818,9 +818,8 @@ onClick={clearSelection}
             >
               <ApperIcon name="Trash2" size={16} className="mr-2" />
               Delete Selected
-            </Button>
+</Button>
           </div>
-        </div>
         </div>
       </Card>
     )}

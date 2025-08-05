@@ -327,17 +327,7 @@ const handleFieldUpdate = async (leadId, field, value) => {
       toast.success(`Category "${newCategory}" created`)
     }
   }
-
-  // Category handlers
-  const handleCreateCategory = (newCategory) => {
-    if (newCategory && !categoryOptions.includes(newCategory)) {
-      setCategoryOptions(prev => [...prev, newCategory]);
-      return newCategory;
-    }
-    return null;
-  };
-
-  // CRUD operations
+// CRUD operations
   const handleDelete = async (leadId) => {
     try {
       await deleteLead(leadId);

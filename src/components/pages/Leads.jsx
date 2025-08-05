@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/columnOrderService";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
-import { getSalesReps, getSalesRepsFromReport } from "@/services/api/reportService";
+import { getSalesReps, getSalesRepsFromReport, getSalesRepsFromReportService } from "@/services/api/reportService";
 import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
@@ -1207,7 +1207,7 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
   }
 
   switch (column.type) {
-    case 'url':
+case 'url':
       return (
         <div className="flex items-center">
           <Input
@@ -1221,14 +1221,6 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
           />
         </div>
       );
-            onBlur={e => handleBlur(e.target.value)}
-            onKeyDown={e => handleKeyDown(e, e.target.value)}
-            placeholder={`Enter ${column.name.toLowerCase()}...`}
-            className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-primary-600 font-medium placeholder-gray-400 flex-1"
-          />
-        </div>
-      );
-    
     case 'number':
       return (
         <Input

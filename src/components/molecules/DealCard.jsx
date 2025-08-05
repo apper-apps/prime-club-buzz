@@ -1,11 +1,10 @@
-import { motion } from "framer-motion";
-import { Draggable } from "react-beautiful-dnd";
-import React from "react";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
-import Avatar from "@/components/atoms/Avatar";
-import Card from "@/components/atoms/Card";
-
+import { motion } from 'framer-motion'
+import { Draggable } from '@hello-pangea/dnd'
+import React from 'react'
+import ApperIcon from '@/components/ApperIcon'
+import Badge from '@/components/atoms/Badge'
+import Avatar from '@/components/atoms/Avatar'
+import Card from '@/components/atoms/Card'
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
-import { getSalesReps } from "@/services/api/reportService";
-import { getSalesReps } from "@/services/api/salesRepService";
+import { getSalesRepsFromReport } from "@/services/api/reportService";
+import { getSalesReps, getSalesRepsFromService } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -244,22 +244,23 @@ async function loadLeads() {
 }
 
   // Load sales reps data
+// Load sales reps data
   async function loadSalesReps() {
     try {
-      const reps = await getSalesReps()
+      const reps = await getSalesRepsFromService()
       setSalesReps(reps)
     } catch (error) {
       console.error('Failed to load sales reps:', error)
       toast.error('Failed to load sales representatives')
     }
-  }
-  
+}
+
   // Load data on component mount
-useEffect(() => {
-   loadCustomColumns()
-   loadLeads()
-   loadSalesReps()
- }, [])
+  useEffect(() => {
+    loadCustomColumns()
+    loadLeads()
+    loadSalesReps()
+  }, [])
 
 // State for timeouts and debouncing
 const [updateTimeouts, setUpdateTimeouts] = useState({});
@@ -1553,26 +1554,6 @@ const [formData, setFormData] = useState(initializeFormData());
             />
           </div>
         );
-// Add salesReps state
-  const [salesReps, setSalesReps] = useState([]);
-
-  // Load sales reps data
-  const loadSalesReps = async () => {
-    try {
-      const reps = await getSalesReps();
-      setSalesReps(reps || []);
-    } catch (error) {
-      console.error('Error loading sales reps:', error);
-      setSalesReps([]);
-    }
-  };
-
-  // Update useEffect to load sales reps
-  useEffect(() => {
-    loadCustomColumns();
-    loadLeads();
-    loadSalesReps(); // Add this line
-  }, []);
       case 'number':
         return (
           <div key={column.Id}>

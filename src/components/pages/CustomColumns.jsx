@@ -324,7 +324,8 @@ const columnTypes = [
     { value: "datetime", label: "Date with Time", icon: "Clock" },
     { value: "select", label: "Select/Dropdown", icon: "ChevronDown" },
     { value: "boolean", label: "True/False", icon: "ToggleLeft" },
-    { value: "url", label: "URL/Link", icon: "Link" }
+    { value: "url", label: "URL/Link", icon: "Link" },
+    { value: "conditional", label: "Conditional/Dynamic", icon: "GitBranch" }
   ];
 
   const handleSubmit = async (e) => {

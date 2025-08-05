@@ -185,7 +185,7 @@ async function loadLeads() {
 }
   
   // Load data on component mount
-  useEffect(() => {
+useEffect(() => {
     loadCustomColumns()
     loadLeads()
   }, [])
@@ -492,12 +492,12 @@ const handleFieldUpdate = async (leadId, field, value) => {
 // Utility function to get field name for column
 
   // Initialize data
-  useEffect(() => {
+useEffect(() => {
     loadCustomColumns();
     loadLeads();
   }, []);
 // Filtering and sorting - ensure data is always an array
-  const filteredAndSortedData = (Array.isArray(data) ? data : [])
+const filteredAndSortedData = (Array.isArray(data) ? data : [])
     .filter(lead => {
       const matchesSearch = !searchTerm || 
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -557,7 +557,6 @@ const handleFieldUpdate = async (leadId, field, value) => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
-
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
@@ -570,7 +569,7 @@ const handleFieldUpdate = async (leadId, field, value) => {
   }, [loading, emptyRows.length]);
 
 
-  if (loading) return <Loading />;
+if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadLeads} />;
 
   return (
@@ -674,7 +673,7 @@ onClick={() => setShowAddLeadModal(true)}
             </div>
         </div>
     </Card>
-    {/* Leads Table */}
+{/* Leads Table */}
     <Card className="overflow-hidden">
         {filteredAndSortedData.length === 0 ? <Empty
 onAction={() => setShowAddLeadModal(true)}
@@ -684,7 +683,7 @@ icon="Building2" /> : <div className="relative">
             <div 
               className="overflow-x-auto"
             >
-                <table className="w-full min-w-[1200px]">
+<table className="w-full min-w-[1200px]">
 <thead className="bg-gray-50">
 <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50px]">

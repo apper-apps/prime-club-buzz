@@ -8,21 +8,26 @@ const Button = forwardRef(({
   variant = "primary", 
   size = "md", 
   disabled = false,
-  ...props 
+...props 
 }, ref) => {
   const variants = {
-    primary: "bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-700 hover:to-primary-800 shadow-lg shadow-primary-500/25",
-    secondary: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400",
-    accent: "bg-gradient-to-r from-accent-500 to-accent-600 text-white hover:from-accent-600 hover:to-accent-700 shadow-lg shadow-accent-500/25",
-    outline: "border border-primary-300 text-primary-600 hover:bg-primary-50 hover:border-primary-400",
-    ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
-    danger: "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-500/25"
+    default: "bg-gradient-to-r from-primary-600 to-primary-700 text-text-inverse hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg border-0 font-medium",
+    primary: "bg-gradient-to-r from-primary-600 to-primary-700 text-text-inverse hover:from-primary-700 hover:to-primary-800 shadow-md hover:shadow-lg border-0 font-medium",
+    secondary: "bg-white text-text-primary border border-border-default hover:bg-surface-50 hover:border-border-medium hover:shadow-sm font-medium",
+    accent: "bg-gradient-to-r from-accent-500 to-accent-600 text-text-inverse hover:from-accent-600 hover:to-accent-700 shadow-md hover:shadow-lg border-0 font-medium",
+    outline: "border border-primary-300 text-primary-600 hover:bg-primary-50 hover:border-primary-500 hover:text-primary-700 bg-white font-medium",
+    ghost: "text-text-secondary hover:text-text-primary hover:bg-surface-100 border-0 font-medium",
+    danger: "bg-gradient-to-r from-error-600 to-error-700 text-text-inverse hover:from-error-700 hover:to-error-800 shadow-md hover:shadow-lg border-0 font-medium",
+    destructive: "bg-gradient-to-r from-error-600 to-error-700 text-text-inverse hover:from-error-700 hover:to-error-800 shadow-md hover:shadow-lg border-0 font-medium",
+    success: "bg-gradient-to-r from-success-600 to-success-700 text-text-inverse hover:from-success-700 hover:to-success-800 shadow-md hover:shadow-lg border-0 font-medium",
+    warning: "bg-gradient-to-r from-warning-500 to-warning-600 text-text-inverse hover:from-warning-600 hover:to-warning-700 shadow-md hover:shadow-lg border-0 font-medium",
+    info: "bg-gradient-to-r from-info-500 to-info-600 text-text-inverse hover:from-info-600 hover:to-info-700 shadow-md hover:shadow-lg border-0 font-medium"
   };
 
   const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-sm",
-    lg: "px-6 py-3 text-base"
+    sm: "px-3 py-1.5 text-sm font-medium tracking-wide",
+    md: "px-4 py-2.5 text-sm font-medium tracking-wide",
+    lg: "px-6 py-3 text-base font-medium tracking-wide"
   };
 
   return (
@@ -31,7 +36,7 @@ const Button = forwardRef(({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center rounded-xl font-sans transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95",
         variants[variant],
         sizes[size],
         className

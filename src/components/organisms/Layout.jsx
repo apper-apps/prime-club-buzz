@@ -6,13 +6,13 @@ const Layout = ({ children }) => {
   const { isCollapsed, toggleSidebar } = useSidebar();
   
   return (
-    <div className="min-h-screen bg-gray-50 relative">
+<div className="min-h-screen bg-surface-50 relative font-sans">
       <Sidebar />
       
-{/* Floating Toggle Button */}
+      {/* Floating Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className={`fixed top-1/2 -translate-y-1/2 z-50 p-3 bg-white shadow-xl border border-gray-200 rounded-full hover:bg-gray-50 hover:shadow-2xl transition-all duration-300 ${
+        className={`fixed top-1/2 -translate-y-1/2 z-50 p-3 bg-white shadow-lg border border-border-default rounded-xl hover:bg-surface-50 hover:shadow-xl hover:border-primary-200 transition-all duration-300 group ${
           isCollapsed 
             ? 'left-20 lg:left-20' 
             : 'left-64 lg:left-64'
@@ -22,14 +22,16 @@ const Layout = ({ children }) => {
         <ApperIcon 
           name={isCollapsed ? "ChevronRight" : "ChevronLeft"} 
           size={18} 
-          className="text-gray-600" 
+          className="text-text-secondary group-hover:text-primary-600 transition-colors" 
         />
       </button>
       
       {/* Main Content */}
       <div className={`transition-all duration-300 ${isCollapsed ? 'lg:ml-16' : 'lg:ml-60'}`}>
-        <main className="p-6 lg:p-8">
-          {children}
+        <main className="p-6 lg:p-8 bg-surface-50 min-h-screen">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

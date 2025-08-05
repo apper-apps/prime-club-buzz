@@ -745,13 +745,33 @@ return (
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Button
-              onClick={() => setShowAddModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white animate-button-hover"
-            >
-              <ApperIcon name="UserPlus" size={16} className="mr-2" />
-              Add Lead
-            </Button>
+<div className="flex items-center gap-4">
+              {/* Tab Navigation */}
+              <div className="flex bg-surface-100 rounded-lg p-1">
+                <button
+                  onClick={() => navigate('/leads')}
+                  className="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-white text-primary-600 shadow-sm"
+                >
+                  <ApperIcon name="Users" size={16} className="mr-2" />
+                  Leads
+                </button>
+                <button
+                  onClick={() => navigate('/leads/custom-columns')}
+                  className="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-50"
+                >
+                  <ApperIcon name="Settings" size={16} className="mr-2" />
+                  Custom Columns
+                </button>
+              </div>
+              
+              <Button
+                onClick={() => setShowAddModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white animate-button-hover"
+              >
+                <ApperIcon name="UserPlus" size={16} className="mr-2" />
+                Add Lead
+              </Button>
+            </div>
           </motion.div>
         </motion.div>
       </motion.div>

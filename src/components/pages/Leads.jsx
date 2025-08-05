@@ -53,20 +53,6 @@ const [customColumns, setCustomColumns] = useState([])
 
   // Debounce timeout storage
   const [updateTimeouts, setUpdateTimeouts] = useState({})
-
-  // Category options for searchable select
-  const categoryOptions = [
-    'Website Contact Form',
-    'LinkedIn Outreach',
-    'Cold Email',
-    'Referral',
-    'Trade Show',
-    'Content Marketing',
-    'Social Media',
-    'Partner',
-    'Direct Sales',
-    'Other'
-  ]
 // Utility functions
   const getFieldNameForColumn = (column) => {
     const fieldMap = {
@@ -487,12 +473,10 @@ const filteredAndSortedData = data
       const matchesSearch = !searchTerm || 
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.teamSize?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
-(lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesStatus = statusFilter === "all" || lead.status === statusFilter;
       const matchesFunding = fundingFilter === "all" || lead.fundingType === fundingFilter;
       const matchesCategory = categoryFilter === "all" || lead.category === categoryFilter;
@@ -500,7 +484,6 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       
       return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
     })
-})
     .sort((a, b) => {
       let aValue = a[sortBy];
       let bValue = b[sortBy];

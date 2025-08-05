@@ -13,10 +13,9 @@ import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Hotlist from "@/components/pages/Hotlist";
 import Badge from "@/components/atoms/Badge";
-import Input, { Input } from "@/components/atoms/Input";
+import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
-
 // Utility functions - moved to top to resolve hoisting issues
 const getStatusColor = (status) => {
   const colors = {

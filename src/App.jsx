@@ -28,24 +28,40 @@ class ErrorBoundary extends Component {
 componentDidCatch(error, errorInfo) {
     // Enhanced error logging for better debugging
     console.error('Error caught by boundary:', {
-      message: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
+      message: error?.message || String(error),
+      stack: error?.stack,
+      componentStack: errorInfo?.componentStack,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
-      url: window.location.href
+      url: window.location.href,
+      errorType: typeof error,
+      errorConstructor: error?.constructor?.name
     });
     
     // Log specific error details for data.filter errors
-    if (error.message && error.message.includes('filter is not a function')) {
+    if (error?.message && error.message.includes('filter is not a function')) {
       console.error('Data type error detected - likely received object instead of array');
     }
   }
-render() {
+
+  render() {
     if (this.state.hasError) {
-      const errorMessage = this.state.error?.message 
-        ? `Application Error: ${this.state.error.message}`
-        : "Something went wrong";
+      // Properly serialize error message to prevent "[object Object]" display
+      let errorMessage = "Something went wrong";
+      
+      const error = this.state.error;
+      if (error) {
+        if (typeof error === 'string') {
+          errorMessage = `Application Error: ${error}`;
+        } else if (error instanceof Error) {
+          errorMessage = `Application Error: ${error.message || error.toString()}`;
+        } else if (error?.message) {
+          errorMessage = `Application Error: ${error.message}`;
+        } else {
+          // Handle cases where error is an object without message property
+          errorMessage = `Application Error: ${JSON.stringify(error, null, 2).substring(0, 200)}`;
+        }
+      }
       
       return <Error message={errorMessage} />;
     }

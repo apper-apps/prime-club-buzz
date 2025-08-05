@@ -37,16 +37,6 @@ let customColumns = [
     order: 3,
     createdAt: new Date().toISOString()
   },
-  {
-    Id: 4,
-    name: "WhatsApp Number",
-    type: "text",
-    required: false,
-    defaultValue: "",
-    isDefault: false,
-    order: 4,
-    createdAt: new Date().toISOString()
-  }
 ];
 
 // Track all URLs that have ever been added to the system (for fresh lead detection)
@@ -146,10 +136,9 @@ category: leadData.category || "Website Contact Form",
     linkedinUrl: leadData.linkedinUrl || "",
 status: leadData.status || "New Lead",
     fundingType: leadData.fundingType || "Bootstrapped",
-    edition: leadData.edition || "Select Edition",
+edition: leadData.edition || "Select Edition",
 followUpDate: leadData.followUpDate || null,
     productName: leadData.productName || "",
-    whatsappNumber: leadData.whatsappNumber || "",
     Id: maxId + 1,
     createdAt: new Date().toISOString()
   };

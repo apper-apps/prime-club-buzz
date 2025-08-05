@@ -838,19 +838,21 @@ onClick={clearSelection}
       </Card>
     )}
 {/* Add Lead Modal */}
-    {showAddLeadModal && <AddLeadModal
+{showAddLeadModal && <AddLeadModal
       onClose={() => setShowAddLeadModal(false)} 
       onSubmit={handleAddLead}
 categoryOptions={categoryOptions}
       onCreateCategory={handleCreateCategory}
+      columns={columns}
     />}
     {/* Edit Lead Modal */}
-    {editingLead && <EditLeadModal
+{editingLead && <EditLeadModal
         lead={editingLead}
         onClose={() => setEditingLead(null)}
 onSubmit={handleUpdateLead}
         categoryOptions={categoryOptions}
         onCreateCategory={handleCreateCategory}
+        columns={columns}
     />}
     {/* Bulk Delete Confirmation Dialog */}
     {showBulkDeleteModal && (
@@ -1139,22 +1141,37 @@ const SearchableSelect = ({ value, onChange, options, placeholder = "Select...",
   );
 };
 
-const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory }) => {
-const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    websiteUrl: "",
-    teamSize: "1-3",
-    arr: "",
-    category: "",
-    linkedinUrl: "",
-    status: "Keep an Eye",
-    fundingType: "Bootstrapped",
-    followUpDate: "",
-    edition: "Select Edition",
-    productName: "",
-    whatsappNumber: ""
-  });
+const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, columns }) => {
+  // Initialize form data based on visible columns
+  const initializeFormData = () => {
+    const initialData = {
+      // Core fields that always exist
+      name: "",
+      email: "",
+      websiteUrl: "",
+      teamSize: "1-3",
+      arr: "",
+      category: "",
+      linkedinUrl: "",
+      status: "Keep an Eye",
+      fundingType: "Bootstrapped",
+      followUpDate: "",
+      edition: "Select Edition",
+      productName: ""
+    };
+
+    // Add dynamic fields based on visible columns
+    columns.forEach(column => {
+      const fieldName = getFieldNameForColumn(column);
+      if (!initialData.hasOwnProperty(fieldName)) {
+        initialData[fieldName] = getDefaultValueForType(column.type);
+      }
+    });
+
+    return initialData;
+  };
+
+  const [formData, setFormData] = useState(initializeFormData());
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -1162,6 +1179,140 @@ const [formData, setFormData] = useState({
       ...formData,
       arr: Number(formData.arr)
     });
+  };
+
+  const renderFormField = (column) => {
+    const fieldName = getFieldNameForColumn(column);
+    const isRequired = column.required;
+
+    // Skip default fields that are handled separately
+    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName'];
+    if (defaultFields.includes(fieldName)) {
+      return null;
+    }
+
+    switch (column.type) {
+      case 'text':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="text"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'number':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="number"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'url':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="url"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`https://example.com`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'email':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="email"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'date':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="date"
+              value={formData[fieldName] ? formData[fieldName].split('T')[0] : ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'select':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <select
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              required={isRequired}
+            >
+              <option value="">{`Select ${column.name.toLowerCase()}`}</option>
+              {column.selectOptions?.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+        );
+      
+      default:
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="text"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+    }
   };
 
 return (
@@ -1361,18 +1512,10 @@ return (
               className="w-full"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              WhatsApp Number
-            </label>
-            <Input
-              type="text"
-              value={formData.whatsappNumber}
-              onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
-              placeholder="Enter WhatsApp number"
-              className="w-full"
-            />
-          </div>
+          
+          {/* Render dynamic fields from custom columns */}
+          {columns && columns.map(column => renderFormField(column))}
+
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
@@ -1387,21 +1530,36 @@ return (
   );
 };
 
-const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory }) => {
-const [formData, setFormData] = useState({
-name: lead.name,
-    email: lead.email,
-    websiteUrl: lead.websiteUrl,
-    teamSize: lead.teamSize,
-    arr: lead.arr.toString(),
-    category: lead.category,
-    linkedinUrl: lead.linkedinUrl,
-    status: lead.status,
-    fundingType: lead.fundingType,
-    edition: lead.edition || "Select Edition",
-    productName: lead.productName || "",
-    whatsappNumber: lead.whatsappNumber || ""
-  });
+const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory, columns }) => {
+  // Initialize form data based on lead data and visible columns
+  const initializeFormData = () => {
+    const initialData = {
+      // Core fields
+      name: lead.name,
+      email: lead.email,
+      websiteUrl: lead.websiteUrl,
+      teamSize: lead.teamSize,
+      arr: lead.arr.toString(),
+      category: lead.category,
+      linkedinUrl: lead.linkedinUrl,
+      status: lead.status,
+      fundingType: lead.fundingType,
+      edition: lead.edition || "Select Edition",
+      productName: lead.productName || ""
+    };
+
+    // Add dynamic fields based on visible columns
+    columns.forEach(column => {
+      const fieldName = getFieldNameForColumn(column);
+      if (!initialData.hasOwnProperty(fieldName)) {
+        initialData[fieldName] = lead[fieldName] || getDefaultValueForType(column.type);
+      }
+    });
+
+    return initialData;
+  };
+
+  const [formData, setFormData] = useState(initializeFormData());
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -1409,6 +1567,140 @@ name: lead.name,
       ...formData,
       arr: Number(formData.arr)
     });
+  };
+
+  const renderFormField = (column) => {
+    const fieldName = getFieldNameForColumn(column);
+    const isRequired = column.required;
+
+    // Skip default fields that are handled separately
+    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName'];
+    if (defaultFields.includes(fieldName)) {
+      return null;
+    }
+
+    switch (column.type) {
+      case 'text':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="text"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'number':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="number"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'url':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="url"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`https://example.com`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'email':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="email"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'date':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="date"
+              value={formData[fieldName] ? formData[fieldName].split('T')[0] : ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+      
+      case 'select':
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <select
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              required={isRequired}
+            >
+              <option value="">{`Select ${column.name.toLowerCase()}`}</option>
+              {column.selectOptions?.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+        );
+      
+      default:
+        return (
+          <div key={column.Id}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {column.name}
+            </label>
+            <Input
+              type="text"
+              value={formData[fieldName] || ''}
+              onChange={(e) => setFormData({...formData, [fieldName]: e.target.value})}
+              placeholder={`Enter ${column.name.toLowerCase()}`}
+              className="w-full"
+              required={isRequired}
+            />
+          </div>
+        );
+    }
   };
 
 return (
@@ -1594,18 +1886,10 @@ return (
                     className="w-full"
                 />
             </div>
-<div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              WhatsApp Number
-            </label>
-            <Input
-              type="text"
-              value={formData.whatsappNumber}
-              onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
-              placeholder="Enter WhatsApp number"
-              className="w-full"
-            />
-          </div>
+            
+            {/* Render dynamic fields from custom columns */}
+            {columns && columns.map(column => renderFormField(column))}
+
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel

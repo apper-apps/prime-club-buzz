@@ -2436,10 +2436,10 @@ return (
                           </td>
                         </tr>
                       ))}
-                    </tbody>
+</tbody>
                   </table>
                 </div>
-</div>
+              </div>
             </div>
           )}
 </div>
@@ -2896,10 +2896,10 @@ return (
                       <ApperIcon name="Save" size={18} className="mr-2" />
                       {currentWorkflow ? 'Update Workflow' : 'Create Workflow'}
                     </Button>
-                  </div>
-                </div>
 </div>
-          </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

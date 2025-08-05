@@ -831,10 +831,11 @@ const ConditionalRulesBuilder = ({ rules, columnType, onChange }) => {
               Add Rule
             </Button>
           </div>
-        </div>
+</div>
       </div>
 
-{columnType === "conditional" && rules.length === 0 && (
+      {/* Conditional Column Warning */}
+      {columnType === "conditional" && rules.length === 0 && (
         <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
           <div className="flex items-center space-x-2">
             <ApperIcon name="AlertCircle" size={16} />

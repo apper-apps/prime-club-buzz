@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import { getSalesRepsFromReport } from "@/services/api/reportService";
-import { getSalesRepsFromService } from "@/services/api/salesRepService";
+import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -243,18 +243,16 @@ async function loadLeads() {
     setLoading(false);
   }
 }
-
-  // Load sales reps data
 // Load sales reps data
   async function loadSalesReps() {
     try {
-      const reps = await getSalesRepsFromService()
+      const reps = await getSalesReps()
       setSalesReps(reps)
     } catch (error) {
       console.error('Failed to load sales reps:', error)
       toast.error('Failed to load sales representatives')
     }
-}
+  }
 
   // Load data on component mount
   useEffect(() => {
@@ -262,7 +260,6 @@ async function loadLeads() {
     loadLeads()
     loadSalesReps()
   }, [])
-
 // State for timeouts and debouncing
 const [updateTimeouts, setUpdateTimeouts] = useState({});
 const [nextTempId, setNextTempId] = useState(-1);

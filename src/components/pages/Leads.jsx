@@ -143,7 +143,6 @@ function Leads() {
   const [editingLead, setEditingLead] = useState(null)
 const [selectedLeads, setSelectedLeads] = useState(new Set())
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false)
-  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false)
   const [showHotlist, setShowHotlist] = useState(false)
   
   // State for filters and search
@@ -866,11 +865,12 @@ const handleFieldUpdate = async (leadId, field, value) => {
                       >
                         <ApperIcon name="Edit2" size={14} />
                       </Button>
-                      <Button
+<Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(lead.Id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                        title="Delete lead"
                       >
                         <ApperIcon name="Trash2" size={14} />
                       </Button>
@@ -974,13 +974,14 @@ const handleFieldUpdate = async (leadId, field, value) => {
             Clear
           </Button>
           <Button
-            variant="outline"
+variant="outline"
             size="sm"
-            onClick={handleBulkDelete}
-            className="text-red-600 border-red-300 hover:bg-red-50"
+            onClick={() => setShowBulkDeleteDialog(true)}
+            disabled={selectedLeads.size === 0}
+            className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ApperIcon name="Trash2" size={14} className="mr-1" />
-            Delete Selected
+            Delete Selected ({selectedLeads.size})
           </Button>
         </div>
       )}
@@ -1010,10 +1011,13 @@ const handleFieldUpdate = async (leadId, field, value) => {
         />
       )}
 
-      {showBulkDeleteDialog && (
+{showBulkDeleteDialog && (
         <BulkDeleteConfirmationDialog
           selectedCount={selectedLeads.size}
-          onConfirm={handleBulkDelete}
+          onConfirm={async () => {
+            await handleBulkDelete()
+            setShowBulkDeleteDialog(false)
+          }}
           onCancel={() => setShowBulkDeleteDialog(false)}
         />
       )}

@@ -1299,5 +1299,3 @@ const CustomColumnsWithModals = () => {
 };
 
 export default CustomColumnsWithModals;
-
-export default CustomColumns;

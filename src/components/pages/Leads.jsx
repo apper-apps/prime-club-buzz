@@ -54,7 +54,7 @@ const [customColumns, setCustomColumns] = useState([])
   // Debounce timeout storage
   const [updateTimeouts, setUpdateTimeouts] = useState({})
 // Utility functions
-  const getFieldNameForColumn = (column) => {
+const getFieldNameForColumn = (column) => {
     const fieldMap = {
       'Website URL': 'websiteUrl',
       'Company Name': 'name',
@@ -66,7 +66,8 @@ const [customColumns, setCustomColumns] = useState([])
       'LinkedIn': 'linkedinUrl',
       'Funding Type': 'fundingType',
       'Follow-up Date': 'followUpDate',
-      'Email': 'email'
+      'Email': 'email',
+      'WhatsApp Number': 'whatsappNumber'
     }
     return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '')
   }
@@ -1176,7 +1177,8 @@ const [formData, setFormData] = useState({
     fundingType: "Bootstrapped",
     followUpDate: "",
     edition: "Select Edition",
-    productName: ""
+    productName: "",
+    whatsappNumber: ""
   });
 
   const handleSubmit = (e) => {
@@ -1369,7 +1371,7 @@ return (
               <option value="Select Edition">Select Edition</option>
               <option value="Black Edition">Black Edition</option>
               <option value="Collector's Edition">Collector's Edition</option>
-              <option value="Limited Edition">Limited Edition</option>
+<option value="Limited Edition">Limited Edition</option>
             </select>
           </div>
           <div>
@@ -1381,6 +1383,18 @@ return (
               value={formData.productName}
               onChange={(e) => setFormData({...formData, productName: e.target.value})}
               placeholder="Enter product name"
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              WhatsApp Number
+            </label>
+            <Input
+              type="text"
+              value={formData.whatsappNumber}
+              onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
+              placeholder="Enter WhatsApp number"
               className="w-full"
             />
           </div>
@@ -1399,7 +1413,7 @@ return (
 };
 
 const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
 name: lead.name,
     email: lead.email,
     websiteUrl: lead.websiteUrl,
@@ -1410,7 +1424,8 @@ name: lead.name,
     status: lead.status,
     fundingType: lead.fundingType,
     edition: lead.edition || "Select Edition",
-    productName: lead.productName || ""
+    productName: lead.productName || "",
+    whatsappNumber: lead.whatsappNumber || ""
   });
 
   const handleSubmit = (e) => {
@@ -1605,6 +1620,18 @@ return (
                 />
             </div>
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+<div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              WhatsApp Number
+            </label>
+            <Input
+              type="text"
+              value={formData.whatsappNumber}
+              onChange={(e) => setFormData({...formData, whatsappNumber: e.target.value})}
+              placeholder="Enter WhatsApp number"
+              className="w-full"
+            />
+          </div>
                 <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
                     Cancel
                 </Button>

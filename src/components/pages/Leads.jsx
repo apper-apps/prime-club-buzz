@@ -6,6 +6,7 @@ import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/colu
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import { getSalesReps, getSalesRepsFromReport } from "@/services/api/reportService";
+import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
@@ -705,45 +706,78 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
   if (loading) return <Loading />;
   if (error) return <Error message={error} />;
 
-  return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
+return (
+    <motion.div 
+      className="p-6 space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      {/* Header */}
+      <motion.div 
+        className="flex justify-between items-center"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Leads</h1>
-          <p className="text-gray-600 mt-1">Manage and track your sales leads</p>
+          <h1 className="text-2xl font-bold text-gray-900">Leads</h1>
+          <p className="text-gray-600">Manage your leads and convert them to deals</p>
         </div>
-        
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/leads/custom-columns')}
-            className="flex items-center gap-2"
+        <motion.div 
+          className="flex gap-3"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <ApperIcon name="Settings" size={16} />
-            Custom Columns
-          </Button>
-          
-          <Button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700"
+            <Button
+              onClick={addEmptyRow}
+              className="bg-green-600 hover:bg-green-700 text-white animate-button-hover"
+            >
+              <ApperIcon name="Plus" size={16} className="mr-2" />
+              Add Row
+            </Button>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            <ApperIcon name="Plus" size={16} />
-            Add Lead
-          </Button>
-        </div>
-      </div>
+            <Button
+              onClick={() => setShowAddModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white animate-button-hover"
+            >
+              <ApperIcon name="UserPlus" size={16} className="mr-2" />
+              Add Lead
+            </Button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
 
-      {/* Search and Filters */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="flex-1">
-          <SearchBar
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="Search leads by name, email, or website..."
-          />
-        </div>
-        
-<div className="flex flex-wrap gap-3">
+      {/* Search Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.25 }}
+      >
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search leads..."
+          className="w-full max-w-md"
+        />
+      </motion.div>
+{/* Filters */}
+      <motion.div 
+        className="bg-white p-4 rounded-lg shadow-sm border animate-card-hover"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -764,11 +798,11 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
             <option value="Closed Lost">Closed Lost</option>
           </select>
           
-<select
+          <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
->
+          >
             <option value="all">All Categories</option>
             {(() => {
               const categoryColumn = columns.find(col => col.name === "Category");
@@ -790,132 +824,233 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
             ))}
           </select>
         </div>
-      </div>
-
-      {/* Results count */}
+      </motion.div>
+{/* Results count */}
       <div className="text-sm text-gray-600">
         Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} leads
       </div>
 
-      {/* Table */}
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-<thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left">
-                  <input
-                    type="checkbox"
-                    checked={selectedLeads.size === paginatedData.length && paginatedData.length > 0}
-                    onChange={toggleSelectAll}
-                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                </th>
-                {orderedColumns.map((column, index) => {
-                  const fieldName = getFieldNameForColumn(column);
-                  return (
-                    <th
-                      key={column.Id}
-                      draggable
-                      onDragStart={(e) => handleColumnDragStart(e, index)}
-                      onDragOver={handleColumnDragOver}
-                      onDrop={(e) => handleColumnDrop(e, index)}
-                      onDragEnd={handleColumnDragEnd}
-                      className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none ${
-                        dragState.isDragging && dragState.dragIndex === index ? 'opacity-50 bg-blue-50' : ''
-                      } ${dragState.dragOverIndex === index ? 'bg-blue-100 border-l-4 border-blue-500' : ''}`}
-                      onClick={() => handleSort(fieldName)}
-                      title={`Drag to reorder ${column.name} column`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="cursor-move p-1 hover:bg-gray-200 rounded opacity-60 hover:opacity-100 transition-opacity">
-                          <ApperIcon name="GripVertical" size={12} />
-                        </div>
+      {/* Selected Items Actions */}
+      {selectedLeads.size > 0 && (
+        <motion.div 
+          className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">
+              {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'} selected
+            </span>
+            <div className="flex gap-2">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  onClick={handleBulkDelete}
+                  variant="outline"
+                  className="text-red-600 border-red-300 hover:bg-red-50 animate-button-hover"
+                >
+                  <ApperIcon name="Trash2" size={16} className="mr-2" />
+                  Delete Selected ({selectedLeads.size})
+                </Button>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  onClick={clearSelection}
+                  variant="outline"
+                  className="text-gray-600 border-gray-300 hover:bg-gray-50 animate-button-hover"
+                >
+                  Clear Selection
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+{/* Main Content */}
+      {loading ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Loading />
+        </motion.div>
+      ) : error ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <Error message={error} />
+        </motion.div>
+      ) : filteredAndSortedData.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Empty message="No leads found" />
+        </motion.div>
+      ) : (
+        <motion.div 
+          className="bg-white rounded-lg shadow-sm border overflow-hidden animate-card-hover"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <motion.thead 
+                className="bg-gray-50 border-b"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.5 }}
+              >
+                <tr>
+                  <th className="px-4 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedLeads.size === paginatedData.length && paginatedData.length > 0}
+                      onChange={toggleSelectAll}
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                  </th>
+                  {orderedColumns.map((column, index) => {
+                    const fieldName = getFieldNameForColumn(column);
+                    return (
+                      <th
+                        key={column.Id}
+                        draggable
+                        onDragStart={(e) => handleColumnDragStart(e, index)}
+                        onDragOver={handleColumnDragOver}
+                        onDrop={(e) => handleColumnDrop(e, index)}
+                        onDragEnd={handleColumnDragEnd}
+                        className={`px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors select-none ${
+                          dragState.isDragging && dragState.dragIndex === index ? 'opacity-50 bg-blue-50' : ''
+                        } ${dragState.dragOverIndex === index ? 'bg-blue-100 border-l-4 border-blue-500' : ''}`}
+                        onClick={() => handleSort(fieldName)}
+                      >
                         <div className="flex items-center gap-1">
                           {column.name}
                           <ApperIcon name="ArrowUpDown" size={12} />
                         </div>
-                      </div>
-                    </th>
-                  );
-                })}
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-<tbody className="bg-white divide-y divide-gray-200">
-{paginatedData.map((lead) => (
-                <tr key={lead.Id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedLeads.has(lead.Id)}
-                      onChange={() => toggleLeadSelection(lead.Id)}
-                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                    />
-                  </td>
-                  {orderedColumns.map((column) => {
-                    const fieldName = getFieldNameForColumn(column);
-                    return (
-                      <td key={column.Id} className="px-4 py-4">
-                        {renderColumnData(lead, column, fieldName)}
-                      </td>
+                      </th>
                     );
                   })}
-                  <td className="px-4 py-4 text-right text-sm font-medium">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setEditingLead(lead);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        <ApperIcon name="Edit2" size={14} />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(lead.Id)}
-                        className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                        title="Delete lead"
-                      >
-                        <ApperIcon name="Trash2" size={14} />
-                      </Button>
-                    </div>
-                  </td>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Empty state */}
-        {paginatedData.length === 0 && (
-          <div className="text-center py-12">
-            <ApperIcon name="Users" size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No leads found</h3>
-            <p className="text-gray-500 mb-4">
-{searchTerm || statusFilter !== 'all' || categoryFilter !== 'all'
-                ? 'Try adjusting your search criteria or filters'
-                : 'Get started by adding your first lead'
-              }
-            </p>
-            {(!searchTerm && statusFilter === 'all' && categoryFilter === 'all') && (
-              <Button onClick={() => setShowAddModal(true)}>
-                <ApperIcon name="Plus" size={16} className="mr-2" />
-                Add Lead
-              </Button>
-            )}
+              </motion.thead>
+              <tbody className="divide-y divide-gray-200">
+                {[...paginatedData, ...emptyRows].map((lead, index) => (
+                  <motion.tr
+                    key={lead.Id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: 0.6 + (index * 0.05),
+                      ease: "easeOut" 
+                    }}
+                    whileHover={{ 
+                      backgroundColor: "#f9fafb",
+                      transition: { duration: 0.2 }
+                    }}
+                    className={`cursor-pointer ${lead.isEmptyRow ? 'empty-row' : ''} ${
+                      selectedLeads.has(lead.Id) ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedLeads.has(lead.Id)}
+                        onChange={() => toggleLeadSelection(lead.Id)}
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                    </td>
+                    {orderedColumns.map((column) => {
+                      const fieldName = getFieldNameForColumn(column);
+                      return (
+                        <td key={column.Id} className="px-4 py-4 whitespace-nowrap">
+                          {lead.isEmptyRow ? (
+                            renderColumnInput(column, lead, true, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)
+                          ) : (
+                            renderColumnData(lead, column, fieldName)
+                          )}
+                        </td>
+                      );
+                    })}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      {!lead.isEmptyRow && (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditingLead(lead);
+                              setShowEditModal(true);
+                            }}
+                            className="text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                            title="Edit lead"
+                          >
+                            <ApperIcon name="Edit2" size={14} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(lead.Id)}
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                            title="Delete lead"
+                          >
+                            <ApperIcon name="Trash2" size={14} />
+                          </Button>
+                        </div>
+                      )}
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </Card>
+
+          {/* Empty state */}
+          {paginatedData.length === 0 && (
+            <div className="text-center py-12">
+              <ApperIcon name="Users" size={48} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No leads found</h3>
+              <p className="text-gray-500 mb-4">
+                {searchTerm || statusFilter !== 'all' || categoryFilter !== 'all'
+                  ? 'Try adjusting your search criteria or filters'
+                  : 'Get started by adding your first lead'
+                }
+              </p>
+              {(!searchTerm && statusFilter === 'all' && categoryFilter === 'all') && (
+                <Button onClick={() => setShowAddModal(true)}>
+                  <ApperIcon name="Plus" size={16} className="mr-2" />
+                  Add Lead
+                </Button>
+              )}
+            </div>
+          )}
+        </motion.div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <motion.div 
+          className="flex items-center justify-between"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.8 }}
+        >
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-700">Show</span>
             <select
@@ -950,7 +1085,7 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
                     variant={currentPage === pageNumber ? "default" : "outline"}
                     size="sm"
                     onClick={() => handlePageChange(pageNumber)}
-                    className="min-w-[32px]"
+                    className="min-w-[2rem]"
                   >
                     {pageNumber}
                   </Button>
@@ -967,37 +1102,11 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
               <ApperIcon name="ChevronRight" size={16} />
             </Button>
           </div>
-        </div>
-      )}
-
-      {/* Bulk Actions */}
-      {selectedLeads.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 flex items-center gap-4 z-50">
-          <span className="text-sm text-gray-600">
-            {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'} selected
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={clearSelection}
-          >
-            Clear
-          </Button>
-          <Button
-variant="outline"
-            size="sm"
-            onClick={() => setShowBulkDeleteDialog(true)}
-            disabled={selectedLeads.size === 0}
-            className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ApperIcon name="Trash2" size={14} className="mr-1" />
-            Delete Selected ({selectedLeads.size})
-          </Button>
-        </div>
+        </motion.div>
       )}
 
       {/* Modals */}
-{showAddModal && (
+      {showAddModal && (
         <AddLeadModal
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddLead}
@@ -1008,7 +1117,7 @@ variant="outline"
         />
       )}
 
-{showEditModal && editingLead && (
+      {showEditModal && editingLead && (
         <EditLeadModal
           lead={editingLead}
           onClose={() => {
@@ -1023,21 +1132,17 @@ variant="outline"
         />
       )}
 
-{showBulkDeleteDialog && (
+      {showBulkDeleteDialog && (
         <BulkDeleteConfirmationDialog
           selectedCount={selectedLeads.size}
-          onConfirm={async () => {
-            await handleBulkDelete()
-            setShowBulkDeleteDialog(false)
-          }}
+          onConfirm={handleBulkDelete}
           onCancel={() => setShowBulkDeleteDialog(false)}
         />
       )}
-    </div>
+    </motion.div>
   );
 }
 
-// Function to render column input based on column type
 // Function to render column input based on column type
 const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory) => {
   const fieldName = getFieldNameForColumn(column);
@@ -1074,19 +1179,16 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
     }
   };
 
-  // Handle read-only display fields
-if (['Lead Score', 'Created Date'].includes(column.name)) {
+  // Handle read-only display for certain columns
+  if (['Lead Score', 'Created Date'].includes(column.name)) {
     let displayValue = value;
     
-    if (column.name === 'ARR' && value) {
-      displayValue = formatCurrency(value);
-    } else if (column.name === 'Lead Score' && value) {
+    if (column.name === 'Lead Score' && value) {
       displayValue = (
         <div className="flex items-center gap-2">
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
             value >= 80 ? 'bg-green-100 text-green-800' :
-            value >= 60 ? 'bg-blue-100 text-blue-800' :
-            value >= 40 ? 'bg-yellow-100 text-yellow-800' :
+            value >= 60 ? 'bg-yellow-100 text-yellow-800' :
             'bg-red-100 text-red-800'
           }`}>
             {value}
@@ -1098,20 +1200,27 @@ if (['Lead Score', 'Created Date'].includes(column.name)) {
     }
     
     return (
-      <div className="px-2 py-1 text-sm">
+      <div className="text-sm text-gray-900">
         {displayValue || '-'}
       </div>
     );
   }
 
   switch (column.type) {
-case 'url':
+    case 'url':
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <Input
             type="url"
             value={value}
             onChange={e => handleChange(e.target.value)}
+            onBlur={e => handleBlur(e.target.value)}
+            onKeyDown={e => handleKeyDown(e, e.target.value)}
+            placeholder={`Enter ${column.name.toLowerCase()}...`}
+            className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 text-primary-600 font-medium placeholder-gray-400 flex-1"
+          />
+        </div>
+      );
             onBlur={e => handleBlur(e.target.value)}
             onKeyDown={e => handleKeyDown(e, e.target.value)}
             placeholder={`Enter ${column.name.toLowerCase()}...`}

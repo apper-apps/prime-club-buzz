@@ -1163,20 +1163,20 @@ const actionTypes = [
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
                   )}
 </button>
-              ))}
+))}
             </nav>
-</nav>
           </div>
         </div>
+</div>
       </div>
 
       {/* Content Area */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-            <div>
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Workflow Automation</h2>
-                
-                {/* Filters and Search Section */}
+{/* Content Area */}
+        {activeTab === 'workflows' && (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Workflow Automation</h2>
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                   <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                     {/* Search Input */}

@@ -768,10 +768,10 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
+>
             <option value="all">All Categories</option>
             {(() => {
-              const categoryColumn = columnsData.find(col => col.name === "Category");
+              const categoryColumn = columns.find(col => col.name === "Category");
               const categoryOptions = categoryColumn?.selectOptions || [];
               return categoryOptions.map(option => (
                 <option key={option} value={option}>{option}</option>

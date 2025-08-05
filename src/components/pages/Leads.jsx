@@ -117,6 +117,7 @@ const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
 const [categoryFilter, setCategoryFilter] = useState('all')
+  const [assignedToFilter, setAssignedToFilter] = useState('all')
   const [sortField, setSortField] = useState('')
   const [sortDirection, setSortDirection] = useState('asc')
   const [currentPage, setCurrentPage] = useState(1)
@@ -654,7 +655,7 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
   };
 
 // Filter and sort data
-  const filteredAndSortedData = useMemo(() => {
+const filteredAndSortedData = useMemo(() => {
     if (!data.length) return [];
     
     let filtered = data.filter(lead => {
@@ -664,8 +665,9 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
       const matchesCategory = categoryFilter === 'all' || lead.category === categoryFilter;
+      const matchesAssignedTo = assignedToFilter === 'all' || lead.assignedTo === assignedToFilter;
       
-      return matchesSearch && matchesStatus && matchesCategory;
+      return matchesSearch && matchesStatus && matchesCategory && matchesAssignedTo;
     });
 
     // Apply sorting
@@ -690,7 +692,7 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
     }
 
     return filtered;
-}, [data, searchTerm, statusFilter, categoryFilter, sortField, sortDirection]);
+}, [data, searchTerm, statusFilter, categoryFilter, assignedToFilter, sortField, sortDirection]);
 
   // Pagination
   const totalItems = filteredAndSortedData.length;
@@ -741,7 +743,7 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
           />
         </div>
         
-        <div className="flex flex-wrap gap-3">
+<div className="flex flex-wrap gap-3">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -774,6 +776,17 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
             <option value="Events">Events</option>
             <option value="Website Chatbot">Website Chatbot</option>
             <option value="Customer Referral">Customer Referral</option>
+          </select>
+
+          <select
+            value={assignedToFilter}
+            onChange={(e) => setAssignedToFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="all">All Assigned To</option>
+            {salesReps.map(rep => (
+              <option key={rep.Id} value={rep.name}>{rep.name}</option>
+            ))}
           </select>
         </div>
       </div>

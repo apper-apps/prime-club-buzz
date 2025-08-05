@@ -11,7 +11,7 @@ import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Hotlist from "@/components/pages/Hotlist";
 import Badge from "@/components/atoms/Badge";
-import Input from "@/components/atoms/Input";
+import { Input } from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
@@ -544,7 +544,89 @@ setCurrentPage(1);
     if (!loading && emptyRows.length === 0) {
       addEmptyRow();
     }
-  }, [loading, emptyRows.length]);
+}, [loading, emptyRows.length]);
+
+  // Missing function definitions and variables
+  const getFieldNameForColumn = (column) => {
+    const fieldMap = {
+      'Website URL': 'websiteUrl',
+      'Company Name': 'name',
+      'Status': 'status',
+      'Product Name': 'productName',
+      'Team Size': 'teamSize',
+      'ARR': 'arr',
+      'Category': 'category',
+      'LinkedIn': 'linkedinUrl',
+      'Funding Type': 'fundingType',
+      'Follow-up Date': 'followUpDate',
+      'Email': 'email',
+      'Notes': 'notes'
+    };
+    return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'New Lead': 'info',
+      'Contacted': 'primary', 
+      'Keep an Eye': 'info',
+      'Proposal Sent': 'warning',
+      'Meeting Booked': 'primary',
+      'Meeting Done': 'success',
+      'Commercials Sent': 'warning',
+      'Negotiation': 'accent',
+      'Hotlist': 'primary',
+      'Temporarily on hold': 'default',
+      'Closed Won': 'success',
+      'Closed Lost': 'default'
+    };
+    return colors[status] || 'default';
+  };
+
+  const categoryOptions = [
+    'Technology',
+    'Healthcare', 
+    'Finance',
+    'Education',
+    'Retail',
+    'Manufacturing',
+    'Real Estate',
+    'Consulting',
+    'Other'
+  ];
+
+  const handleCreateCategory = (newCategory) => {
+    if (newCategory && !categoryOptions.includes(newCategory)) {
+      categoryOptions.push(newCategory);
+      toast.success(`Category "${newCategory}" created successfully`);
+    }
+  };
+
+  // Debounced update timeouts
+  const [updateTimeouts, setUpdateTimeouts] = useState({});
+
+  const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
+    // Clear existing timeout for this field
+    const timeoutKey = `${leadId}-${field}`;
+    if (updateTimeouts[timeoutKey]) {
+      clearTimeout(updateTimeouts[timeoutKey]);
+    }
+
+    // Set new timeout
+    const timeoutId = setTimeout(() => {
+      handleFieldUpdate(leadId, field, value);
+      setUpdateTimeouts(prev => {
+        const newTimeouts = { ...prev };
+        delete newTimeouts[timeoutKey];
+        return newTimeouts;
+      });
+    }, 500);
+
+    setUpdateTimeouts(prev => ({
+      ...prev,
+      [timeoutKey]: timeoutId
+    }));
+  }, [updateTimeouts]);
 
   if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadLeads} />;

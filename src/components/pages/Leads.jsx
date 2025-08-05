@@ -1368,14 +1368,37 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
 
     return initialData;
   };
-
-  const [formData, setFormData] = useState(initializeFormData());
+const [formData, setFormData] = useState(initializeFormData());
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit({
       ...formData,
       arr: Number(formData.arr)
+    });
+  };
+
+  // Check if field should be visible based on conditional logic
+  const shouldShowField = (column) => {
+    if (!column.conditionalRules || column.conditionalRules.length === 0) {
+      return true;
+    }
+
+    // Check each conditional rule
+    return column.conditionalRules.some(rule => {
+      const conditionFieldName = getFieldNameForColumn({ name: rule.condition.field });
+      const conditionValue = formData[conditionFieldName];
+      
+      switch (rule.condition.operator) {
+        case 'equals':
+          return conditionValue === rule.condition.value;
+        case 'notEquals':
+          return conditionValue !== rule.condition.value;
+        case 'contains':
+          return conditionValue && conditionValue.includes(rule.condition.value);
+        default:
+          return true;
+      }
     });
   };
 
@@ -1386,6 +1409,11 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
     // Skip default fields that are handled separately
     const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName'];
     if (defaultFields.includes(fieldName)) {
+      return null;
+    }
+
+    // Check conditional visibility
+    if (!shouldShowField(column)) {
       return null;
     }
 
@@ -1512,7 +1540,6 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
         );
     }
   };
-
 return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
@@ -1758,14 +1785,37 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
 
     return initialData;
   };
-
-  const [formData, setFormData] = useState(initializeFormData());
+const [formData, setFormData] = useState(initializeFormData());
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(lead.Id, {
       ...formData,
       arr: Number(formData.arr)
+    });
+  };
+
+  // Check if field should be visible based on conditional logic
+  const shouldShowField = (column) => {
+    if (!column.conditionalRules || column.conditionalRules.length === 0) {
+      return true;
+    }
+
+    // Check each conditional rule
+    return column.conditionalRules.some(rule => {
+      const conditionFieldName = getFieldNameForColumn({ name: rule.condition.field });
+      const conditionValue = formData[conditionFieldName];
+      
+      switch (rule.condition.operator) {
+        case 'equals':
+          return conditionValue === rule.condition.value;
+        case 'notEquals':
+          return conditionValue !== rule.condition.value;
+        case 'contains':
+          return conditionValue && conditionValue.includes(rule.condition.value);
+        default:
+          return true;
+      }
     });
   };
 
@@ -1776,6 +1826,11 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
     // Skip default fields that are handled separately
     const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName'];
     if (defaultFields.includes(fieldName)) {
+      return null;
+    }
+
+    // Check conditional visibility
+    if (!shouldShowField(column)) {
       return null;
     }
 

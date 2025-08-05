@@ -318,14 +318,13 @@ const [formData, setFormData] = useState({
   const [loading, setLoading] = useState(false);
 
 const columnTypes = [
-    { value: "text", label: "Text", icon: "Type" },
+{ value: "text", label: "Text", icon: "Type" },
     { value: "number", label: "Number", icon: "Hash" },
     { value: "date", label: "Date", icon: "Calendar" },
     { value: "datetime", label: "Date with Time", icon: "Clock" },
     { value: "select", label: "Select/Dropdown", icon: "ChevronDown" },
     { value: "boolean", label: "True/False", icon: "ToggleLeft" },
-    { value: "url", label: "URL/Link", icon: "Link" },
-    { value: "conditional", label: "If-Then-Else Logic", icon: "GitBranch" }
+    { value: "url", label: "URL/Link", icon: "Link" }
   ];
 
   const handleSubmit = async (e) => {
@@ -591,8 +590,7 @@ const DeleteConfirmationModal = ({ column, onClose, onConfirm }) => {
 const ConditionalRulesBuilder = ({ rules, columnType, onChange }) => {
   const [newRule, setNewRule] = useState({
     condition: { field: "", operator: "", value: "" },
-    thenAction: { type: "setValue", value: "" },
-    elseAction: { type: "setValue", value: "" }
+    thenAction: { type: "setValue", value: "" }
   });
 
   const availableFields = [
@@ -692,14 +690,8 @@ const ConditionalRulesBuilder = ({ rules, columnType, onChange }) => {
                   )}
                 </div>
 
-                <div className="flex items-center space-x-2 text-gray-700">
-                  <span className="font-medium text-orange-600">ELSE</span>
-                  <span>{actionTypes.find(act => act.value === rule.elseAction.type)?.label}</span>
-                  {rule.elseAction.value && (
-                    <span className="bg-white px-2 py-1 rounded border text-xs font-mono">
-                      {rule.elseAction.value}
-                    </span>
-                  )}
+<div className="flex items-center space-x-2 text-gray-700">
+                  <span className="text-gray-500 text-sm">Simple condition applied</span>
                 </div>
               </div>
             </div>
@@ -798,36 +790,9 @@ const ConditionalRulesBuilder = ({ rules, columnType, onChange }) => {
             </div>
           </div>
 
-          {/* ELSE Action */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div>
-              <label className="block text-xs font-medium text-orange-700 mb-1">ELSE Action</label>
-              <select
-                value={newRule.elseAction.type}
-                onChange={(e) => setNewRule(prev => ({
-                  ...prev,
-                  elseAction: { ...prev.elseAction, type: e.target.value }
-                }))}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-              >
-                {actionTypes.map(action => (
-                  <option key={action.value} value={action.value}>{action.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-orange-700 mb-1">ELSE Value</label>
-              <Input
-                value={newRule.elseAction.value}
-                onChange={(e) => setNewRule(prev => ({
-                  ...prev,
-                  elseAction: { ...prev.elseAction, value: e.target.value }
-                }))}
-                placeholder="Else value"
-                className="text-sm"
-              />
-            </div>
+{/* Simple IF-THEN Logic - No ELSE needed */}
+          <div className="text-sm text-gray-600 italic">
+            This creates a simple condition: when the specified field matches the condition, the action will be performed.
           </div>
 
           <div className="flex justify-end">

@@ -171,8 +171,8 @@ useEffect(() => {
     </div>
     {/* Metrics Cards */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => <MetricCard
-            key={metric.id}
+{metrics.map((metric, index) => <MetricCard
+            key={`metric-${metric.id || index}-${index}`}
             title={metric.title}
             value={metric.value}
             icon={metric.icon}
@@ -243,21 +243,21 @@ useEffect(() => {
             <ApperIcon name="Users" size={20} className="text-primary-600" />
           </div>
           <div className="space-y-4">
-            {teamPerformance.slice(0, 5).map((rep, index) => (
-              <div key={rep.Id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+{teamPerformance.slice(0, 5).map((rep, index) => (
+              <div key={`team-perf-${rep.Id || rep.name || index}-${index}`} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm font-semibold">
-                      {rep.name.charAt(0)}
+                      {rep.name?.charAt(0) || '?'}
                     </span>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{rep.name}</p>
-                    <p className="text-xs text-gray-500">{rep.weekLeads} leads this week</p>
+                    <p className="font-medium text-gray-900">{rep.name || 'Unknown'}</p>
+                    <p className="text-xs text-gray-500">{rep.weekLeads || 0} leads this week</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-primary-600">{rep.totalLeads}</p>
+                  <p className="font-semibold text-primary-600">{rep.totalLeads || 0}</p>
                   <p className="text-xs text-gray-500">total</p>
                 </div>
               </div>
@@ -290,8 +290,8 @@ useEffect(() => {
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
-                {salesReps.map(rep => (
-                  <option key={rep.Id} value={rep.Id}>{rep.name}</option>
+{salesReps.map((rep, index) => (
+                  <option key={`sales-rep-${rep.Id || index}-${index}`} value={rep.Id}>{rep.name || 'Unknown Rep'}</option>
                 ))}
               </select>
             </div>
@@ -444,19 +444,19 @@ useEffect(() => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Meetings Today</h3>
           <div className="space-y-3">
             {meetings.length > 0 ? meetings.map((meeting, index) => (
-              <motion.div
-                key={meeting.id}
+<motion.div
+                key={`meeting-${meeting.id || meeting.title || index}-${index}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-all">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900 text-sm">{meeting.title}</div>
-                    <div className="text-xs text-gray-500">{meeting.client}</div>
+                    <div className="font-medium text-gray-900 text-sm">{meeting.title || 'No Title'}</div>
+                    <div className="text-xs text-gray-500">{meeting.client || 'No Client'}</div>
                   </div>
                   <div className="text-xs font-medium text-primary-600">
-                    {meeting.time}
+                    {meeting.time || 'No Time'}
                   </div>
                 </div>
               </motion.div>
@@ -473,8 +473,8 @@ useEffect(() => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Pending Follow-ups</h3>
           <div className="space-y-3">
             {pendingFollowUps.length > 0 ? pendingFollowUps.slice(0, 5).map((followUp, index) => (
-              <motion.div
-                key={followUp.Id}
+<motion.div
+                key={`followup-${followUp.Id || followUp.websiteUrl || index}-${index}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -482,12 +482,12 @@ useEffect(() => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="font-medium text-gray-900 text-sm">
-                      {followUp.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                      {followUp.websiteUrl?.replace(/^https?:\/\//, "")?.replace(/\/$/, "") || 'No URL'}
                     </div>
-                    <div className="text-xs text-gray-500">{followUp.category}</div>
+                    <div className="text-xs text-gray-500">{followUp.category || 'No Category'}</div>
                   </div>
                   <div className="text-xs font-medium text-primary-600">
-                    {new Date(followUp.followUpDate).toLocaleDateString()}
+                    {followUp.followUpDate ? new Date(followUp.followUpDate).toLocaleDateString() : 'No Date'}
                   </div>
                 </div>
               </motion.div>
@@ -506,9 +506,9 @@ useEffect(() => {
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
           <div className="space-y-3 max-h-80 overflow-y-auto">
-            {detailedActivity.map((item, index) => (
+{detailedActivity.map((item, index) => (
               <motion.div
-                key={item.id}
+                key={`activity-${item.id || item.title || index}-${index}`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -518,8 +518,8 @@ useEffect(() => {
                   item.type === "deal" ? "bg-green-500" : "bg-yellow-500"
                 }`} />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{item.title}</p>
-                  <p className="text-xs text-gray-500">{item.time}</p>
+                  <p className="text-sm font-medium text-gray-900">{item.title || 'No Title'}</p>
+                  <p className="text-xs text-gray-500">{item.time || 'No Time'}</p>
                 </div>
               </motion.div>
             ))}

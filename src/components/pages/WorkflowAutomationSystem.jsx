@@ -2442,9 +2442,10 @@ return (
 </div>
             </div>
           )}
-        </div>
+</div>
       </div>
-{/* Enhanced Workflow Builder Modal */}
+
+      {/* Enhanced Workflow Builder Modal */}
       {isBuilderOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="relative">

@@ -1081,7 +1081,6 @@ const actionTypes = [
   ];
 
 return (
-    <>
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
 <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 border-b border-gray-200">
@@ -2899,12 +2898,11 @@ return (
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+</div>
+</div>
         </div>
-)}
+      )}
     </div>
-    </>
   );
 };
 

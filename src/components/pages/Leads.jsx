@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createLead, deleteLead, getLeads, updateLead, getVisibleColumns } from "@/services/api/leadsService";
+import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
@@ -15,89 +15,117 @@ import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
-const Leads = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [customColumns, setCustomColumns] = useState([]);
-const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [fundingFilter, setFundingFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [teamSizeFilter, setTeamSizeFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("websiteUrl");
-  const [sortOrder, setSortOrder] = useState("desc");
-const [showAddForm, setShowAddForm] = useState(false);
-  const [editingLead, setEditingLead] = useState(null);
-const [emptyRows, setEmptyRows] = useState([]);
-  const [nextTempId, setNextTempId] = useState(-1);
-  const [selectedLeads, setSelectedLeads] = useState([]);
-  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-const [pageSize, setPageSize] = useState(25);
-  const navigate = useNavigate();
+function Leads() {
+  const navigate = useNavigate()
+  
+  // State management
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedLeads, setSelectedLeads] = useState([])
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [editingLead, setEditingLead] = useState(null)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [customColumns, setCustomColumns] = useState([])
+  const [emptyRows, setEmptyRows] = useState([])
+  const [nextTempId, setNextTempId] = useState(-1)
+  
+  // Filters
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [fundingFilter, setFundingFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const [teamSizeFilter, setTeamSizeFilter] = useState('all')
+  
+  // Sorting
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState('desc')
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
+  
+  // View states
+  const [viewMode, setViewMode] = useState('table')
+  const [showHotlist, setShowHotlist] = useState(false)
 
-useEffect(() => {
-    loadLeads();
-    loadCustomColumns();
-  }, []);
+  // Debounce timeout storage
+  const [updateTimeouts, setUpdateTimeouts] = useState({})
 
+  // Category options for searchable select
+  const categoryOptions = [
+    'Website Contact Form',
+    'LinkedIn Outreach',
+    'Cold Email',
+    'Referral',
+    'Trade Show',
+    'Content Marketing',
+    'Social Media',
+    'Partner',
+    'Direct Sales',
+    'Other'
+  ]
+// Utility functions
+  const getFieldNameForColumn = (column) => {
+    const fieldMap = {
+      'Website URL': 'websiteUrl',
+      'Company Name': 'name',
+      'Status': 'status',
+      'Product Name': 'productName',
+      'Team Size': 'teamSize',
+      'ARR': 'arr',
+      'Category': 'category',
+      'LinkedIn': 'linkedinUrl',
+      'Funding Type': 'fundingType',
+      'Follow-up Date': 'followUpDate',
+      'Email': 'email'
+    }
+    return fieldMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '')
+  }
+
+  const getDefaultValueForType = (type) => {
+    switch (type) {
+      case 'text':
+      case 'email':
+      case 'url':
+        return ''
+      case 'number':
+        return 0
+      case 'boolean':
+        return false
+      case 'date':
+        return null
+      case 'select':
+        return ''
+      default:
+        return ''
+    }
+  }
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'New Lead': 'info',
+      'Contacted': 'primary',
+      'Keep an Eye': 'info',
+      'Proposal Sent': 'warning',
+      'Meeting Booked': 'primary',
+      'Meeting Done': 'success',
+      'Commercials Sent': 'warning',
+      'Negotiation': 'accent',
+      'Hotlist': 'primary',
+      'Temporarily on hold': 'default',
+      'Closed Won': 'success',
+      'Closed Lost': 'danger'
+    }
+    return colors[status] || 'default'
+  }
+
+  // Load functions
   const loadCustomColumns = async () => {
     try {
-      const columns = await getVisibleColumns();
-      setCustomColumns(columns);
-    } catch (err) {
-      console.error("Failed to load custom columns:", err);
-      toast.error("Failed to load custom columns");
-    }
-  };
-
-  // Synchronize scrolling between top and bottom scrollbars
-
-const loadLeads = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await getLeads();
-      
-      // Handle both old format (direct array) and new format (object with leads and deduplication info)
-      if (response.leads) {
-        setData(response.leads);
-        
-        // Show deduplication result if duplicates were removed
-        if (response.deduplicationResult) {
-          const { duplicateCount, duplicatesRemoved } = response.deduplicationResult;
-          toast.info(
-            `Automatically removed ${duplicateCount} duplicate website URL${duplicateCount > 1 ? 's' : ''}`,
-            { autoClose: 5000 }
-          );
-        }
-      } else {
-        // Fallback for old format
-        setData(response);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-const handleStatusChange = async (leadId, newStatus) => {
-    try {
-      const updatedLead = await updateLead(leadId, { status: newStatus });
-      setData(prevData => 
-        prevData.map(lead => 
-          lead.Id === leadId ? updatedLead : lead
-        )
-      );
-      
-      // Define status-to-stage mapping for common statuses
-const statusToStageMap = {
-        "Contacted": "Connected",
-        "Meeting Booked": "Meeting Booked",
-        "Meeting Done": "Meeting Done",
-        "Commercials Sent": "Negotiation",
+      const columns = await getVisibleColumns()
+      setCustomColumns(columns)
+    } catch (error) {
         "Negotiation": "Negotiation",
         "Closed Won": "Won",
         "Closed Lost": "Lost"
@@ -117,37 +145,43 @@ if (existingDeal) {
             await updateDeal(existingDeal.Id, { stage: targetStage });
             toast.success(`Lead status updated and deal moved to ${targetStage} stage!`);
           } else {
-            // Create new deal in the target stage
-            const dealData = {
-name: `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
-              leadName: updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
-              leadId: leadId.toString(),
-              value: updatedLead.arr || 0,
-              stage: targetStage,
-              assignedRep: "Unassigned",
-              startMonth: new Date().toISOString().split('T')[0],
-              endMonth: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              edition: updatedLead.edition || "Select Edition"
-            };
-            await createDeal(dealData);
-            toast.success(`Lead status updated and deal created in ${targetStage} stage!`);
-          }
-        } catch (dealError) {
-          console.error("Failed to handle deal operation:", dealError);
-          toast.warning("Lead status updated, but failed to sync with deal pipeline");
-        }
-      } else {
-        toast.success("Lead status updated successfully!");
-      }
-    } catch (err) {
-      toast.error("Failed to update lead status");
+} catch (error) {
+      console.error('Error loading leads:', error)
+      setError('Failed to load leads')
+      toast.error('Failed to load leads')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
-const handleDelete = async (leadId) => {
-    if (!confirm("Are you sure you want to delete this lead?")) return;
-    
+  // Load data on component mount
+  useEffect(() => {
+    loadLeads()
+    loadCustomColumns()
+  }, [])
+
+  // Status update handler
+  const handleStatusChange = async (leadId, newStatus) => {
     try {
+      const updatedLead = await updateLead(leadId, { status: newStatus })
+      
+      setData(prevData => prevData.map(item => 
+        item.Id === leadId ? updatedLead : item
+      ))
+      
+      // Handle deal creation/updates based on status
+      const statusToStageMap = {
+        'Contacted': 'Connected',
+        'Meeting Booked': 'Meeting Booked',
+        'Meeting Done': 'Meeting Done',
+        'Commercials Sent': 'Negotiation',
+        'Negotiation': 'Negotiation',
+        'Closed Won': 'Won',
+        'Closed Lost': 'Lost'
+      }
+      
+      const targetStage = statusToStageMap[newStatus]
+      if (targetStage) {
       await deleteLead(leadId);
       setData(prevData => prevData.filter(lead => lead.Id !== leadId));
       setSelectedLeads(prevSelected => prevSelected.filter(id => id !== leadId));
@@ -197,57 +231,119 @@ const handleDelete = async (leadId) => {
       setData(prevData => [newLead, ...prevData]);
       setShowAddForm(false);
       toast.success("Lead added successfully!");
-    } catch (err) {
-      toast.error("Failed to add lead");
-    }
-  };
-
-const handleUpdateLead = async (leadId, updates) => {
+// Field update handlers
+  const handleFieldUpdate = async (leadId, field, value) => {
     try {
-      const updatedLead = await updateLead(leadId, updates);
-      setData(prevData => 
-        prevData.map(lead => 
-          lead.Id === leadId ? updatedLead : lead
-        )
-      );
-      setEditingLead(null);
-      toast.success("Lead updated successfully!");
-    } catch (err) {
-      toast.error("Failed to update lead");
+      const processedValue = field === 'arr' ? Number(value) : value
+      const updates = { [field]: processedValue }
+      const updatedLead = await updateLead(leadId, updates)
+      
+      setData(prevData => prevData.map(item => 
+        item.Id === leadId ? updatedLead : item
+      ))
+      
+      toast.success('Field updated successfully')
+    } catch (error) {
+      console.error('Error updating field:', error)
+      toast.error('Failed to update field')
     }
-  };
+  }
 
-  const toggleLeadSelection = (leadId) => {
-    setSelectedLeads(prevSelected => {
-      if (prevSelected.includes(leadId)) {
-        return prevSelected.filter(id => id !== leadId);
-      } else {
-        return [...prevSelected, leadId];
-      }
-    });
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedLeads.length === filteredAndSortedData.length) {
-      setSelectedLeads([]);
-    } else {
-      setSelectedLeads(filteredAndSortedData.map(lead => lead.Id));
+  const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
+    const timeoutKey = `${leadId}-${field}`
+    
+    // Clear existing timeout
+    if (updateTimeouts[timeoutKey]) {
+      clearTimeout(updateTimeouts[timeoutKey])
     }
-  };
+    
+    // Set new timeout
+    const timeoutId = setTimeout(() => {
+      handleFieldUpdate(leadId, field, value)
+      setUpdateTimeouts(prev => {
+        const newTimeouts = { ...prev }
+        delete newTimeouts[timeoutKey]
+        return newTimeouts
+      })
+    }, 1000)
+    
+    setUpdateTimeouts(prev => ({ ...prev, [timeoutKey]: timeoutId }))
+  }, [updateTimeouts])
 
-  const clearSelection = () => {
-    setSelectedLeads([]);
-  };
+  // Empty row management
+  const addEmptyRow = () => {
+    const newEmptyRow = {
+      Id: nextTempId,
+      isEmptyRow: true
+    }
+    setEmptyRows(prev => [...prev, newEmptyRow])
+    setNextTempId(prev => prev - 1)
+  }
 
-const handleFieldUpdate = async (leadId, field, value) => {
+  const handleEmptyRowUpdate = async (tempId, field, value) => {
     try {
-      let processedValue = value;
-      if (field === 'arr') {
-        processedValue = Number(value);
+      const emptyRow = emptyRows.find(row => row.Id === tempId)
+      if (!emptyRow) return
+
+      // Collect all filled fields from the empty row
+      const urls = parseMultipleUrls(emptyRow.websiteUrl || value)
+      
+      if (urls.length === 0) {
+        toast.error('Please enter at least one website URL')
+        return
       }
-      const updates = { [field]: processedValue };
-      const updatedLead = await updateLead(leadId, updates);
-      setData(prevData => 
+
+      const leadData = {}
+      customColumns.forEach(column => {
+        const fieldName = getFieldNameForColumn(column)
+        if (fieldName === 'websiteUrl') {
+          // Skip websiteUrl as we handle it separately
+          return
+        }
+        leadData[fieldName] = emptyRow[fieldName] || ''
+      })
+
+      // Create leads for each URL
+      const successfulLeads = []
+      const failedUrls = []
+
+      for (const url of urls) {
+        try {
+          const newLead = await createLead({
+            ...leadData,
+            websiteUrl: url
+          })
+          successfulLeads.push(newLead)
+        } catch (error) {
+          console.error(`Failed to create lead for ${url}:`, error)
+          failedUrls.push(url)
+        }
+      }
+
+      if (successfulLeads.length > 0) {
+        setData(prev => [...successfulLeads, ...prev])
+        toast.success(`Successfully created ${successfulLeads.length} lead(s)`)
+      }
+
+      if (failedUrls.length > 0) {
+        toast.error(`Failed to create leads for ${failedUrls.length} URL(s)`)
+      }
+
+      // Remove the empty row
+      setEmptyRows(prev => prev.filter(row => row.Id !== tempId))
+    } catch (error) {
+      console.error('Error updating empty row:', error)
+      toast.error('Failed to create lead')
+    }
+  }
+
+  const handleCreateCategory = (newCategory) => {
+    // For now, just add to local state - in real app would call API
+    toast.success(`Category "${newCategory}" created successfully`)
+  }
+
+  // Handle multiple URL parsing
+  const parseMultipleUrls = (input) => {
         prevData.map(lead => 
           lead.Id === leadId ? updatedLead : lead
         )

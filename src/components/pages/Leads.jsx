@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -152,6 +152,17 @@ const [selectedLeads, setSelectedLeads] = useState(new Set())
   const [fundingFilter, setFundingFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [teamSizeFilter, setTeamSizeFilter] = useState('all')
+  const [sortField, setSortField] = useState('')
+  const [sortDirection, setSortDirection] = useState('asc')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(25)
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+
+// State for categories
+  const [categoryOptions, setCategoryOptions] = useState([])
+  
+  // State for timeouts and debouncing
   
   // State for pagination and sorting
   const [currentPage, setCurrentPage] = useState(1)
@@ -540,89 +551,539 @@ const handleFieldUpdate = async (leadId, field, value) => {
     }
   };
 
-// Utility function to get field name for column
-
-  // Initialize data
-useEffect(() => {
-    loadCustomColumns();
-    loadLeads();
-  }, []);
-// Filtering and sorting - ensure data is always an array
-const filteredAndSortedData = (Array.isArray(data) ? data : [])
-    .filter(lead => {
-      const matchesSearch = !searchTerm || 
+// Filter and sort data
+  const filteredAndSortedData = useMemo(() => {
+    if (!data.length) return [];
+    
+    let filtered = data.filter(lead => {
+      const matchesSearch = searchTerm === '' || 
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead['Company Name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.Email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead['Website URL']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.Category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead.teamSize?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lead['Team Size']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (lead.productName && lead.productName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (lead['Product Name'] && lead['Product Name'].toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesStatus = statusFilter === "" || lead.Status === statusFilter || lead.status === statusFilter;
-      const matchesFunding = fundingFilter === "" || lead['Funding Type'] === fundingFilter || lead.fundingType === fundingFilter;
-      const matchesCategory = categoryFilter === "" || lead.Category === categoryFilter || lead.category === categoryFilter;
-      const matchesTeamSize = teamSizeFilter === "" || lead['Team Size'] === teamSizeFilter || lead.teamSize === teamSizeFilter;
+        lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+      const matchesFunding = fundingFilter === 'all' || lead.fundingType === fundingFilter;
+      const matchesCategory = categoryFilter === 'all' || lead.category === categoryFilter;
+      const matchesTeamSize = teamSizeFilter === 'all' || lead.teamSize === teamSizeFilter;
       
       return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
-    })
-.sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-      
-      if (sortField === "ARR" || sortField === "arr") {
-        aValue = Number(a.ARR || a.arr || 0);
-        bValue = Number(b.ARR || b.arr || 0);
-      }
-      
-      if (sortField === "createdAt") {
-        aValue = new Date(a.createdAt || a.CreatedAt || 0);
-        bValue = new Date(b.createdAt || b.CreatedAt || 0);
-      }
-      
-      if (sortField === "websiteUrl" || sortField === "Website URL") {
-        // Sort websiteUrl by creation date (newest first) instead of alphabetical
-        aValue = new Date(a.createdAt || a.CreatedAt || 0);
-        bValue = new Date(b.createdAt || b.CreatedAt || 0);
-      }
-      
-      // Handle null/undefined values
-      if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return 1;
-      if (bValue == null) return -1;
-      
-      if (sortDirection === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
     });
 
-  // Pagination logic
+    // Apply sorting
+    if (sortField) {
+      filtered.sort((a, b) => {
+        const aValue = a[sortField] || '';
+        const bValue = b[sortField] || '';
+        
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+        
+        const aStr = String(aValue).toLowerCase();
+        const bStr = String(bValue).toLowerCase();
+        
+        if (sortDirection === 'asc') {
+          return aStr.localeCompare(bStr);
+        } else {
+          return bStr.localeCompare(aStr);
+        }
+      });
+    }
+
+    return filtered;
+  }, [data, searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter, sortField, sortDirection]);
+
+  // Pagination
   const totalItems = filteredAndSortedData.length;
   const totalPages = Math.ceil(totalItems / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
-// Always maintain one empty row at the top
-  useEffect(() => {
-    if (!loading && emptyRows.length === 0) {
-      addEmptyRow();
-    }
-  }, [loading, emptyRows.length]);
 
+  // Render main content
+  if (loading) return <Loading />;
+  if (error) return <Error message={error} />;
+
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Leads</h1>
+          <p className="text-gray-600 mt-1">Manage and track your sales leads</p>
+        </div>
+        
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/leads/custom-columns')}
+            className="flex items-center gap-2"
+          >
+            <ApperIcon name="Settings" size={16} />
+            Custom Columns
+          </Button>
+          
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700"
+          >
+            <ApperIcon name="Plus" size={16} />
+            Add Lead
+          </Button>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1">
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Search leads by name, email, or website..."
+          />
+        </div>
+        
+        <div className="flex flex-wrap gap-3">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="all">All Status</option>
+            <option value="Keep an Eye">Keep an Eye</option>
+            <option value="Hotlist">Hotlist</option>
+            <option value="Connected">Connected</option>
+            <option value="Meeting Booked">Meeting Booked</option>
+            <option value="Meeting Done">Meeting Done</option>
+            <option value="Negotiation">Negotiation</option>
+            <option value="Launched on AppSumo">Launched on AppSumo</option>
+            <option value="Launched on Prime Club">Launched on Prime Club</option>
+            <option value="Out of League">Out of League</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Closed Won">Closed Won</option>
+            <option value="Closed Lost">Closed Lost</option>
+          </select>
+          
+          <select
+            value={fundingFilter}
+            onChange={(e) => setFundingFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="all">All Funding</option>
+            <option value="Bootstrapped">Bootstrapped</option>
+            <option value="Series A">Series A</option>
+            <option value="Series B">Series B</option>
+            <option value="Series C">Series C</option>
+            <option value="Y Combinator">Y Combinator</option>
+          </select>
+          
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="all">All Categories</option>
+            <option value="Website Contact Form">Website Contact Form</option>
+            <option value="Partner Referral">Partner Referral</option>
+            <option value="Cold Calling">Cold Calling</option>
+            <option value="Events">Events</option>
+            <option value="Website Chatbot">Website Chatbot</option>
+            <option value="Customer Referral">Customer Referral</option>
+          </select>
+          
+          <select
+            value={teamSizeFilter}
+            onChange={(e) => setTeamSizeFilter(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="all">All Team Sizes</option>
+            <option value="1-3">1-3</option>
+            <option value="4-10">4-10</option>
+            <option value="11-50">11-50</option>
+            <option value="51-100">51-100</option>
+            <option value="101-500">101-500</option>
+            <option value="500+">500+</option>
+            <option value="1001+">1001+</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Results count */}
+      <div className="text-sm text-gray-600">
+        Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} leads
+      </div>
+
+      {/* Table */}
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left">
+                  <input
+                    type="checkbox"
+                    checked={selectedLeads.size === paginatedData.length && paginatedData.length > 0}
+                    onChange={toggleSelectAll}
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('name')}
+                >
+                  <div className="flex items-center gap-1">
+                    Company Name
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('email')}
+                >
+                  <div className="flex items-center gap-1">
+                    Email
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('status')}
+                >
+                  <div className="flex items-center gap-1">
+                    Status
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('leadScore')}
+                >
+                  <div className="flex items-center gap-1">
+                    Lead Score
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('arr')}
+                >
+                  <div className="flex items-center gap-1">
+                    ARR
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('teamSize')}
+                >
+                  <div className="flex items-center gap-1">
+                    Team Size
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('category')}
+                >
+                  <div className="flex items-center gap-1">
+                    Category
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('engagementLevel')}
+                >
+                  <div className="flex items-center gap-1">
+                    Engagement
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('addedByName')}
+                >
+                  <div className="flex items-center gap-1">
+                    Added By
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {paginatedData.map((lead) => (
+                <tr key={lead.Id} className="hover:bg-gray-50">
+                  <td className="px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedLeads.has(lead.Id)}
+                      onChange={() => toggleLeadSelection(lead.Id)}
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="flex items-center">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                        <div className="text-sm text-gray-500">{lead.websiteUrl}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.email}</td>
+                  <td className="px-4 py-4">
+                    <Badge variant={getStatusColor(lead.status)}>
+                      {lead.status}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="flex items-center">
+                      <div className="text-sm font-medium text-gray-900">{lead.leadScore}</div>
+                      <div className="ml-2 w-16 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-primary-600 h-2 rounded-full" 
+                          style={{ width: `${Math.min(100, lead.leadScore)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">
+                    {formatCurrency(lead.arr)}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.teamSize}</td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.category}</td>
+                  <td className="px-4 py-4">
+                    <Badge variant={getEngagementColor(lead.engagementLevel)}>
+                      {lead.engagementLevel}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.addedByName}</td>
+                  <td className="px-4 py-4 text-right text-sm font-medium">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setEditingLead(lead);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <ApperIcon name="Edit2" size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(lead.Id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <ApperIcon name="Trash2" size={14} />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Empty state */}
+        {paginatedData.length === 0 && (
+          <div className="text-center py-12">
+            <ApperIcon name="Users" size={48} className="mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No leads found</h3>
+            <p className="text-gray-500 mb-4">
+              {searchTerm || statusFilter !== 'all' || fundingFilter !== 'all' || categoryFilter !== 'all' || teamSizeFilter !== 'all'
+                ? 'Try adjusting your search criteria or filters'
+                : 'Get started by adding your first lead'
+              }
+            </p>
+            {(!searchTerm && statusFilter === 'all' && fundingFilter === 'all' && categoryFilter === 'all' && teamSizeFilter === 'all') && (
+              <Button onClick={() => setShowAddModal(true)}>
+                <ApperIcon name="Plus" size={16} className="mr-2" />
+                Add Lead
+              </Button>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-700">Show</span>
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+              className="border border-gray-300 rounded px-2 py-1 text-sm"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span className="text-sm text-gray-700">per page</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ApperIcon name="ChevronLeft" size={16} />
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNumber = i + 1;
+                return (
+                  <Button
+                    key={pageNumber}
+                    variant={currentPage === pageNumber ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(pageNumber)}
+                    className="min-w-[32px]"
+                  >
+                    {pageNumber}
+                  </Button>
+                );
+              })}
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <ApperIcon name="ChevronRight" size={16} />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Actions */}
+      {selectedLeads.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 flex items-center gap-4 z-50">
+          <span className="text-sm text-gray-600">
+            {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'} selected
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearSelection}
+          >
+            Clear
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleBulkDelete}
+            className="text-red-600 border-red-300 hover:bg-red-50"
+          >
+            <ApperIcon name="Trash2" size={14} className="mr-1" />
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
+      {/* Modals */}
+      {showAddModal && (
+        <AddLeadModal
+          onClose={() => setShowAddModal(false)}
+          onSubmit={handleAddLead}
+          categoryOptions={categories}
+        />
+      )}
+
+      {showEditModal && editingLead && (
+        <EditLeadModal
+          lead={editingLead}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingLead(null);
+          }}
+          onSubmit={handleUpdateLead}
+        />
+      )}
+
+      {showBulkDeleteDialog && (
+        <BulkDeleteConfirmationDialog
+          selectedCount={selectedLeads.size}
+          onConfirm={handleBulkDelete}
+          onCancel={() => setShowBulkDeleteDialog(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Filter and sort data using useMemo for performance
+const filteredAndSortedData = useMemo(() => {
+  if (!data.length) return [];
+  
+  let filtered = data.filter(lead => {
+    const matchesSearch = searchTerm === '' || 
+      lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.websiteUrl?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+    const matchesFunding = fundingFilter === 'all' || lead.fundingType === fundingFilter;
+    const matchesCategory = categoryFilter === 'all' || lead.category === categoryFilter;
+    const matchesTeamSize = teamSizeFilter === 'all' || lead.teamSize === teamSizeFilter;
+    
+    return matchesSearch && matchesStatus && matchesFunding && matchesCategory && matchesTeamSize;
+  });
+
+  // Apply sorting
+  if (sortField) {
+    filtered.sort((a, b) => {
+      const aValue = a[sortField] || '';
+      const bValue = b[sortField] || '';
+      
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+      
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+      
+      if (sortDirection === 'asc') {
+        return aStr.localeCompare(bStr);
+      } else {
+        return bStr.localeCompare(aStr);
+      }
+    });
+  }
+
+  return filtered;
+}, [data, searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter, sortField, sortDirection]);
+
+// Pagination
+const totalItems = filteredAndSortedData.length;
+const totalPages = Math.ceil(totalItems / pageSize);
+const startIndex = (currentPage - 1) * pageSize;
+const endIndex = startIndex + pageSize;
+const paginatedData = filteredAndSortedData.slice(startIndex, endIndex);
+
+// Reset to first page when filters change
+useEffect(() => {
+  setCurrentPage(1);
+}, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
+
+// Always maintain one empty row at the top
+useEffect(() => {
+  if (!loading && emptyRows.length === 0) {
+    addEmptyRow();
+  }
+}, [loading, emptyRows.length, addEmptyRow]);
 
 if (loading) return <Loading />;
-  if (error) return <Error message={error} onRetry={loadLeads} />;
-
+if (error) return <Error message={error} onRetry={loadLeads} />;
   return (
     <motion.div
     initial={{

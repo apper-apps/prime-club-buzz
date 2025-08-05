@@ -321,9 +321,8 @@ export async function getDailyLeadsReport() {
   } catch (error) {
     console.error('Error getting daily leads report:', error);
     throw new Error('Failed to get daily leads report');
-  }
 }
-import salesRepData from "@/services/mockData/salesReps.json";
+}
 
 let leads = [...leadsData];
 let salesReps = [...salesRepData];

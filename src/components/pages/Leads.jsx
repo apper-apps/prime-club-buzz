@@ -12,7 +12,7 @@ import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Hotlist from "@/components/pages/Hotlist";
 import Badge from "@/components/atoms/Badge";
-import Input from "@/components/atoms/Input";
+import Input, { Input } from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
@@ -1090,6 +1090,7 @@ variant="outline"
           categoryOptions={categoryOptions}
           onCreateCategory={handleCreateCategory}
           columns={columns}
+          salesReps={salesReps}
         />
       )}
 
@@ -1104,6 +1105,7 @@ variant="outline"
           categoryOptions={categoryOptions}
           onCreateCategory={handleCreateCategory}
           columns={columns}
+          salesReps={salesReps}
         />
       )}
 
@@ -1550,7 +1552,26 @@ const [formData, setFormData] = useState(initializeFormData());
             />
           </div>
         );
-      
+// Add salesReps state
+  const [salesReps, setSalesReps] = useState([]);
+
+  // Load sales reps data
+  const loadSalesReps = async () => {
+    try {
+      const reps = await getSalesReps();
+      setSalesReps(reps || []);
+    } catch (error) {
+      console.error('Error loading sales reps:', error);
+      setSalesReps([]);
+    }
+  };
+
+  // Update useEffect to load sales reps
+  useEffect(() => {
+    loadCustomColumns();
+    loadLeads();
+    loadSalesReps(); // Add this line
+  }, []);
       case 'number':
         return (
           <div key={column.Id}>
@@ -2014,7 +2035,7 @@ return (
   );
 };
 
-const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory, columns }) => {
+const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory, columns, salesReps = [] }) => {
   // Initialize form data based on lead data and visible columns
   const initializeFormData = () => {
     const initialData = {

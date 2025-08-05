@@ -8,7 +8,7 @@ import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import ApperIcon from "@/components/ApperIcon";
 import { getSalesReps } from "@/services/api/salesRepService";
-
+import { listAnimations, cardAnimations } from "@/utils/animations";
 const Leaderboard = () => {
   const [salesReps, setSalesReps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -147,12 +147,10 @@ const getRankIcon = (rank) => {
                     const rank = index + 1;
                     const score = rep.dealsClosed * 3 + rep.meetingsBooked * 2 + rep.leadsContacted;
                     
-                    return (
+return (
                       <motion.tr
                         key={rep.Id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        {...listAnimations.staggered(index)}
                         className={`hover:bg-gray-50 transition-colors ${
                           rank <= 3 ? "bg-gradient-to-r " + getRankColor(rank) + " bg-opacity-10" : ""
                         }`}
@@ -200,36 +198,42 @@ const getRankIcon = (rank) => {
           </Card>
 
           {/* Performance Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-<Card className="p-6 text-center">
-              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ApperIcon name="Users" size={24} className="text-primary-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Leads</h3>
-              <p className="text-3xl font-bold text-primary-600">
-                {salesReps.reduce((sum, rep) => sum + rep.leadsContacted, 0)}
-              </p>
-            </Card>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <motion.div {...cardAnimations.staggeredGrid(0)}>
+              <Card className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ApperIcon name="Users" size={24} className="text-primary-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Leads</h3>
+                <p className="text-3xl font-bold text-primary-600">
+                  {salesReps.reduce((sum, rep) => sum + rep.leadsContacted, 0)}
+                </p>
+              </Card>
+            </motion.div>
 
-            <Card className="p-6 text-center">
-              <div className="w-12 h-12 bg-primary-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ApperIcon name="Calendar" size={24} className="text-primary-700" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Meetings</h3>
-              <p className="text-3xl font-bold text-primary-700">
-                {salesReps.reduce((sum, rep) => sum + rep.meetingsBooked, 0)}
-              </p>
-            </Card>
+            <motion.div {...cardAnimations.staggeredGrid(1)}>
+              <Card className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ApperIcon name="Calendar" size={24} className="text-primary-700" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Meetings</h3>
+                <p className="text-3xl font-bold text-primary-700">
+                  {salesReps.reduce((sum, rep) => sum + rep.meetingsBooked, 0)}
+                </p>
+              </Card>
+            </motion.div>
 
-            <Card className="p-6 text-center">
-              <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ApperIcon name="DollarSign" size={24} className="text-accent-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Revenue</h3>
-              <p className="text-3xl font-bold text-accent-600">
-                {formatCurrency(salesReps.reduce((sum, rep) => sum + rep.totalRevenue, 0))}
-              </p>
-            </Card>
+            <motion.div {...cardAnimations.staggeredGrid(2)}>
+              <Card className="p-6 text-center">
+                <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ApperIcon name="DollarSign" size={24} className="text-accent-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Revenue</h3>
+                <p className="text-3xl font-bold text-accent-600">
+                  {formatCurrency(salesReps.reduce((sum, rep) => sum + rep.totalRevenue, 0))}
+                </p>
+              </Card>
+            </motion.div>
           </div>
         </div>
       )}

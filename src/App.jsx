@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { pageTransitions } from '@/utils/animations';
 import React, { Component } from 'react';
 import Layout from '@/components/organisms/Layout';
 import { SidebarProvider } from '@/contexts/SidebarContext';
@@ -71,12 +72,8 @@ componentDidCatch(error, errorInfo) {
 }
 
 const MainApp = () => {
-  const pageTransition = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.3 }
-  };
-
+  // Use global page transition animation
+  const pageTransition = pageTransitions.fadeSlide;
 return (
     <div className="font-sans antialiased">
       <SidebarProvider>

@@ -5,6 +5,8 @@ import ApperIcon from '@/components/ApperIcon'
 import Badge from '@/components/atoms/Badge'
 import Avatar from '@/components/atoms/Avatar'
 import Card from '@/components/atoms/Card'
+import { cardAnimations } from '@/utils/animations'
+
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -39,13 +41,13 @@ function DealCard({ deal, index, onEdit }) {
   return (
     <Draggable draggableId={draggableId} index={index}>
       {(provided, snapshot) => (
-        <motion.div
+<motion.div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: index * 0.1 }}
+          {...cardAnimations.listItem(index)}
+          whileHover={cardAnimations.hover}
+          whileTap={cardAnimations.tap}
           className={`mb-3 ${snapshot.isDragging ? 'dragging' : ''}`}
         >
           <Card className="group cursor-pointer transition-all duration-200 hover:shadow-lg">

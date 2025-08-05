@@ -5,7 +5,7 @@ import Card from "@/components/atoms/Card";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import ApperIcon from "@/components/ApperIcon";
-
+import { modalAnimations } from "@/utils/animations";
 const DealEditModal = ({ isOpen, onClose, deal, onSave }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -151,19 +151,15 @@ const DealEditModal = ({ isOpen, onClose, deal, onSave }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            {...modalAnimations.backdrop}
             className="fixed inset-0 bg-black bg-opacity-50"
             onClick={handleClose}
           />
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            {...modalAnimations.content}
             className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto"
           >
             <Card className="p-6">

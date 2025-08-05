@@ -10,10 +10,10 @@ const Layout = ({ children }) => {
       <Sidebar />
       
       {/* Floating Toggle Button */}
-      <button
+<button
         onClick={toggleSidebar}
         className={`fixed top-1/2 -translate-y-1/2 z-50 p-2 bg-white shadow-lg border border-gray-200 rounded-full hover:bg-gray-50 transition-all duration-300 ${
-          isCollapsed ? 'left-14' : 'left-58'
+          isCollapsed ? 'right-4' : 'right-14'
         }`}
         style={{ transform: 'translateY(-50%)' }}
       >

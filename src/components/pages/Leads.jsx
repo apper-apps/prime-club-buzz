@@ -255,7 +255,7 @@ const handleFieldUpdate = async (leadId, field, value) => {
   }
 
 
-  // Empty row handlers
+// Empty row handlers
   const addEmptyRow = () => {
     const newEmptyRow = {
       Id: nextTempId,
@@ -264,32 +264,6 @@ const handleFieldUpdate = async (leadId, field, value) => {
     setEmptyRows(prev => [...prev, newEmptyRow]);
     setNextTempId(prev => prev - 1);
   };
-
-  const handleEmptyRowUpdate = async (tempId, field, value) => {
-    try {
-      const emptyRow = emptyRows.find(row => row.Id === tempId)
-      if (!emptyRow) return
-
-      // Collect all filled fields from the empty row
-      const urls = parseMultipleUrls(emptyRow.websiteUrl || value)
-      
-      if (urls.length === 0) {
-        toast.error('Please enter at least one website URL')
-        return
-      }
-
-      const leadData = {}
-customColumns.forEach(column => {
-        const fieldName = getFieldNameForColumn(column);
-        const fieldValue = emptyRow[fieldName] || (field === fieldName && value);
-        if (fieldValue !== undefined && fieldValue !== '') {
-          leadData[fieldName] = fieldValue;
-        }
-      });
-
-      // Create leads from URLs
-      const successfulLeads = [];
-      const failedUrls = [];
 
   // Handle empty row updates and conversion to actual leads
   const handleEmptyRowUpdate = async (tempId, field, value) => {
@@ -333,7 +307,6 @@ customColumns.forEach(column => {
           // Remove the empty row and add the new lead to data
           setEmptyRows(prev => prev.filter(row => row.Id !== tempId))
           setData(prevData => [newLead, ...prevData])
-          setLeads(prevLeads => [newLead, ...prevLeads])
           
           toast.success(`Lead created for ${leadData['Company Name'] || 'company'}`)
         } catch (error) {
@@ -352,47 +325,6 @@ customColumns.forEach(column => {
     if (newCategory && !categoryOptions.includes(newCategory)) {
       setCategoryOptions(prev => [...prev, newCategory])
       toast.success(`Category "${newCategory}" created`)
-    }
-  }
-
-  // Add empty row for inline data entry
-// Add empty row for inline data entry
-  const addEmptyRow = () => {
-    const newEmptyRow = {
-      Id: nextTempId,
-      isEmptyRow: true
-    };
-    setEmptyRows(prev => [...prev, newEmptyRow]);
-    setNextTempId(prev => prev - 1);
-  };
-  }
-      for (const url of urls) {
-        try {
-          const newLead = await createLead({
-            ...leadData,
-            websiteUrl: url
-          })
-          successfulLeads.push(newLead)
-        } catch (error) {
-          console.error(`Failed to create lead for ${url}:`, error)
-          failedUrls.push(url)
-        }
-      }
-
-      if (successfulLeads.length > 0) {
-        setData(prev => [...successfulLeads, ...prev])
-        toast.success(`Successfully created ${successfulLeads.length} lead(s)`)
-      }
-
-      if (failedUrls.length > 0) {
-        toast.error(`Failed to create leads for ${failedUrls.length} URL(s)`)
-      }
-
-      // Remove the empty row
-      setEmptyRows(prev => prev.filter(row => row.Id !== tempId))
-    } catch (error) {
-      console.error('Error updating empty row:', error)
-      toast.error('Failed to create lead')
     }
   }
 

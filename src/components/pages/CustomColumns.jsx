@@ -2,16 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { 
-  bulkDeleteColumns, 
-  bulkToggleColumns, 
-  createCustomColumn, 
-  deleteCustomColumn, 
-  getCustomColumns, 
-  reorderCustomColumns, 
-  toggleColumnVisibility, 
-  updateCustomColumn 
-} from "@/services/api/leadsService";
+import { bulkDeleteColumns, bulkToggleColumns, createCustomColumn, deleteCustomColumn, getCustomColumns, reorderCustomColumns, toggleColumnVisibility, updateCustomColumn } from "@/services/api/leadsService";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
@@ -237,7 +228,7 @@ const handleDeleteColumn = async (id) => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+<div className="flex items-center space-x-2">
               {selectedColumns.length > 0 && (
                 <>
                   <div className="text-sm text-gray-600">
@@ -269,6 +260,14 @@ const handleDeleteColumn = async (id) => {
                       Delete ({deletableSelectedCount})
                     </Button>
                   )}
+<Button
+                    onClick={() => setSelectedColumns([])}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <ApperIcon name="X" size={14} className="mr-1" />
+                    Unselect All
+                  </Button>
                 </>
               )}
               <div className="text-sm text-gray-500">

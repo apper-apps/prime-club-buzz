@@ -432,31 +432,48 @@ export async function deleteCustomColumn(id) {
       throw new Error('Column not found');
     }
     
-    if (customColumns[index].isDefault) {
-      throw new Error('Cannot delete default columns');
+    const column = customColumns[index];
+    // Only prevent deletion of core required columns
+    const protectedColumns = ['Company Name', 'Email', 'Website URL'];
+    if (column.isDefault && protectedColumns.includes(column.name)) {
+      throw new Error(`Cannot delete core column: ${column.name}`);
     }
     
     const deletedColumn = customColumns.splice(index, 1)[0];
     return deletedColumn;
   } catch (error) {
     console.error('Error deleting custom column:', error);
-    throw new Error('Failed to delete custom column');
+    throw error;
   }
 }
 
 export async function bulkDeleteColumns(columnIds) {
   try {
     const deletedColumns = [];
+    const skippedColumns = [];
     // Sort IDs in descending order to avoid index shifting issues
     const sortedIds = columnIds.sort((a, b) => b - a);
     
+    const protectedColumns = ['Company Name', 'Email', 'Website URL'];
+    
     for (const id of sortedIds) {
       const index = customColumns.findIndex(c => c.Id === parseInt(id));
-      if (index !== -1 && !customColumns[index].isDefault) {
-        const deletedColumn = customColumns.splice(index, 1)[0];
-        deletedColumns.push(deletedColumn);
+      if (index !== -1) {
+        const column = customColumns[index];
+        // Only prevent deletion of core required columns
+        if (column.isDefault && protectedColumns.includes(column.name)) {
+          skippedColumns.push(column.name);
+        } else {
+          const deletedColumn = customColumns.splice(index, 1)[0];
+          deletedColumns.push(deletedColumn);
+        }
       }
     }
+    
+    if (skippedColumns.length > 0) {
+      console.warn(`Skipped deletion of protected columns: ${skippedColumns.join(', ')}`);
+    }
+    
     return deletedColumns;
   } catch (error) {
     console.error('Error bulk deleting columns:', error);

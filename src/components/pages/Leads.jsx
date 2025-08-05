@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/columnOrderService";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
 import { createDeal, getDeals, updateDeal } from "@/services/api/dealsService";
-import { getSalesReps, getSalesRepsFromReport, getSalesRepsFromReportService } from "@/services/api/reportService";
 import { getSalesReps } from "@/services/api/salesRepService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";

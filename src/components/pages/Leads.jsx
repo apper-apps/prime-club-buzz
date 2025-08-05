@@ -151,8 +151,15 @@ function Leads() {
   const [pageSize, setPageSize] = useState(25)
   const [showAddModal, setShowAddModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
-
-  // State for categories
+// State for categories
+  
+  // State for drag and drop functionality
+  const [dragState, setDragState] = useState({
+    isDragging: false,
+    draggedIndex: null,
+    dragOverIndex: null,
+    draggedColumn: null
+  })
   const [categoryOptions, setCategoryOptions] = useState([])
   
   // State for sales reps

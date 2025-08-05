@@ -459,9 +459,9 @@ const handleFieldUpdate = async (leadId, field, value) => {
         }
       }
       
-      setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
+setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
       setSelectedLeads(new Set());
-      setShowBulkDeleteModal(false);
+      setShowBulkDeleteDialog(false);
       
       if (successCount > 0) {
         toast.success(`Successfully deleted ${successCount} lead(s)`);

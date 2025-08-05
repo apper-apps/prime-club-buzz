@@ -52,7 +52,7 @@ export const getDealById = async (id) => {
       console.error('Deals is not an array in getDealById');
       return null;
     }
-    return deals.find(deal => deal && deal.id === id) || null;
+    return deals.find(deal => deal && deal.Id === parseInt(id)) || null;
   } catch (error) {
     console.error('Error in getDealById:', error);
     return null;
@@ -65,8 +65,9 @@ export const createDeal = async (dealData) => {
     if (!Array.isArray(deals)) {
       deals = [];
     }
+    const maxId = deals.length > 0 ? Math.max(...deals.map(d => d.Id || 0)) : 0;
     const newDeal = {
-      id: Date.now().toString(),
+      Id: maxId + 1,
       ...dealData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -85,7 +86,7 @@ export const updateDeal = async (id, updates) => {
     if (!Array.isArray(deals)) {
       throw new Error('Deals data is corrupted');
     }
-    const index = deals.findIndex(deal => deal && deal.id === id);
+    const index = deals.findIndex(deal => deal && deal.Id === parseInt(id));
     if (index !== -1) {
       deals[index] = {
         ...deals[index],
@@ -107,7 +108,7 @@ export const deleteDeal = async (id) => {
     if (!Array.isArray(deals)) {
       throw new Error('Deals data is corrupted');
     }
-    const index = deals.findIndex(deal => deal && deal.id === id);
+    const index = deals.findIndex(deal => deal && deal.Id === parseInt(id));
     if (index !== -1) {
       const deletedDeal = deals[index];
       deals.splice(index, 1);

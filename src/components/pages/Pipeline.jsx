@@ -105,8 +105,8 @@ const loadDeals = async () => {
     try {
       await updateDeal(dealId, { stage: newStage });
       
-      const updatedDeals = deals.map(deal =>
-        deal.Id === dealId ? { ...deal, stage: newStage } : deal
+const updatedDeals = deals.map(deal =>
+        deal.Id === parseInt(dealId) ? { ...deal, stage: newStage } : deal
       );
       setDeals(updatedDeals);
       
@@ -125,7 +125,7 @@ const loadDeals = async () => {
     const updatedDeal = await updateDeal(dealId, updatedData);
     
     const updatedDeals = deals.map(deal =>
-      deal.Id === dealId ? { ...deal, ...updatedData } : deal
+deal.Id === parseInt(dealId) ? { ...deal, ...updatedData } : deal
     );
     setDeals(updatedDeals);
   };
@@ -230,9 +230,9 @@ const getDealsForStage = (stage) => {
                             <p className="text-sm">No deals in this stage</p>
                           </div>
                         ) : (
-                          stageDeals.map((deal, index) => (
+stageDeals.map((deal, index) => (
                             <DealCard
-                              key={deal.Id}
+                              key={deal.Id || index}
                               deal={deal}
                               index={index}
                               onEdit={handleEditDeal}

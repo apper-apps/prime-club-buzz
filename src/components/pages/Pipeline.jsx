@@ -19,7 +19,7 @@ import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
 const Pipeline = () => {
-  const [deals, setDeals] = useState([]);
+const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -34,15 +34,19 @@ const Pipeline = () => {
     { id: "Lost", name: "Lost", color: "bg-gray-500" }
   ];
 
-  const loadDeals = async () => {
+const loadDeals = async () => {
     try {
       setLoading(true);
       setError("");
       
       const data = await getDeals();
-      setDeals(data);
+      // Ensure data is always an array to prevent filter errors
+      const dealsArray = Array.isArray(data) ? data : [];
+      setDeals(dealsArray);
     } catch (err) {
-      setError("Failed to load deals");
+      console.error("Failed to load deals:", err);
+      setError("Failed to load deals. Please try again.");
+      setDeals([]); // Reset to empty array on error
     } finally {
       setLoading(false);
     }
@@ -100,12 +104,18 @@ const Pipeline = () => {
     setEditingDeal(null);
   };
 
-  const getDealsForStage = (stage) => {
-    return deals.filter(deal => deal.stage === stage);
+const getDealsForStage = (stage) => {
+    // Defensive check to ensure deals is always an array
+    if (!Array.isArray(deals)) {
+      console.error("Deals is not an array:", deals);
+      return [];
+    }
+    return deals.filter(deal => deal?.stage === stage);
   };
+  
   const getTotalValue = (stage) => {
     const stageDeals = getDealsForStage(stage);
-    return stageDeals.reduce((sum, deal) => sum + deal.value, 0);
+    return stageDeals.reduce((sum, deal) => sum + (deal?.value || 0), 0);
   };
 
   const formatCurrency = (amount) => {

@@ -1,10 +1,28 @@
 import dealsData from "@/services/mockData/deals.json";
 
-let deals = [...dealsData];
+// Ensure deals is always an array with proper validation
+let deals;
+try {
+  // Handle both array and object formats from JSON
+  if (Array.isArray(dealsData)) {
+    deals = [...dealsData];
+  } else if (dealsData && typeof dealsData === 'object') {
+    // If it's an object, try to extract an array property or convert to array
+    deals = dealsData.deals || dealsData.data || Object.values(dealsData);
+    if (!Array.isArray(deals)) {
+      deals = [];
+    }
+  } else {
+    deals = [];
+  }
+} catch (error) {
+  console.error("Error processing deals data:", error);
+  deals = [];
+}
 
 export const getDeals = async (year = null) => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 300));
   
   if (year) {
     const currentYear = new Date().getFullYear();
@@ -15,7 +33,8 @@ export const getDeals = async (year = null) => {
     return [...filteredDeals];
   }
   
-  return [...deals];
+  // Always return a valid array
+  return Array.isArray(deals) ? deals : [];
 };
 
 export const getDealById = async (id) => {

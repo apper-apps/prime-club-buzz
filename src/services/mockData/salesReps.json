@@ -5,7 +5,52 @@
     "leadsContacted": 847,
     "meetingsBooked": 124,
     "dealsClosed": 45,
-    "totalRevenue": 1250000
+    "totalRevenue": 1250000,
+    "telephony": {
+      "callsPlaced": 1247,
+      "callsAnswered": 623,
+      "callConnectRate": 49.96,
+      "avgCallDuration": "4:32",
+      "totalCallTime": "142:15:30",
+      "voicemailsLeft": 324,
+      "callBacks": 89,
+      "callDisposition": {
+        "interested": 156,
+        "notInterested": 298,
+        "callback": 89,
+        "voicemail": 324,
+        "noAnswer": 267,
+        "busy": 78,
+        "wrongNumber": 35
+      },
+      "bestCallTimes": ["10:00-11:30", "14:00-16:00"],
+      "conversionRate": 25.04,
+      "dialingEfficiency": 87.2
+    },
+    "assignments": {
+      "assignmentsCompleted": 234,
+      "assignmentsActive": 45,
+      "avgCompletionTime": "2.3 days",
+      "assignmentSuccessRate": 91.2,
+      "territoryPerformance": {
+        "northAmerica": {
+          "leads": 523,
+          "conversions": 142,
+          "revenue": 780000
+        },
+        "enterpriseAccounts": {
+          "leads": 324,
+          "conversions": 89,
+          "revenue": 470000
+        }
+      },
+      "currentWorkload": {
+        "calls": 12,
+        "demos": 8,
+        "followUps": 15,
+        "proposals": 10
+      }
+    }
   },
   {
     "Id": 2,
@@ -13,7 +58,51 @@
     "leadsContacted": 723,
     "meetingsBooked": 98,
     "dealsClosed": 38,
-    "totalRevenue": 980000
+    "totalRevenue": 980000,
+    "telephony": {
+      "callsPlaced": 986,
+      "callsAnswered": 512,
+      "callConnectRate": 51.93,
+      "avgCallDuration": "3:47",
+      "totalCallTime": "96:28:15",
+      "voicemailsLeft": 267,
+      "callBacks": 73,
+      "callDisposition": {
+        "interested": 134,
+        "notInterested": 245,
+        "callback": 73,
+        "voicemail": 267,
+        "noAnswer": 201,
+        "busy": 66
+      },
+      "bestCallTimes": ["09:00-10:30", "15:30-17:00"],
+      "conversionRate": 26.17,
+      "dialingEfficiency": 82.5
+    },
+    "assignments": {
+      "assignmentsCompleted": 187,
+      "assignmentsActive": 32,
+      "avgCompletionTime": "1.8 days",
+      "assignmentSuccessRate": 88.7,
+      "territoryPerformance": {
+        "midwest": {
+          "leads": 412,
+          "conversions": 98,
+          "revenue": 590000
+        },
+        "smbAccounts": {
+          "leads": 311,
+          "conversions": 76,
+          "revenue": 390000
+        }
+      },
+      "currentWorkload": {
+        "calls": 8,
+        "demos": 6,
+        "followUps": 12,
+        "proposals": 6
+      }
+    }
   },
   {
     "Id": 3,
@@ -21,7 +110,51 @@
     "leadsContacted": 654,
     "meetingsBooked": 87,
     "dealsClosed": 32,
-    "totalRevenue": 875000
+    "totalRevenue": 875000,
+    "telephony": {
+      "callsPlaced": 892,
+      "callsAnswered": 423,
+      "callConnectRate": 47.42,
+      "avgCallDuration": "4:15",
+      "totalCallTime": "89:47:45",
+      "voicemailsLeft": 234,
+      "callBacks": 67,
+      "callDisposition": {
+        "interested": 121,
+        "notInterested": 198,
+        "callback": 67,
+        "voicemail": 234,
+        "noAnswer": 189,
+        "busy": 83
+      },
+      "bestCallTimes": ["11:00-12:00", "16:00-17:30"],
+      "conversionRate": 28.62,
+      "dialingEfficiency": 79.8
+    },
+    "assignments": {
+      "assignmentsCompleted": 156,
+      "assignmentsActive": 28,
+      "avgCompletionTime": "2.1 days",
+      "assignmentSuccessRate": 85.3,
+      "territoryPerformance": {
+        "southeast": {
+          "leads": 389,
+          "conversions": 87,
+          "revenue": 520000
+        },
+        "newAccounts": {
+          "leads": 265,
+          "conversions": 54,
+          "revenue": 355000
+        }
+      },
+      "currentWorkload": {
+        "calls": 10,
+        "demos": 4,
+        "followUps": 9,
+        "proposals": 5
+      }
+    }
   },
   {
     "Id": 4,
@@ -29,15 +162,102 @@
     "leadsContacted": 592,
     "meetingsBooked": 76,
     "dealsClosed": 28,
-    "totalRevenue": 720000
+    "totalRevenue": 720000,
+    "telephony": {
+      "callsPlaced": 456,
+      "callsAnswered": 267,
+      "callConnectRate": 58.55,
+      "avgCallDuration": "3:22",
+      "totalCallTime": "44:56:30",
+      "voicemailsLeft": 123,
+      "callBacks": 34,
+      "callDisposition": {
+        "interested": 89,
+        "notInterested": 134,
+        "callback": 34,
+        "voicemail": 123,
+        "noAnswer": 76
+      },
+      "bestCallTimes": ["10:00-12:00", "14:00-15:30"],
+      "conversionRate": 33.33,
+      "dialingEfficiency": 91.2
+    },
+    "assignments": {
+      "assignmentsCompleted": 89,
+      "assignmentsActive": 12,
+      "avgCompletionTime": "1.2 days",
+      "assignmentSuccessRate": 94.7,
+      "territoryPerformance": {
+        "westCoast": {
+          "leads": 234,
+          "conversions": 67,
+          "revenue": 420000
+        },
+        "support": {
+          "leads": 358,
+          "conversions": 89,
+          "revenue": 300000
+        }
+      },
+      "currentWorkload": {
+        "calls": 3,
+        "demos": 2,
+        "followUps": 5,
+        "proposals": 2
+      }
+    }
   },
-{
+  {
     "Id": 5,
     "name": "Alex Rodriguez",
     "leadsContacted": 531,
     "meetingsBooked": 65,
     "dealsClosed": 24,
-    "totalRevenue": 650000
+    "totalRevenue": 650000,
+    "telephony": {
+      "callsPlaced": 743,
+      "callsAnswered": 312,
+      "callConnectRate": 42.0,
+      "avgCallDuration": "3:58",
+      "totalCallTime": "61:32:40",
+      "voicemailsLeft": 198,
+      "callBacks": 45,
+      "callDisposition": {
+        "interested": 98,
+        "notInterested": 167,
+        "callback": 45,
+        "voicemail": 198,
+        "noAnswer": 156,
+        "busy": 79
+      },
+      "bestCallTimes": ["09:30-11:00", "13:30-15:00"],
+      "conversionRate": 31.41,
+      "dialingEfficiency": 76.4
+    },
+    "assignments": {
+      "assignmentsCompleted": 142,
+      "assignmentsActive": 23,
+      "avgCompletionTime": "2.7 days",
+      "assignmentSuccessRate": 82.1,
+      "territoryPerformance": {
+        "southwest": {
+          "leads": 312,
+          "conversions": 65,
+          "revenue": 390000
+        },
+        "retail": {
+          "leads": 219,
+          "conversions": 42,
+          "revenue": 260000
+        }
+      },
+      "currentWorkload": {
+        "calls": 7,
+        "demos": 3,
+        "followUps": 8,
+        "proposals": 5
+      }
+    }
   },
   {
     "Id": 6,
@@ -45,6 +265,102 @@
     "leadsContacted": 689,
     "meetingsBooked": 91,
     "dealsClosed": 35,
-    "totalRevenue": 890000
+    "totalRevenu": 890000,
+    "telephony": {
+      "callsPlaced": 1023,
+      "callsAnswered": 478,
+      "callConnectRate": 46.73,
+      "avgCallDuration": "4:12",
+      "totalCallTime": "100:08:20",
+      "voicemailsLeft": 289,
+      "callBacks": 67,
+      "callDisposition": {
+        "interested": 145,
+        "notInterested": 223,
+        "callback": 67,
+        "voicemail": 289,
+        "noAnswer": 187,
+        "busy": 112
+      },
+      "bestCallTimes": ["08:30-10:00", "14:30-16:30"],
+      "conversionRate": 30.35,
+      "dialingEfficiency": 81.3
+    },
+    "assignments": {
+      "assignmentsCompleted": 198,
+      "assignmentsActive": 34,
+      "avgCompletionTime": "2.0 days",
+      "assignmentSuccessRate": 87.9,
+      "territoryPerformance": {
+        "international": {
+          "leads": 423,
+          "conversions": 91,
+          "revenue": 540000
+        },
+        "technology": {
+          "leads": 266,
+          "conversions": 58,
+          "revenue": 350000
+        }
+      },
+      "currentWorkload": {
+        "calls": 9,
+        "demos": 7,
+        "followUps": 11,
+        "proposals": 7
+      }
+    }
+  },
+  {
+    "Id": 7,
+    "name": "Jessica Martinez",
+    "leadsContacted": 612,
+    "meetingsBooked": 89,
+    "dealsClosed": 41,
+    "totalRevenue": 1180000,
+    "telephony": {
+      "callsPlaced": 934,
+      "callsAnswered": 487,
+      "callConnectRate": 52.14,
+      "avgCallDuration": "5:18",
+      "totalCallTime": "128:43:15",
+      "voicemailsLeft": 245,
+      "callBacks": 78,
+      "callDisposition": {
+        "interested": 167,
+        "notInterested": 189,
+        "callback": 78,
+        "voicemail": 245,
+        "noAnswer": 156,
+        "busy": 99
+      },
+      "bestCallTimes": ["09:00-11:30", "15:00-17:00"],
+      "conversionRate": 34.29,
+      "dialingEfficiency": 89.1
+    },
+    "assignments": {
+      "assignmentsCompleted": 203,
+      "assignmentsActive": 38,
+      "avgCompletionTime": "1.9 days",
+      "assignmentSuccessRate": 92.4,
+      "territoryPerformance": {
+        "southwest": {
+          "leads": 378,
+          "conversions": 123,
+          "revenue": 720000
+        },
+        "healthcare": {
+          "leads": 234,
+          "conversions": 89,
+          "revenue": 460000
+        }
+      },
+      "currentWorkload": {
+        "calls": 11,
+        "demos": 9,
+        "followUps": 13,
+        "proposals": 5
+      }
+    }
   }
 ]

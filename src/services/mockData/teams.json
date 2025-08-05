@@ -17,7 +17,56 @@
     "status": "active",
     "createdAt": "2024-01-15T10:30:00Z",
     "updatedAt": "2024-12-19T15:45:00Z",
-    "lastLogin": "2024-12-19T14:30:00Z"
+    "lastLogin": "2024-12-19T14:30:00Z",
+    "telephony": {
+      "phone": "+1-555-0101",
+      "extension": "101",
+      "directLine": "+1-555-1001",
+      "mobile": "+1-555-2001",
+      "voicemailEnabled": true,
+      "callForwarding": true,
+      "autoDialer": true,
+      "recordCalls": true,
+      "callDisposition": ["Interested", "Not Interested", "Callback", "Voicemail", "No Answer", "Busy", "Wrong Number"],
+      "preferredCallHours": {
+        "start": "09:00",
+        "end": "17:00",
+        "timezone": "EST"
+      },
+      "callQuota": {
+        "daily": 80,
+        "weekly": 400,
+        "monthly": 1600
+      }
+    },
+    "assignments": {
+      "territories": ["North America", "Enterprise Accounts"],
+      "leadSources": ["Website", "Referral", "Cold Call", "LinkedIn"],
+      "activeAssignments": 45,
+      "completedAssignments": 234,
+      "assignmentLoad": "high",
+      "specializations": ["Enterprise Sales", "SaaS Solutions", "Technical Sales"],
+      "currentTasks": [
+        {
+          "Id": 1,
+          "title": "Follow up Enterprise Lead - ABC Corp",
+          "priority": "high",
+          "dueDate": "2024-12-20T15:00:00Z",
+          "type": "call",
+          "leadId": 12,
+          "status": "pending"
+        },
+        {
+          "Id": 2,
+          "title": "Demo preparation for XYZ Industries",
+          "priority": "medium",
+          "dueDate": "2024-12-21T10:00:00Z",
+          "type": "task",
+          "leadId": 15,
+          "status": "in_progress"
+        }
+      ]
+    }
   },
   {
     "Id": 2,
@@ -37,7 +86,56 @@
     "status": "active",
     "createdAt": "2024-01-20T14:15:00Z",
     "updatedAt": "2024-12-18T11:20:00Z",
-    "lastLogin": "2024-12-18T16:45:00Z"
+    "lastLogin": "2024-12-18T16:45:00Z",
+    "telephony": {
+      "phone": "+1-555-0102",
+      "extension": "102",
+      "directLine": "+1-555-1002",
+      "mobile": "+1-555-2002",
+      "voicemailEnabled": true,
+      "callForwarding": false,
+      "autoDialer": true,
+      "recordCalls": true,
+      "callDisposition": ["Interested", "Not Interested", "Callback", "Voicemail", "No Answer", "Busy"],
+      "preferredCallHours": {
+        "start": "08:30",
+        "end": "18:00",
+        "timezone": "CST"
+      },
+      "callQuota": {
+        "daily": 60,
+        "weekly": 300,
+        "monthly": 1200
+      }
+    },
+    "assignments": {
+      "territories": ["Midwest", "SMB Accounts"],
+      "leadSources": ["Website", "Trade Shows", "Email Campaign"],
+      "activeAssignments": 32,
+      "completedAssignments": 187,
+      "assignmentLoad": "medium",
+      "specializations": ["SMB Sales", "Consultative Selling", "Lead Nurturing"],
+      "currentTasks": [
+        {
+          "Id": 3,
+          "title": "Quarterly review call - DEF Company",
+          "priority": "medium",
+          "dueDate": "2024-12-20T14:30:00Z",
+          "type": "call",
+          "leadId": 8,
+          "status": "scheduled"
+        },
+        {
+          "Id": 4,
+          "title": "Proposal follow-up - GHI Solutions",
+          "priority": "high",
+          "dueDate": "2024-12-19T16:00:00Z",
+          "type": "email",
+          "leadId": 22,
+          "status": "pending"
+        }
+      ]
+    }
   },
   {
     "Id": 3,
@@ -57,7 +155,47 @@
     "status": "active",
     "createdAt": "2024-02-01T09:45:00Z",
     "updatedAt": "2024-12-17T16:30:00Z",
-    "lastLogin": "2024-12-17T13:20:00Z"
+    "lastLogin": "2024-12-17T13:20:00Z",
+    "telephony": {
+      "phone": "+1-555-0103",
+      "extension": "103",
+      "directLine": "+1-555-1003",
+      "mobile": "+1-555-2003",
+      "voicemailEnabled": true,
+      "callForwarding": true,
+      "autoDialer": false,
+      "recordCalls": false,
+      "callDisposition": ["Interested", "Not Interested", "Callback", "Voicemail"],
+      "preferredCallHours": {
+        "start": "09:00",
+        "end": "16:00",
+        "timezone": "PST"
+      },
+      "callQuota": {
+        "daily": 25,
+        "weekly": 125,
+        "monthly": 500
+      }
+    },
+    "assignments": {
+      "territories": ["West Coast", "Support"],
+      "leadSources": ["Support Tickets", "Referral"],
+      "activeAssignments": 12,
+      "completedAssignments": 89,
+      "assignmentLoad": "low",
+      "specializations": ["Customer Support", "Lead Qualification", "Data Analysis"],
+      "currentTasks": [
+        {
+          "Id": 5,
+          "title": "Customer satisfaction survey - JKL Corp",
+          "priority": "low",
+          "dueDate": "2024-12-22T11:00:00Z",
+          "type": "survey",
+          "leadId": 5,
+          "status": "pending"
+        }
+      ]
+    }
   },
   {
     "Id": 4,
@@ -77,6 +215,124 @@
     "status": "pending",
     "createdAt": "2024-03-10T11:20:00Z",
     "updatedAt": "2024-12-16T14:10:00Z",
-    "lastLogin": null
+    "lastLogin": null,
+    "telephony": {
+      "phone": "+1-555-0104",
+      "extension": "104",
+      "directLine": "+1-555-1004",
+      "mobile": "+1-555-2004",
+      "voicemailEnabled": true,
+      "callForwarding": false,
+      "autoDialer": true,
+      "recordCalls": true,
+      "callDisposition": ["Interested", "Not Interested", "Callback", "Voicemail", "No Answer"],
+      "preferredCallHours": {
+        "start": "10:00",
+        "end": "18:30",
+        "timezone": "EST"
+      },
+      "callQuota": {
+        "daily": 50,
+        "weekly": 250,
+        "monthly": 1000
+      }
+    },
+    "assignments": {
+      "territories": ["Southeast", "New Accounts"],
+      "leadSources": ["Cold Call", "Email Campaign", "Social Media"],
+      "activeAssignments": 28,
+      "completedAssignments": 156,
+      "assignmentLoad": "medium",
+      "specializations": ["New Business Development", "Cold Calling", "Social Selling"],
+      "currentTasks": [
+        {
+          "Id": 6,
+          "title": "Initial outreach - MNO Enterprises",
+          "priority": "medium",
+          "dueDate": "2024-12-21T09:00:00Z",
+          "type": "call",
+          "leadId": 18,
+          "status": "pending"
+        },
+        {
+          "Id": 7,
+          "title": "LinkedIn connection follow-up",
+          "priority": "low",
+          "dueDate": "2024-12-23T12:00:00Z",
+          "type": "social",
+          "leadId": 31,
+          "status": "pending"
+        }
+      ]
+    }
+  },
+  {
+    "Id": 5,
+    "name": "Jessica Martinez",
+    "email": "jessica.martinez@example.com",
+    "role": "editor",
+    "permissions": {
+      "dashboard": true,
+      "leads": true,
+      "hotlist": true,
+      "pipeline": true,
+      "calendar": true,
+      "analytics": true,
+      "leaderboard": true,
+      "contacts": true
+    },
+    "status": "active",
+    "createdAt": "2024-03-15T13:30:00Z",
+    "updatedAt": "2024-12-19T10:15:00Z",
+    "lastLogin": "2024-12-19T09:45:00Z",
+    "telephony": {
+      "phone": "+1-555-0105",
+      "extension": "105",
+      "directLine": "+1-555-1005",
+      "mobile": "+1-555-2005",
+      "voicemailEnabled": true,
+      "callForwarding": true,
+      "autoDialer": true,
+      "recordCalls": true,
+      "callDisposition": ["Interested", "Not Interested", "Callback", "Voicemail", "No Answer", "Busy", "Decision Maker"],
+      "preferredCallHours": {
+        "start": "08:00",
+        "end": "17:30",
+        "timezone": "MST"
+      },
+      "callQuota": {
+        "daily": 70,
+        "weekly": 350,
+        "monthly": 1400
+      }
+    },
+    "assignments": {
+      "territories": ["Southwest", "Healthcare Vertical"],
+      "leadSources": ["Website", "Healthcare Events", "Partner Referral"],
+      "activeAssignments": 38,
+      "completedAssignments": 203,
+      "assignmentLoad": "high",
+      "specializations": ["Healthcare Sales", "Vertical Markets", "Complex Sales Cycles"],
+      "currentTasks": [
+        {
+          "Id": 8,
+          "title": "Healthcare compliance demo - PQR Medical",
+          "priority": "high",
+          "dueDate": "2024-12-20T13:00:00Z",
+          "type": "demo",
+          "leadId": 41,
+          "status": "confirmed"
+        },
+        {
+          "Id": 9,
+          "title": "Contract negotiation call - STU Health Systems",
+          "priority": "high",
+          "dueDate": "2024-12-19T15:30:00Z",
+          "type": "call",
+          "leadId": 47,
+          "status": "scheduled"
+        }
+      ]
+    }
   }
 ]

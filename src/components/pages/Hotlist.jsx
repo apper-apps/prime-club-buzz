@@ -91,10 +91,10 @@ const targetStage = statusToStageMap[newStatus];
         if (existingDeal) {
           await updateDeal(existingDeal.Id, { stage: targetStage });
           toast.info(`Deal stage updated to ${targetStage}`);
-        } else {
+} else {
           const dealData = {
-            name: `${updatedLead.websiteUrl.replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
-            leadName: updatedLead.websiteUrl.replace('https://', '').replace('www.', ''),
+            name: `${(updatedLead.websiteUrl || '').replace('https://', '').replace('www.', '')} - ${updatedLead.category}`,
+            leadName: (updatedLead.websiteUrl || '').replace('https://', '').replace('www.', ''),
             leadId: leadId.toString(),
             value: updatedLead.arr || 0,
             stage: targetStage,
@@ -622,12 +622,12 @@ let filtered = leads.filter(lead => {
                         {lead.email || "—"}
                       </span>
                     </td>
-                    <td className="p-4">
+<td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                           <ApperIcon name="Globe" size={16} className="text-gray-400" />
                           <span className="font-medium text-gray-900">
-                            {lead.websiteUrl.replace('https://', '').replace('www.', '')}
+                            {(lead.websiteUrl || '').replace('https://', '').replace('www.', '')}
                           </span>
                         </div>
                         {lead.linkedinUrl && (

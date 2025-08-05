@@ -138,10 +138,19 @@ const Leads = () => {
 
   const loadLeads = async () => {
     try {
-      setLoading(true);
+setLoading(true);
       setError(null);
       const leadsData = await getLeads();
-      setData(leadsData);
+      
+      // Extract leads array from service response object
+      // getLeads() returns { leads: Array, deduplicationResult: Object }
+      const leads = Array.isArray(leadsData) ? leadsData : (leadsData?.leads || []);
+      setData(leads);
+      
+      // Log deduplication results if available
+      if (leadsData?.deduplicationResult) {
+        console.log('Deduplication completed:', leadsData.deduplicationResult);
+      }
     } catch (error) {
       console.error('Error loading leads:', error);
       setError('Failed to load leads');
@@ -450,8 +459,8 @@ const handleFieldUpdate = async (leadId, field, value) => {
     loadCustomColumns();
     loadLeads();
   }, []);
-// Filtering and sorting
-const filteredAndSortedData = data
+// Filtering and sorting - ensure data is always an array
+const filteredAndSortedData = (Array.isArray(data) ? data : [])
     .filter(lead => {
       const matchesSearch = !searchTerm || 
         lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

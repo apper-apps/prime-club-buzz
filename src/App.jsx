@@ -25,14 +25,29 @@ class ErrorBoundary extends Component {
   static getDerivedStateFromError(error) {
     return { hasError: true, error };
   }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+componentDidCatch(error, errorInfo) {
+    // Enhanced error logging for better debugging
+    console.error('Error caught by boundary:', {
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    });
+    
+    // Log specific error details for data.filter errors
+    if (error.message && error.message.includes('filter is not a function')) {
+      console.error('Data type error detected - likely received object instead of array');
+    }
   }
-
-  render() {
+render() {
     if (this.state.hasError) {
-      return <Error message="Something went wrong" />;
+      const errorMessage = this.state.error?.message 
+        ? `Application Error: ${this.state.error.message}`
+        : "Something went wrong";
+      
+      return <Error message={errorMessage} />;
     }
 
     return this.props.children;

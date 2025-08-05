@@ -243,18 +243,55 @@ export const getFreshLeadsOnly = async (leadsArray) => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 100));
   
-  const freshLeads = leadsArray.filter(lead => {
-    const normalizedUrl = lead.websiteUrl.toLowerCase().replace(/\/$/, '');
-    // Check if this URL was added today and wasn't in the system before today
-    const leadDate = new Date(lead.createdAt);
-    const today = new Date();
-    
-    // If lead was created today and URL never existed before, it's fresh
-    return leadDate.toDateString() === today.toDateString() && 
-           !wasUrlPreviouslyAdded(normalizedUrl, leadDate);
-  });
+  // Type validation and defensive programming
+  if (!leadsArray) {
+    console.warn('getFreshLeadsOnly: leadsArray is null or undefined, returning empty array');
+    return [];
+  }
   
-  return freshLeads;
+  if (!Array.isArray(leadsArray)) {
+    console.error('getFreshLeadsOnly: Expected array but received:', typeof leadsArray, leadsArray);
+    return [];
+  }
+  
+  if (leadsArray.length === 0) {
+    return [];
+  }
+  
+  try {
+    const freshLeads = leadsArray.filter(lead => {
+      // Validate lead object structure
+      if (!lead || typeof lead !== 'object') {
+        console.warn('getFreshLeadsOnly: Invalid lead object:', lead);
+        return false;
+      }
+      
+      if (!lead.websiteUrl || !lead.createdAt) {
+        console.warn('getFreshLeadsOnly: Lead missing required fields:', lead);
+        return false;
+      }
+      
+      const normalizedUrl = lead.websiteUrl.toLowerCase().replace(/\/$/, '');
+      // Check if this URL was added today and wasn't in the system before today
+      const leadDate = new Date(lead.createdAt);
+      const today = new Date();
+      
+      // Validate date objects
+      if (isNaN(leadDate.getTime()) || isNaN(today.getTime())) {
+        console.warn('getFreshLeadsOnly: Invalid date in lead:', lead);
+        return false;
+      }
+      
+      // If lead was created today and URL never existed before, it's fresh
+      return leadDate.toDateString() === today.toDateString() && 
+             !wasUrlPreviouslyAdded(normalizedUrl, leadDate);
+    });
+    
+    return freshLeads;
+  } catch (error) {
+    console.error('getFreshLeadsOnly: Error processing leads:', error);
+    return [];
+  }
 };
 
 // Helper function to check if URL existed before a given date

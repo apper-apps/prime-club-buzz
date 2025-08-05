@@ -57,9 +57,15 @@ const getFieldNameForColumn = (column) => {
     'Lead Score': 'leadScore',
     'Engagement Level': 'engagementLevel',
     'Response Rate': 'responseRate',
-    'Deal Potential': 'dealPotential',
+'Deal Potential': 'dealPotential',
     'Added By': 'addedByName',
-    'Created Date': 'createdAt'
+    'Created Date': 'createdAt',
+    'IVR Number': 'ivrNumber',
+    'DID Number': 'didNumber',
+    'Creation Date & Time': 'creationDateTime',
+    'Follow-up Date': 'followUpDate',
+    'Assigned To': 'assignedTo',
+    'Assign Number': 'assignNumber'
   };
   
   return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
@@ -710,7 +716,7 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+<thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left">
                   <input
@@ -794,6 +800,60 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
                 </th>
                 <th 
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('ivrNumber')}
+                >
+                  <div className="flex items-center gap-1">
+                    IVR Number
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('didNumber')}
+                >
+                  <div className="flex items-center gap-1">
+                    DID Number
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('creationDateTime')}
+                >
+                  <div className="flex items-center gap-1">
+                    Creation Date & Time
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('followUpDate')}
+                >
+                  <div className="flex items-center gap-1">
+                    Follow-up Date
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('assignedTo')}
+                >
+                  <div className="flex items-center gap-1">
+                    Assigned To
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('assignNumber')}
+                >
+                  <div className="flex items-center gap-1">
+                    Assign Number
+                    <ApperIcon name="ArrowUpDown" size={12} />
+                  </div>
+                </th>
+                <th 
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('addedByName')}
                 >
                   <div className="flex items-center gap-1">
@@ -806,7 +866,7 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+<tbody className="bg-white divide-y divide-gray-200">
               {paginatedData.map((lead) => (
                 <tr key={lead.Id} className="hover:bg-gray-50">
                   <td className="px-4 py-4">
@@ -852,6 +912,27 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
                       {lead.engagementLevel}
                     </Badge>
                   </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.ivrNumber || '-'}</td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.didNumber || '-'}</td>
+                  <td className="px-4 py-4 text-sm text-gray-900">
+                    {lead.creationDateTime ? new Date(lead.creationDateTime).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true
+                    }) : '-'}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">
+                    {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit'
+                    }) : '-'}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.assignedTo || '-'}</td>
+                  <td className="px-4 py-4 text-sm text-gray-900">{lead.assignNumber || '-'}</td>
                   <td className="px-4 py-4 text-sm text-gray-900">{lead.addedByName}</td>
                   <td className="px-4 py-4 text-right text-sm font-medium">
                     <div className="flex items-center gap-2">
@@ -865,7 +946,7 @@ setData(prevData => prevData.filter(item => !selectedLeads.has(item.Id)));
                       >
                         <ApperIcon name="Edit2" size={14} />
                       </Button>
-<Button
+                      <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(lead.Id)}
@@ -1187,6 +1268,17 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
         );
       }
 
+case 'datetime':
+      return (
+        <Input
+          type="datetime-local"
+          value={value ? new Date(value).toISOString().slice(0, 16) : ''}
+          onChange={e => handleChange(e.target.value ? new Date(e.target.value).toISOString() : '')}
+          onBlur={e => handleBlur(e.target.value ? new Date(e.target.value).toISOString() : '')}
+          onKeyDown={e => handleKeyDown(e, e.target.value ? new Date(e.target.value).toISOString() : '')}
+          className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400 text-xs"
+        />
+      );
 
     case 'date':
       return (
@@ -1347,7 +1439,7 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
   // Initialize form data based on visible columns
   const initializeFormData = () => {
     const initialData = {
-      // Core fields that always exist
+// Core fields that always exist
       name: "",
       email: "",
       websiteUrl: "",
@@ -1359,7 +1451,12 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
       fundingType: "Bootstrapped",
       followUpDate: "",
       edition: "Select Edition",
-      productName: ""
+      productName: "",
+      ivrNumber: "",
+      didNumber: "",
+      creationDateTime: new Date().toISOString(),
+      assignedTo: "",
+      assignNumber: ""
     };
 
     // Add dynamic fields based on visible columns
@@ -1740,7 +1837,7 @@ return (
           )}
 
           {/* Follow-up Date */}
-          {shouldShowField({ fieldName: 'followUpDate' }) && (
+{shouldShowField({ fieldName: 'followUpDate' }) && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Follow-up Date
@@ -1749,6 +1846,103 @@ return (
                 type="date"
                 value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
                 onChange={(e) => setFormData({...formData, followUpDate: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* IVR Number */}
+          {shouldShowField({ fieldName: 'ivrNumber' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                IVR Number
+              </label>
+              <Input
+                type="text"
+                value={formData.ivrNumber}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Validate 10-12 digits if numeric
+                  if (value && /^\d+$/.test(value) && (value.length < 10 || value.length > 12)) {
+                    return; // Don't update if numeric but wrong length
+                  }
+                  setFormData({...formData, ivrNumber: value});
+                }}
+                placeholder="Enter IVR number (10-12 digits if numeric)"
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* DID Number */}
+          {shouldShowField({ fieldName: 'didNumber' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                DID Number
+              </label>
+              <Input
+                type="text"
+                value={formData.didNumber}
+                onChange={(e) => setFormData({...formData, didNumber: e.target.value})}
+                placeholder="Enter DID number"
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* Creation Date & Time */}
+          {shouldShowField({ fieldName: 'creationDateTime' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Creation Date & Time
+              </label>
+              <Input
+                type="datetime-local"
+                value={formData.creationDateTime ? new Date(formData.creationDateTime).toISOString().slice(0, 16) : ''}
+                onChange={(e) => setFormData({...formData, creationDateTime: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* Assigned To */}
+          {shouldShowField({ fieldName: 'assignedTo' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Assigned To
+              </label>
+              <select
+                value={formData.assignedTo}
+                onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+              >
+                <option value="">Select assignee...</option>
+                {salesReps.map(rep => (
+                  <option key={rep.Id} value={rep.name}>{rep.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Assign Number */}
+          {shouldShowField({ fieldName: 'assignNumber' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Assign Number
+              </label>
+              <Input
+                type="text"
+                value={formData.assignNumber}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                  // Validate: 10-digit mobile or 4-6 digit extension
+                  if (value && ((value.length !== 10 && value.length < 4) || value.length > 10)) {
+                    return; // Don't update if invalid length
+                  }
+                  setFormData({...formData, assignNumber: value});
+                }}
+                placeholder="10-digit mobile or 4-6 digit extension"
                 className="w-full"
               />
             </div>
@@ -1791,9 +1985,6 @@ return (
 
           {/* Dynamic custom fields */}
           {columns && columns.map(column => renderFormField(column))}
-          {/* Render dynamic fields from custom columns */}
-          {columns && columns.map(column => renderFormField(column))}
-
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
@@ -1812,7 +2003,7 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
   // Initialize form data based on lead data and visible columns
   const initializeFormData = () => {
     const initialData = {
-      // Core fields
+// Core fields
       name: lead?.name || '',
       email: lead?.email || '',
       websiteUrl: lead?.websiteUrl || '',
@@ -1823,7 +2014,12 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
       status: lead?.status || 'New Lead',
       fundingType: lead?.fundingType || 'Bootstrapped',
       edition: lead?.edition || "Select Edition",
-      productName: lead?.productName || ""
+      productName: lead?.productName || "",
+      ivrNumber: lead?.ivrNumber || '',
+      didNumber: lead?.didNumber || '',
+      creationDateTime: lead?.creationDateTime || new Date().toISOString(),
+      assignedTo: lead?.assignedTo || '',
+      assignNumber: lead?.assignNumber || ''
     };
 
     // Add dynamic fields based on visible columns
@@ -1876,8 +2072,8 @@ const [formData, setFormData] = useState(initializeFormData());
     const fieldName = getFieldNameForColumn(column);
     const isRequired = column.required;
 
-    // Skip default fields that are handled separately
-    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName'];
+// Skip default fields that are handled separately
+    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
     if (defaultFields.includes(fieldName)) {
       return null;
     }
@@ -2199,6 +2395,100 @@ return (
                   </select>
                 </div>
               )}
+</div>
+          )}
+
+          {/* IVR Number */}
+          {shouldShowField({ fieldName: 'ivrNumber' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">IVR Number</label>
+              <Input
+                type="text"
+                value={formData.ivrNumber}
+                onChange={e => {
+                  const value = e.target.value;
+                  // Validate 10-12 digits if numeric
+                  if (value && /^\d+$/.test(value) && (value.length < 10 || value.length > 12)) {
+                    return; // Don't update if numeric but wrong length
+                  }
+                  setFormData({...formData, ivrNumber: value});
+                }}
+                placeholder="Enter IVR number (10-12 digits if numeric)"
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* DID Number */}
+          {shouldShowField({ fieldName: 'didNumber' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">DID Number</label>
+              <Input
+                type="text"
+                value={formData.didNumber}
+                onChange={e => setFormData({
+                  ...formData,
+                  didNumber: e.target.value
+                })}
+                placeholder="Enter DID number"
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* Creation Date & Time */}
+          {shouldShowField({ fieldName: 'creationDateTime' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Creation Date & Time</label>
+              <Input
+                type="datetime-local"
+                value={formData.creationDateTime ? new Date(formData.creationDateTime).toISOString().slice(0, 16) : ''}
+                onChange={e => setFormData({
+                  ...formData,
+                  creationDateTime: e.target.value ? new Date(e.target.value).toISOString() : ''
+                })}
+                className="w-full"
+              />
+            </div>
+          )}
+
+          {/* Assigned To */}
+          {shouldShowField({ fieldName: 'assignedTo' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Assigned To</label>
+              <select
+                value={formData.assignedTo}
+                onChange={e => setFormData({
+                  ...formData,
+                  assignedTo: e.target.value
+                })}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                <option value="">Select assignee...</option>
+                {salesReps.map(rep => (
+                  <option key={rep.Id} value={rep.name}>{rep.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Assign Number */}
+          {shouldShowField({ fieldName: 'assignNumber' }) && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Assign Number</label>
+              <Input
+                type="text"
+                value={formData.assignNumber}
+                onChange={e => {
+                  const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                  // Validate: 10-digit mobile or 4-6 digit extension
+                  if (value && ((value.length !== 10 && value.length < 4) || value.length > 10)) {
+                    return; // Don't update if invalid length
+                  }
+                  setFormData({...formData, assignNumber: value});
+                }}
+                placeholder="10-digit mobile or 4-6 digit extension"
+                className="w-full"
+              />
             </div>
           )}
 
@@ -2240,9 +2530,6 @@ return (
 
           {/* Dynamic custom fields */}
           {columns && columns.map(column => renderFormField(column))}
-            {/* Render dynamic fields from custom columns */}
-            {columns && columns.map(column => renderFormField(column))}
-
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel

@@ -151,7 +151,7 @@ const customColumns = [
     order: 14,
     createdAt: new Date().toISOString()
   },
-  {
+{
     Id: 15,
     name: "Created Date",
     type: "readonly",
@@ -159,6 +159,67 @@ const customColumns = [
     defaultValue: "",
     isDefault: true,
     order: 15,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 16,
+    name: "IVR Number",
+    type: "text",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 16,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 17,
+    name: "DID Number", 
+    type: "text",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 17,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 18,
+    name: "Creation Date & Time",
+    type: "datetime",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 18,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 19,
+    name: "Follow-up Date",
+    type: "date",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 19,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 20,
+    name: "Assigned To",
+    type: "select",
+    required: false,
+    defaultValue: "",
+    selectOptions: [],
+    isDefault: true,
+    order: 20,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 21,
+    name: "Assign Number",
+    type: "number",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 21,
     createdAt: new Date().toISOString()
   }
 ];

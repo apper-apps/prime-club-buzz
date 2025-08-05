@@ -50,9 +50,10 @@ const Input = forwardRef(({
 
   return (
 <input
-      type={type}
+type={type}
       className={cn(
         "flex h-11 w-full rounded-xl border border-border-default bg-white px-4 py-3 text-sm font-sans text-text-primary placeholder:text-text-tertiary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 focus:border-primary-500 hover:border-border-medium disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-100 file:border-0 file:bg-transparent file:text-sm file:font-medium shadow-sm hover:shadow-md focus:shadow-md",
+        type === "datetime-local" && "text-xs",
         className
       )}
       ref={ref}

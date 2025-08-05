@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -245,6 +245,50 @@ useEffect(() => {
   const [nextTempId, setNextTempId] = useState(-1);
   const [updateTimeouts, setUpdateTimeouts] = useState({});
 
+  // Missing state variables
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [fundingFilter, setFundingFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [teamSizeFilter, setTeamSizeFilter] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [emptyRows, setEmptyRows] = useState([]);
+
+  // Add missing addEmptyRow function
+  const addEmptyRow = useCallback(() => {
+    const newEmptyRow = {
+      Id: nextTempId,
+      isEmptyRow: true,
+      name: '',
+      email: '',
+      websiteUrl: '',
+      status: 'Keep an Eye',
+      teamSize: '1-3',
+      category: '',
+      fundingType: 'Bootstrapped'
+    };
+    setEmptyRows(prev => [...prev, newEmptyRow]);
+    setNextTempId(prev => prev - 1);
+  }, [nextTempId]);
+
+  // Derive categories from leads data
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(data.map(lead => lead.category).filter(Boolean))];
+    return uniqueCategories;
+  }, [data]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
+
+  // Always maintain one empty row at the top
+  useEffect(() => {
+    if (!loading && emptyRows.length === 0) {
+      addEmptyRow();
+    }
+  }, [loading, emptyRows.length, addEmptyRow]);
   // Debounced field update with timeout management
   const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
     const timeoutKey = `${leadId}-${field}`;
@@ -979,11 +1023,11 @@ const handleFieldUpdate = async (leadId, field, value) => {
       )}
 
       {/* Modals */}
-      {showAddModal && (
+{showAddModal && (
         <AddLeadModal
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddLead}
-          categoryOptions={categories}
+          categoryOptions={categories || []}
         />
       )}
 
@@ -1008,18 +1052,6 @@ const handleFieldUpdate = async (leadId, field, value) => {
     </div>
   );
 }
-
-// Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
-
-  // Always maintain one empty row at the top
-  useEffect(() => {
-    if (!loading && emptyRows.length === 0) {
-      addEmptyRow();
-    }
-  }, [loading, emptyRows.length, addEmptyRow]);
 
 // Function to render column input based on column type
 // Function to render column input based on column type

@@ -236,32 +236,30 @@ async function loadLeads() {
   
   // Load data on component mount
 useEffect(() => {
-    loadCustomColumns()
-    loadLeads()
-  }, [])
-  
-// Additional state for dynamic functionality
-  const [debounceTimeouts, setDebounceTimeouts] = useState({});
-  const [nextTempId, setNextTempId] = useState(-1);
-  const [updateTimeouts, setUpdateTimeouts] = useState({});
+   loadCustomColumns()
+   loadLeads()
+ }, [])
 
-  // Derive categories from leads data
-  const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(data.map(lead => lead.category).filter(Boolean))];
-    return uniqueCategories;
-  }, [data]);
+// State for timeouts and debouncing
+const [updateTimeouts, setUpdateTimeouts] = useState({});
+const [nextTempId, setNextTempId] = useState(-1);
 
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, statusFilter, fundingFilter, categoryFilter, teamSizeFilter]);
+// Add empty row function - moved before useEffect to avoid temporal dead zone
+const addEmptyRow = () => {
+  const newEmptyRow = {
+    Id: nextTempId,
+    isEmptyRow: true
+  };
+  setEmptyRows(prev => [...prev, newEmptyRow]);
+  setNextTempId(prev => prev - 1);
+};
 
-  // Always maintain one empty row at the top
-  useEffect(() => {
-    if (!loading && emptyRows.length === 0) {
-      addEmptyRow();
-    }
-  }, [loading, emptyRows.length, addEmptyRow]);
+ useEffect(() => {
+   if (!loading && emptyRows.length === 0) {
+     addEmptyRow();
+   }
+ }, [loading, emptyRows.length, addEmptyRow]);
+
   // Debounced field update with timeout management
   const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
     const timeoutKey = `${leadId}-${field}`;
@@ -367,14 +365,6 @@ const handleFieldUpdate = async (leadId, field, value) => {
 
 
 // Empty row handlers
-  const addEmptyRow = () => {
-    const newEmptyRow = {
-      Id: nextTempId,
-      isEmptyRow: true
-    };
-    setEmptyRows(prev => [...prev, newEmptyRow]);
-    setNextTempId(prev => prev - 1);
-  };
 
   // Handle empty row updates and conversion to actual leads
   const handleEmptyRowUpdate = async (tempId, field, value) => {
@@ -1000,11 +990,13 @@ const handleFieldUpdate = async (leadId, field, value) => {
         <AddLeadModal
           onClose={() => setShowAddModal(false)}
           onSubmit={handleAddLead}
-          categoryOptions={categories || []}
+          categoryOptions={categoryOptions}
+          onCreateCategory={handleCreateCategory}
+          columns={columns}
         />
       )}
 
-      {showEditModal && editingLead && (
+{showEditModal && editingLead && (
         <EditLeadModal
           lead={editingLead}
           onClose={() => {
@@ -1012,6 +1004,9 @@ const handleFieldUpdate = async (leadId, field, value) => {
             setEditingLead(null);
           }}
           onSubmit={handleUpdateLead}
+          categoryOptions={categoryOptions}
+          onCreateCategory={handleCreateCategory}
+          columns={columns}
         />
       )}
 
@@ -1188,20 +1183,6 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
         );
       }
 
-    case 'number':
-      return (
-        <Input
-          type="number"
-          step="1"
-          min="0"
-          value={value}
-          onChange={e => handleChange(column.name === "ARR" ? Number(e.target.value) : e.target.value)}
-          onBlur={e => handleBlur(e.target.value)}
-          onKeyDown={e => handleKeyDown(e, e.target.value)}
-          placeholder={column.defaultValue || "0"}
-          className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 w-full placeholder-gray-400"
-        />
-      );
 
     case 'date':
       return (
@@ -1752,26 +1733,28 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
   const initializeFormData = () => {
     const initialData = {
       // Core fields
-      name: lead.name,
-      email: lead.email,
-      websiteUrl: lead.websiteUrl,
-      teamSize: lead.teamSize,
-      arr: lead.arr.toString(),
-      category: lead.category,
-      linkedinUrl: lead.linkedinUrl,
-      status: lead.status,
-      fundingType: lead.fundingType,
-      edition: lead.edition || "Select Edition",
-      productName: lead.productName || ""
+      name: lead?.name || '',
+      email: lead?.email || '',
+      websiteUrl: lead?.websiteUrl || '',
+      teamSize: lead?.teamSize || '1-3',
+      arr: lead?.arr ? lead.arr.toString() : '',
+      category: lead?.category || '',
+      linkedinUrl: lead?.linkedinUrl || '',
+      status: lead?.status || 'New Lead',
+      fundingType: lead?.fundingType || 'Bootstrapped',
+      edition: lead?.edition || "Select Edition",
+      productName: lead?.productName || ""
     };
 
     // Add dynamic fields based on visible columns
-    columns.forEach(column => {
-      const fieldName = getFieldNameForColumn(column);
-      if (!initialData.hasOwnProperty(fieldName)) {
-        initialData[fieldName] = lead[fieldName] || getDefaultValueForType(column.type);
-      }
-    });
+    if (columns && Array.isArray(columns)) {
+      columns.forEach(column => {
+        const fieldName = getFieldNameForColumn(column);
+        if (!initialData.hasOwnProperty(fieldName)) {
+          initialData[fieldName] = lead?.[fieldName] || getDefaultValueForType(column.type);
+        }
+      });
+    }
 
     return initialData;
   };

@@ -53,10 +53,61 @@ const getFieldNameForColumn = (column) => {
     'Funding Type': 'fundingType',
     'Follow-up Date': 'followUpDate',
     'Edition': 'edition',
-    'Product Name': 'productName'
+    'Product Name': 'productName',
+    'Lead Score': 'leadScore',
+    'Engagement Level': 'engagementLevel',
+    'Response Rate': 'responseRate',
+    'Deal Potential': 'dealPotential',
+    'Added By': 'addedByName',
+    'Created Date': 'createdAt'
   };
   
   return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
+};
+
+// Format currency values
+const formatCurrency = (amount) => {
+  if (!amount) return '-';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Format date values
+const formatDate = (dateString) => {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+// Get engagement level color
+const getEngagementColor = (level) => {
+  const colors = {
+    'Very High': 'bg-green-100 text-green-800',
+    'High': 'bg-blue-100 text-blue-800',
+    'Medium': 'bg-yellow-100 text-yellow-800',
+    'Low': 'bg-orange-100 text-orange-800',
+    'Very Low': 'bg-red-100 text-red-800'
+  };
+  return colors[level] || 'bg-gray-100 text-gray-800';
+};
+
+// Get deal potential color
+const getDealPotentialColor = (potential) => {
+  const colors = {
+    'Very High': 'bg-emerald-100 text-emerald-800',
+    'High': 'bg-green-100 text-green-800',
+    'Medium': 'bg-yellow-100 text-yellow-800',
+    'Low': 'bg-orange-100 text-orange-800',
+    'Very Low': 'bg-red-100 text-red-800'
+  };
+  return colors[potential] || 'bg-gray-100 text-gray-800';
 };
 
 const getDefaultValueForType = (type) => {
@@ -950,6 +1001,50 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
     }
   };
 
+  // Handle read-only display fields
+  if (['Lead Score', 'Engagement Level', 'Response Rate', 'Deal Potential', 'Added By', 'Created Date'].includes(column.name)) {
+    let displayValue = value;
+    
+    if (column.name === 'ARR' && value) {
+      displayValue = formatCurrency(value);
+    } else if (column.name === 'Lead Score' && value) {
+      displayValue = (
+        <div className="flex items-center gap-2">
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            value >= 80 ? 'bg-green-100 text-green-800' :
+            value >= 60 ? 'bg-blue-100 text-blue-800' :
+            value >= 40 ? 'bg-yellow-100 text-yellow-800' :
+            'bg-red-100 text-red-800'
+          }`}>
+            {value}
+          </span>
+        </div>
+      );
+    } else if (column.name === 'Engagement Level') {
+      displayValue = (
+        <Badge className={`${getEngagementColor(value)} border-0 font-medium`}>
+          {value || '-'}
+        </Badge>
+      );
+    } else if (column.name === 'Deal Potential') {
+      displayValue = (
+        <Badge className={`${getDealPotentialColor(value)} border-0 font-medium`}>
+          {value || '-'}
+        </Badge>
+      );
+    } else if (column.name === 'Response Rate' && value) {
+      displayValue = `${value}%`;
+    } else if (column.name === 'Created Date') {
+      displayValue = formatDate(value);
+    }
+    
+    return (
+      <div className="px-2 py-1 text-sm">
+        {displayValue || '-'}
+      </div>
+    );
+  }
+
   switch (column.type) {
     case 'url':
       return (
@@ -976,6 +1071,19 @@ const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounc
             </a>
           )}
         </div>
+      );
+    
+    case 'number':
+      return (
+        <Input
+          type="number"
+          value={value}
+          onChange={e => handleChange(e.target.value)}
+          onBlur={e => handleBlur(e.target.value)}
+          onKeyDown={e => handleKeyDown(e, e.target.value)}
+          placeholder={column.name === 'ARR' ? '150000' : `Enter ${column.name.toLowerCase()}...`}
+          className="border-0 bg-transparent p-1 hover:bg-gray-50 focus:bg-white focus:border-gray-300 font-medium placeholder-gray-400"
+        />
       );
 
     case 'select':

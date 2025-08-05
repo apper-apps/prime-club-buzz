@@ -9,8 +9,8 @@ const salesReps = [...salesRepData];
 const customColumns = [
   {
     Id: 1,
-    name: "Website URL",
-    type: "url",
+    name: "Company Name", 
+    type: "text",
     required: true,
     defaultValue: "",
     isDefault: true,
@@ -19,8 +19,8 @@ const customColumns = [
   },
   {
     Id: 2,
-    name: "Company Name", 
-    type: "text",
+    name: "Email",
+    type: "email",
     required: true,
     defaultValue: "",
     isDefault: true,
@@ -29,33 +29,31 @@ const customColumns = [
   },
   {
     Id: 3,
-    name: "Status",
-    type: "select",
+    name: "Website URL",
+    type: "url",
     required: true,
-    defaultValue: "New Lead",
-    selectOptions: ["New Lead", "Contacted", "Meeting Booked", "Meeting Done", "Negotiation", "Closed Won", "Closed Lost"],
+    defaultValue: "",
     isDefault: true,
     order: 3,
     createdAt: new Date().toISOString()
   },
   {
     Id: 4,
-    name: "Category",
+    name: "Status",
     type: "select",
-    required: false,
-    defaultValue: "",
-    selectOptions: ["Website Contact Form", "Partner Referral", "Cold Calling", "Events", "Facebook", "Website Chatbot", "Customer Referral", "Google PPC", "Organic SEO Traffic", "Product Inquiry Page", "Google My Business", "YouTube", "CRM API Integration Lead", "WhatsApp"],
+    required: true,
+    defaultValue: "New Lead",
+    selectOptions: ["New Lead", "Contacted", "Keep an Eye", "Proposal Sent", "Meeting Booked", "Meeting Done", "Commercials Sent", "Negotiation", "Hotlist", "Temporarily on hold", "Out of League", "Outdated", "Rejected", "Closed Won", "Closed Lost", "Launched on AppSumo", "Launched on Prime Club", "Connected", "Locked", "Unsubscribed"],
     isDefault: true,
     order: 4,
     createdAt: new Date().toISOString()
   },
   {
     Id: 5,
-    name: "Team Size",
-    type: "select",
+    name: "Lead Score",
+    type: "readonly",
     required: false,
     defaultValue: "",
-    selectOptions: ["1-3", "4-10", "11-50", "51-100", "101-500", "501-1000", "1001+"],
     isDefault: true,
     order: 5,
     createdAt: new Date().toISOString()
@@ -72,13 +70,95 @@ const customColumns = [
   },
   {
     Id: 7,
+    name: "Team Size",
+    type: "select",
+    required: false,
+    defaultValue: "",
+    selectOptions: ["1-3", "4-10", "11-50", "51-100", "101-500", "501-1000", "1001+"],
+    isDefault: true,
+    order: 7,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 8,
+    name: "Category",
+    type: "select",
+    required: false,
+    defaultValue: "",
+    selectOptions: ["Website Contact Form", "Partner Referral", "Cold Calling", "Events", "Facebook", "Website Chatbot", "Customer Referral", "Google PPC", "Organic SEO Traffic", "Product Inquiry Page", "Google My Business", "YouTube", "CRM API Integration Lead", "WhatsApp"],
+    isDefault: true,
+    order: 8,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 9,
+    name: "Engagement Level",
+    type: "readonly",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 9,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 10,
+    name: "Deal Potential",
+    type: "readonly",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 10,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 11,
     name: "Funding Type",
     type: "select",
     required: false,
     defaultValue: "",
-    selectOptions: ["Bootstrapped", "Y Combinator", "Series A", "Series B", "Series C"],
+    selectOptions: ["Bootstrapped", "Pre-seed", "Y Combinator", "Angel", "Series A", "Series B", "Series C"],
     isDefault: true,
-    order: 7,
+    order: 11,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 12,
+    name: "LinkedIn",
+    type: "url",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 12,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 13,
+    name: "Response Rate",
+    type: "readonly",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 13,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 14,
+    name: "Added By",
+    type: "readonly",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 14,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 15,
+    name: "Created Date",
+    type: "readonly",
+    required: false,
+    defaultValue: "",
+    isDefault: true,
+    order: 15,
     createdAt: new Date().toISOString()
   }
 ];

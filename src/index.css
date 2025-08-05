@@ -144,8 +144,6 @@
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(90deg, theme('colors.primary.500'), theme('colors.primary.600'));
 }
-  min-height: 40px;
-}
 
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;

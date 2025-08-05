@@ -478,9 +478,8 @@ const ColumnItem = ({ column, index, isSelected, onSelect, onEdit, onDelete, onT
           >
             <ApperIcon name="Edit" size={16} />
           </Button>
-          
-          {/* Delete Button - only for non-default columns */}
-          {!column.isDefault && (
+{/* Delete Button - only for deletable columns */}
+          {(!column.isDefault || (column.isDefault && !['Company Name', 'Email', 'Website URL'].includes(column.name))) && (
             <Button
               onClick={onDelete}
               variant="ghost"

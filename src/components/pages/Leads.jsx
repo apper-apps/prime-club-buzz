@@ -556,12 +556,12 @@ onClick={() => setShowAddLeadModal(true)}
                     placeholder="Search by website, category, or team size..."
                     onSearch={setSearchTerm} />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <select
-<option value="">All Statuses</option>
+                    value={statusFilter}
                     onChange={e => setStatusFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="all">All Statuses</option>
+                    <option value="">All Statuses</option>
 <option value="New Lead">New Lead</option>
                     <option value="Contacted">Contacted</option>
                     <option value="Keep an Eye">Keep an Eye</option>
@@ -577,12 +577,12 @@ onClick={() => setShowAddLeadModal(true)}
                     <option value="Rejected">Rejected</option>
                     <option value="Closed Won">Closed Won</option>
                     <option value="Closed Lost">Closed Lost</option>
-                </select>
+</select>
                 <select
-<option value="">All Funding Types</option>
+                    value={fundingFilter}
                     onChange={e => setFundingFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="all">All Funding Types</option>
+                    <option value="">All Funding Types</option>
                     <option value="Bootstrapped">Bootstrapped</option>
                     <option value="Pre-seed">Pre-seed</option>
                     <option value="Y Combinator">Y Combinator</option>
@@ -591,20 +591,20 @@ onClick={() => setShowAddLeadModal(true)}
                     <option value="Series B">Series B</option>
                     <option value="Series C">Series C</option>
                 </select>
-                <select
-<option value="">All Categories</option>
+<select
+                    value={categoryFilter}
                     onChange={e => setCategoryFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="all">All Categories</option>
+                    <option value="">All Categories</option>
                     {categoryOptions.map(category => (
                         <option key={category} value={category}>{category}</option>
                     ))}
                 </select>
-                <select
-<option value="">All Team Sizes</option>
+<select
+                    value={teamSizeFilter}
                     onChange={e => setTeamSizeFilter(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="all">All Team Sizes</option>
+                    <option value="">All Team Sizes</option>
                     {teamSizeOptions.map(size => (
                         <option key={size} value={size}>{size}</option>
                     ))}
@@ -805,11 +805,12 @@ icon="Building2" /> : <div className="relative">
             <Button
               variant="outline"
               size="sm"
-              onClick={clearSelection}
+onClick={clearSelection}
               className="text-primary-600 border-primary-300 hover:bg-primary-100"
             >
               Clear Selection
-<Button
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               onClick={() => setShowBulkDeleteModal(true)}
@@ -819,7 +820,7 @@ icon="Building2" /> : <div className="relative">
               Delete Selected
             </Button>
           </div>
-          </div>
+        </div>
         </div>
       </Card>
     )}
@@ -827,25 +828,24 @@ icon="Building2" /> : <div className="relative">
     {showAddLeadModal && <AddLeadModal
       onClose={() => setShowAddLeadModal(false)} 
       onSubmit={handleAddLead}
-      categoryOptions={categoryOptions}
+categoryOptions={categoryOptions}
       onCreateCategory={handleCreateCategory}
-    />}
     />}
     {/* Edit Lead Modal */}
     {editingLead && <EditLeadModal
         lead={editingLead}
         onClose={() => setEditingLead(null)}
-        onSubmit={handleUpdateLead}
+onSubmit={handleUpdateLead}
         categoryOptions={categoryOptions}
         onCreateCategory={handleCreateCategory}
-{/* Bulk Delete Confirmation Dialog */}
+    />}
+    {/* Bulk Delete Confirmation Dialog */}
     {showBulkDeleteModal && (
       <BulkDeleteConfirmationDialog
         selectedCount={selectedLeads.size}
         onConfirm={handleBulkDelete}
         onCancel={() => setShowBulkDeleteModal(false)}
       />
-    )}
     )}
 </motion.div>
   );

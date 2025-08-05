@@ -216,10 +216,20 @@ const customColumns = [
     Id: 21,
     name: "Assign Number",
     type: "number",
-    required: false,
+required: false,
     defaultValue: "",
     isDefault: true,
     order: 21,
+    createdAt: new Date().toISOString()
+  },
+  {
+    Id: 22,
+    name: "Notes",
+    type: "textarea",
+    required: false,
+    defaultValue: "",
+    isDefault: false,
+    order: 22,
     createdAt: new Date().toISOString()
   }
 ];

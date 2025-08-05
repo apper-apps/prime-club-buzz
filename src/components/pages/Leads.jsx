@@ -1407,10 +1407,10 @@ const SearchableSelect = ({ value, onChange, options, placeholder = "Select...",
 };
 
 const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, columns, salesReps }) => {
-  // Initialize form data based on visible columns
+// Initialize form data based on visible columns
   const initializeFormData = () => {
     const initialData = {
-// Core fields that always exist
+      // Core fields that always exist
       name: "",
       email: "",
       websiteUrl: "",
@@ -1431,12 +1431,14 @@ const AddLeadModal = ({ onClose, onSubmit, categoryOptions, onCreateCategory, co
     };
 
     // Add dynamic fields based on visible columns
-    columns.forEach(column => {
-      const fieldName = getFieldNameForColumn(column);
-      if (!initialData.hasOwnProperty(fieldName)) {
-        initialData[fieldName] = getDefaultValueForType(column.type);
-      }
-    });
+    if (columns && Array.isArray(columns)) {
+      columns.forEach(column => {
+        const fieldName = getFieldNameForColumn(column);
+        if (!initialData.hasOwnProperty(fieldName)) {
+          initialData[fieldName] = getDefaultValueForType(column.type);
+        }
+      });
+    }
 
     return initialData;
   };
@@ -1474,12 +1476,12 @@ const [formData, setFormData] = useState(initializeFormData());
     });
   };
 
-  const renderFormField = (column) => {
+const renderFormField = (column) => {
     const fieldName = getFieldNameForColumn(column);
     const isRequired = column.required;
 
     // Skip default fields that are handled separately
-    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName'];
+    const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
     if (defaultFields.includes(fieldName)) {
       return null;
     }
@@ -1612,349 +1614,349 @@ const [formData, setFormData] = useState(initializeFormData());
     }
   };
 return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
-          <h3 className="text-lg font-semibold">Add New Lead</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-full">
-            <ApperIcon name="X" size={20} />
-          </button>
-        </div>
-<form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
-{/* Name and Email Row */}
-          {(shouldShowField({ fieldName: 'name' }) || shouldShowField({ fieldName: 'email' })) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {shouldShowField({ fieldName: 'name' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Name
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="Acme Corp"
-                    className="w-full"
-                    required
-                  />
-                </div>
-              )}
-              {shouldShowField({ fieldName: 'email' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="partnerships@acme.com"
-                    className="w-full"
-                    required
-                  />
-                </div>
-              )}
-            </div>
-          )}
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <h3 className="text-lg font-semibold">Add New Lead</h3>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-full">
+              <ApperIcon name="X" size={20} />
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+            {/* Name and Email Row */}
+            {(shouldShowField({ fieldName: 'name' }) || shouldShowField({ fieldName: 'email' })) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {shouldShowField({ fieldName: 'name' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Name
+                    </label>
+                    <Input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="Acme Corp"
+                      className="w-full"
+                      required
+                    />
+                  </div>
+                )}
+                {shouldShowField({ fieldName: 'email' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      placeholder="partnerships@acme.com"
+                      className="w-full"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Website URL */}
-          {shouldShowField({ fieldName: 'websiteUrl' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Website URL
-              </label>
-              <Input
-                type="url"
-                value={formData.websiteUrl}
-                detectUrlPrefix={true}
-                urlPrefix="https://"
-                onChange={(e) => setFormData({...formData, websiteUrl: e.target.value})}
-                placeholder="https://example.com"
-                className="w-full"
-                required
-              />
-            </div>
-          )}
-
-          {/* Team Size and ARR Row */}
-          {(shouldShowField({ fieldName: 'teamSize' }) || shouldShowField({ fieldName: 'arr' })) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {shouldShowField({ fieldName: 'teamSize' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Team Size
-                  </label>
-                  <select
-                    value={formData.teamSize}
-                    onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                  >
-                    <option value="1-3">1-3</option>
-                    <option value="4-10">4-10</option>
-                    <option value="11-50">11-50</option>
-                    <option value="51-100">51-100</option>
-                    <option value="101-500">101-500</option>
-                    <option value="500+">500+</option>
-                  </select>
-                </div>
-              )}
-              {shouldShowField({ fieldName: 'arr' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    ARR (USD)
-                  </label>
-                  <Input
-                    type="number"
-                    value={formData.arr}
-                    onChange={(e) => setFormData({...formData, arr: e.target.value})}
-                    placeholder="150000"
-                    className="w-full"
-                    required
-                  />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Category */}
-          {shouldShowField({ fieldName: 'category' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
-              </label>
-              <div className="relative">
-                <SearchableSelect
-                  value={formData.category}
-                  onChange={(value) => setFormData({...formData, category: value})}
-                  options={categoryOptions}
-                  placeholder="Select category..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  onCreateCategory={onCreateCategory}
+            {/* Website URL */}
+            {shouldShowField({ fieldName: 'websiteUrl' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Website URL
+                </label>
+                <Input
+                  type="url"
+                  value={formData.websiteUrl}
+                  detectUrlPrefix={true}
+                  urlPrefix="https://"
+                  onChange={(e) => setFormData({...formData, websiteUrl: e.target.value})}
+                  placeholder="https://example.com"
+                  className="w-full"
+                  required
                 />
               </div>
-            </div>
-          )}
+            )}
 
-          {/* LinkedIn URL */}
-          {shouldShowField({ fieldName: 'linkedinUrl' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                LinkedIn URL
-              </label>
-              <Input
-                type="url"
-                value={formData.linkedinUrl}
-                onChange={(e) => setFormData({...formData, linkedinUrl: e.target.value})}
-                placeholder="https://linkedin.com/company/example"
-                className="w-full"
-                required
-              />
-            </div>
-          )}
+            {/* Team Size and ARR Row */}
+            {(shouldShowField({ fieldName: 'teamSize' }) || shouldShowField({ fieldName: 'arr' })) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {shouldShowField({ fieldName: 'teamSize' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Team Size
+                    </label>
+                    <select
+                      value={formData.teamSize}
+                      onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                    >
+                      <option value="1-3">1-3</option>
+                      <option value="4-10">4-10</option>
+                      <option value="11-50">11-50</option>
+                      <option value="51-100">51-100</option>
+                      <option value="101-500">101-500</option>
+                      <option value="500+">500+</option>
+                    </select>
+                  </div>
+                )}
+                {shouldShowField({ fieldName: 'arr' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      ARR (USD)
+                    </label>
+                    <Input
+                      type="number"
+                      value={formData.arr}
+                      onChange={(e) => setFormData({...formData, arr: e.target.value})}
+                      placeholder="150000"
+                      className="w-full"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Status and Funding Type Row */}
-          {(shouldShowField({ fieldName: 'status' }) || shouldShowField({ fieldName: 'fundingType' })) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {shouldShowField({ fieldName: 'status' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({...formData, status: e.target.value})}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                  >
-                    <option value="New Lead">New Lead</option>
-                    <option value="Contacted">Contacted</option>
-                    <option value="Keep an Eye">Keep an Eye</option>
-                    <option value="Proposal Sent">Proposal Sent</option>
-                    <option value="Meeting Booked">Meeting Booked</option>
-                    <option value="Meeting Done">Meeting Done</option>
-                    <option value="Commercials Sent">Commercials Sent</option>
-                    <option value="Negotiation">Negotiation</option>
-                    <option value="Hotlist">Hotlist</option>
-                    <option value="Temporarily on hold">Temporarily on hold</option>
-                    <option value="Out of League">Out of League</option>
-                    <option value="Outdated">Outdated</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Closed Won">Closed Won</option>
-                    <option value="Closed Lost">Closed Lost</option>
-                  </select>
+            {/* Category */}
+            {shouldShowField({ fieldName: 'category' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Category
+                </label>
+                <div className="relative">
+                  <SearchableSelect
+                    value={formData.category}
+                    onChange={(value) => setFormData({...formData, category: value})}
+                    options={categoryOptions}
+                    placeholder="Select category..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    onCreateCategory={onCreateCategory}
+                  />
                 </div>
-              )}
-              {shouldShowField({ fieldName: 'fundingType' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Funding Type
-                  </label>
-                  <select
-                    value={formData.fundingType}
-                    onChange={(e) => setFormData({...formData, fundingType: e.target.value})}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                  >
-                    <option value="Bootstrapped">Bootstrapped</option>
-                    <option value="Pre-seed">Pre-seed</option>
-                    <option value="Y Combinator">Y Combinator</option>
-                    <option value="Angel">Angel</option>
-                    <option value="Series A">Series A</option>
-                    <option value="Series B">Series B</option>
-                    <option value="Series C">Series C</option>
-                  </select>
-                </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Follow-up Date */}
-{shouldShowField({ fieldName: 'followUpDate' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Follow-up Date
-              </label>
-              <Input
-                type="date"
-                value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
-                onChange={(e) => setFormData({...formData, followUpDate: e.target.value ? new Date(e.target.value).toISOString() : ''})}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* LinkedIn URL */}
+            {shouldShowField({ fieldName: 'linkedinUrl' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  LinkedIn URL
+                </label>
+                <Input
+                  type="url"
+                  value={formData.linkedinUrl}
+                  onChange={(e) => setFormData({...formData, linkedinUrl: e.target.value})}
+                  placeholder="https://linkedin.com/company/example"
+                  className="w-full"
+                  required
+                />
+              </div>
+            )}
 
-          {/* IVR Number */}
-          {shouldShowField({ fieldName: 'ivrNumber' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                IVR Number
-              </label>
-              <Input
-                type="text"
-                value={formData.ivrNumber}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  // Validate 10-12 digits if numeric
-                  if (value && /^\d+$/.test(value) && (value.length < 10 || value.length > 12)) {
-                    return; // Don't update if numeric but wrong length
-                  }
-                  setFormData({...formData, ivrNumber: value});
-                }}
-                placeholder="Enter IVR number (10-12 digits if numeric)"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Status and Funding Type Row */}
+            {(shouldShowField({ fieldName: 'status' }) || shouldShowField({ fieldName: 'fundingType' })) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {shouldShowField({ fieldName: 'status' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({...formData, status: e.target.value})}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                    >
+                      <option value="New Lead">New Lead</option>
+                      <option value="Contacted">Contacted</option>
+                      <option value="Keep an Eye">Keep an Eye</option>
+                      <option value="Proposal Sent">Proposal Sent</option>
+                      <option value="Meeting Booked">Meeting Booked</option>
+                      <option value="Meeting Done">Meeting Done</option>
+                      <option value="Commercials Sent">Commercials Sent</option>
+                      <option value="Negotiation">Negotiation</option>
+                      <option value="Hotlist">Hotlist</option>
+                      <option value="Temporarily on hold">Temporarily on hold</option>
+                      <option value="Out of League">Out of League</option>
+                      <option value="Outdated">Outdated</option>
+                      <option value="Rejected">Rejected</option>
+                      <option value="Closed Won">Closed Won</option>
+                      <option value="Closed Lost">Closed Lost</option>
+                    </select>
+                  </div>
+                )}
+                {shouldShowField({ fieldName: 'fundingType' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Funding Type
+                    </label>
+                    <select
+                      value={formData.fundingType}
+                      onChange={(e) => setFormData({...formData, fundingType: e.target.value})}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                    >
+                      <option value="Bootstrapped">Bootstrapped</option>
+                      <option value="Pre-seed">Pre-seed</option>
+                      <option value="Y Combinator">Y Combinator</option>
+                      <option value="Angel">Angel</option>
+                      <option value="Series A">Series A</option>
+                      <option value="Series B">Series B</option>
+                      <option value="Series C">Series C</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* DID Number */}
-          {shouldShowField({ fieldName: 'didNumber' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                DID Number
-              </label>
-              <Input
-                type="text"
-                value={formData.didNumber}
-                onChange={(e) => setFormData({...formData, didNumber: e.target.value})}
-                placeholder="Enter DID number"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Follow-up Date */}
+            {shouldShowField({ fieldName: 'followUpDate' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Follow-up Date
+                </label>
+                <Input
+                  type="date"
+                  value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
+                  onChange={(e) => setFormData({...formData, followUpDate: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Creation Date & Time */}
-          {shouldShowField({ fieldName: 'creationDateTime' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Creation Date & Time
-              </label>
-              <Input
-                type="datetime-local"
-                value={formData.creationDateTime ? new Date(formData.creationDateTime).toISOString().slice(0, 16) : ''}
-                onChange={(e) => setFormData({...formData, creationDateTime: e.target.value ? new Date(e.target.value).toISOString() : ''})}
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* IVR Number */}
+            {shouldShowField({ fieldName: 'ivrNumber' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  IVR Number
+                </label>
+                <Input
+                  type="text"
+                  value={formData.ivrNumber}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Validate 10-12 digits if numeric
+                    if (value && /^\d+$/.test(value) && (value.length < 10 || value.length > 12)) {
+                      return; // Don't update if numeric but wrong length
+                    }
+                    setFormData({...formData, ivrNumber: value});
+                  }}
+                  placeholder="Enter IVR number (10-12 digits if numeric)"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Assigned To */}
-          {shouldShowField({ fieldName: 'assignedTo' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Assigned To
-              </label>
-              <select
-                value={formData.assignedTo}
-                onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-              >
-                <option value="">Select assignee...</option>
-                {salesReps.map(rep => (
-                  <option key={rep.Id} value={rep.name}>{rep.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
+            {/* DID Number */}
+            {shouldShowField({ fieldName: 'didNumber' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  DID Number
+                </label>
+                <Input
+                  type="text"
+                  value={formData.didNumber}
+                  onChange={(e) => setFormData({...formData, didNumber: e.target.value})}
+                  placeholder="Enter DID number"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Assign Number */}
-          {shouldShowField({ fieldName: 'assignNumber' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Assign Number
-              </label>
-              <Input
-                type="text"
-                value={formData.assignNumber}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-                  // Validate: 10-digit mobile or 4-6 digit extension
-                  if (value && ((value.length !== 10 && value.length < 4) || value.length > 10)) {
-                    return; // Don't update if invalid length
-                  }
-                  setFormData({...formData, assignNumber: value});
-                }}
-                placeholder="10-digit mobile or 4-6 digit extension"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Creation Date & Time */}
+            {shouldShowField({ fieldName: 'creationDateTime' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Creation Date & Time
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={formData.creationDateTime ? new Date(formData.creationDateTime).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => setFormData({...formData, creationDateTime: e.target.value ? new Date(e.target.value).toISOString() : ''})}
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Edition */}
-          {shouldShowField({ fieldName: 'edition' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Edition
-              </label>
-              <select
-                value={formData.edition}
-                onChange={(e) => setFormData({...formData, edition: e.target.value})}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-              >
-                <option value="Select Edition">Select Edition</option>
-                <option value="Black Edition">Black Edition</option>
-                <option value="Collector's Edition">Collector's Edition</option>
-                <option value="Limited Edition">Limited Edition</option>
-              </select>
-            </div>
-          )}
+            {/* Assigned To */}
+            {shouldShowField({ fieldName: 'assignedTo' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Assigned To
+                </label>
+                <select
+                  value={formData.assignedTo}
+                  onChange={(e) => setFormData({...formData, assignedTo: e.target.value})}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                >
+                  <option value="">Select assignee...</option>
+                  {salesReps.map(rep => (
+                    <option key={rep.Id} value={rep.name}>{rep.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-          {/* Product Name */}
-          {shouldShowField({ fieldName: 'productName' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Product Name
-              </label>
-              <Input
-                type="text"
-                value={formData.productName}
-                onChange={(e) => setFormData({...formData, productName: e.target.value})}
-                placeholder="Enter product name"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Assign Number */}
+            {shouldShowField({ fieldName: 'assignNumber' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Assign Number
+                </label>
+                <Input
+                  type="text"
+                  value={formData.assignNumber}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                    // Validate: 10-digit mobile or 4-6 digit extension
+                    if (value && ((value.length !== 10 && value.length < 4) || value.length > 10)) {
+                      return; // Don't update if invalid length
+                    }
+                    setFormData({...formData, assignNumber: value});
+                  }}
+                  placeholder="10-digit mobile or 4-6 digit extension"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Dynamic custom fields */}
-          {columns && columns.map(column => renderFormField(column))}
+            {/* Edition */}
+            {shouldShowField({ fieldName: 'edition' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Edition
+                </label>
+                <select
+                  value={formData.edition}
+                  onChange={(e) => setFormData({...formData, edition: e.target.value})}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+                >
+                  <option value="Select Edition">Select Edition</option>
+                  <option value="Black Edition">Black Edition</option>
+                  <option value="Collector's Edition">Collector's Edition</option>
+                  <option value="Limited Edition">Limited Edition</option>
+                </select>
+              </div>
+            )}
+
+            {/* Product Name */}
+            {shouldShowField({ fieldName: 'productName' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Product Name
+                </label>
+                <Input
+                  type="text"
+                  value={formData.productName}
+                  onChange={(e) => setFormData({...formData, productName: e.target.value})}
+                  placeholder="Enter product name"
+                  className="w-full"
+                />
+              </div>
+            )}
+
+            {/* Dynamic custom fields */}
+            {columns && Array.isArray(columns) && columns.map(column => renderFormField(column))}
 <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel
@@ -1971,9 +1973,9 @@ return (
 
 const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCategory, columns, salesReps = [] }) => {
   // Initialize form data based on lead data and visible columns
-  const initializeFormData = () => {
+const initializeFormData = () => {
     const initialData = {
-// Core fields
+      // Core fields
       name: lead?.name || '',
       email: lead?.email || '',
       websiteUrl: lead?.websiteUrl || '',
@@ -1983,6 +1985,7 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
       linkedinUrl: lead?.linkedinUrl || '',
       status: lead?.status || 'New Lead',
       fundingType: lead?.fundingType || 'Bootstrapped',
+      followUpDate: lead?.followUpDate || '',
       edition: lead?.edition || "Select Edition",
       productName: lead?.productName || "",
       ivrNumber: lead?.ivrNumber || '',
@@ -2004,7 +2007,7 @@ const EditLeadModal = ({ lead, onClose, onSubmit, categoryOptions, onCreateCateg
 
     return initialData;
   };
-const [formData, setFormData] = useState(initializeFormData());
+  const [formData, setFormData] = useState(initializeFormData());
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -2038,11 +2041,11 @@ const [formData, setFormData] = useState(initializeFormData());
     });
   };
 
-  const renderFormField = (column) => {
+const renderFormField = (column) => {
     const fieldName = getFieldNameForColumn(column);
     const isRequired = column.required;
 
-// Skip default fields that are handled separately
+    // Skip default fields that are handled separately
     const defaultFields = ['name', 'email', 'websiteUrl', 'teamSize', 'arr', 'category', 'linkedinUrl', 'status', 'fundingType', 'followUpDate', 'edition', 'productName', 'ivrNumber', 'didNumber', 'creationDateTime', 'assignedTo', 'assignNumber'];
     if (defaultFields.includes(fieldName)) {
       return null;
@@ -2178,328 +2181,345 @@ const [formData, setFormData] = useState(initializeFormData());
   };
 
 return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
-          <h3 className="text-lg font-semibold">Edit Lead</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-full">
-            <ApperIcon name="X" size={20} />
-          </button>
-        </div>
-<form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
-          {/* Name and Email Row */}
-          {(shouldShowField({ fieldName: 'name' }) || shouldShowField({ fieldName: 'email' })) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {shouldShowField({ fieldName: 'name' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                  <Input
-                    type="text"
-                    value={formData.name}
-                    onChange={e => setFormData({
-                      ...formData,
-                      name: e.target.value
-                    })}
-                    className="w-full"
-                    required />
-                </div>
-              )}
-              {shouldShowField({ fieldName: 'email' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={e => setFormData({
-                      ...formData,
-                      email: e.target.value
-                    })}
-                    className="w-full"
-                    required />
-                </div>
-              )}
-            </div>
-          )}
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <h3 className="text-lg font-semibold">Edit Lead</h3>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-full">
+              <ApperIcon name="X" size={20} />
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+            {/* Name and Email Row */}
+            {(shouldShowField({ fieldName: 'name' }) || shouldShowField({ fieldName: 'email' })) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {shouldShowField({ fieldName: 'name' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <Input
+                      type="text"
+                      value={formData.name}
+                      onChange={e => setFormData({
+                        ...formData,
+                        name: e.target.value
+                      })}
+                      className="w-full"
+                      required />
+                  </div>
+                )}
+                {shouldShowField({ fieldName: 'email' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={e => setFormData({
+                        ...formData,
+                        email: e.target.value
+                      })}
+                      className="w-full"
+                      required />
+                  </div>
+                )}
+              </div>
+            )}
 
-          {/* Website URL */}
-          {shouldShowField({ fieldName: 'websiteUrl' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
-              <Input
-                type="url"
-                value={formData.websiteUrl}
-                detectUrlPrefix={true}
-                urlPrefix="https://"
-                onChange={e => setFormData({
-                  ...formData,
-                  websiteUrl: e.target.value
-                })}
-                className="w-full"
-                required />
-            </div>
-          )}
-
-          {/* Team Size and ARR Row */}
-          {(shouldShowField({ fieldName: 'teamSize' }) || shouldShowField({ fieldName: 'arr' })) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {shouldShowField({ fieldName: 'teamSize' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
-                  <select
-                    value={formData.teamSize}
-                    onChange={e => setFormData({
-                      ...formData,
-                      teamSize: e.target.value
-                    })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="1-3">1-3</option>
-                    <option value="4-10">4-10</option>
-                    <option value="11-50">11-50</option>
-                    <option value="51-100">51-100</option>
-                    <option value="101-500">101-500</option>
-                    <option value="500+">500+</option>
-                  </select>
-                </div>
-              )}
-              {shouldShowField({ fieldName: 'arr' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">ARR (USD)</label>
-                  <Input
-                    type="number"
-                    value={formData.arr}
-                    onChange={e => setFormData({
-                      ...formData,
-                      arr: e.target.value
-                    })}
-                    className="w-full"
-                    required />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Category */}
-          {shouldShowField({ fieldName: 'category' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <div className="relative">
-                <SearchableSelect
-                  value={formData.category}
-                  onChange={(value) => setFormData({
+            {/* Website URL */}
+            {shouldShowField({ fieldName: 'websiteUrl' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Website URL</label>
+                <Input
+                  type="url"
+                  value={formData.websiteUrl}
+                  detectUrlPrefix={true}
+                  urlPrefix="https://"
+                  onChange={e => setFormData({
                     ...formData,
-                    category: value
+                    websiteUrl: e.target.value
                   })}
-                  options={categoryOptions}
-                  placeholder="Select category..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  onCreateCategory={onCreateCategory}
+                  className="w-full"
+                  required />
+              </div>
+            )}
+
+            {/* Team Size and ARR Row */}
+            {(shouldShowField({ fieldName: 'teamSize' }) || shouldShowField({ fieldName: 'arr' })) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {shouldShowField({ fieldName: 'teamSize' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Team Size</label>
+                    <select
+                      value={formData.teamSize}
+                      onChange={e => setFormData({
+                        ...formData,
+                        teamSize: e.target.value
+                      })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                      <option value="1-3">1-3</option>
+                      <option value="4-10">4-10</option>
+                      <option value="11-50">11-50</option>
+                      <option value="51-100">51-100</option>
+                      <option value="101-500">101-500</option>
+                      <option value="500+">500+</option>
+                    </select>
+                  </div>
+                )}
+                {shouldShowField({ fieldName: 'arr' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">ARR (USD)</label>
+                    <Input
+                      type="number"
+                      value={formData.arr}
+                      onChange={e => setFormData({
+                        ...formData,
+                        arr: e.target.value
+                      })}
+                      className="w-full"
+                      required />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Category */}
+            {shouldShowField({ fieldName: 'category' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <div className="relative">
+                  <SearchableSelect
+                    value={formData.category}
+                    onChange={(value) => setFormData({
+                      ...formData,
+                      category: value
+                    })}
+                    options={categoryOptions}
+                    placeholder="Select category..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    onCreateCategory={onCreateCategory}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* LinkedIn URL */}
+            {shouldShowField({ fieldName: 'linkedinUrl' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
+                <Input
+                  type="url"
+                  value={formData.linkedinUrl}
+                  onChange={e => setFormData({
+                    ...formData,
+                    linkedinUrl: e.target.value
+                  })}
+                  className="w-full"
+                  required />
+              </div>
+            )}
+
+            {/* Status and Funding Type Row */}
+            {(shouldShowField({ fieldName: 'status' }) || shouldShowField({ fieldName: 'fundingType' })) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {shouldShowField({ fieldName: 'status' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select
+                      value={formData.status}
+                      onChange={e => setFormData({
+                        ...formData,
+                        status: e.target.value
+                      })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                      <option value="New Lead">New Lead</option>
+                      <option value="Contacted">Contacted</option>
+                      <option value="Keep an Eye">Keep an Eye</option>
+                      <option value="Proposal Sent">Proposal Sent</option>
+                      <option value="Meeting Booked">Meeting Booked</option>
+                      <option value="Meeting Done">Meeting Done</option>
+                      <option value="Commercials Sent">Commercials Sent</option>
+                      <option value="Negotiation">Negotiation</option>
+                      <option value="Hotlist">Hotlist</option>
+                      <option value="Temporarily on hold">Temporarily on hold</option>
+                      <option value="Out of League">Out of League</option>
+                      <option value="Outdated">Outdated</option>
+                      <option value="Rejected">Rejected</option>
+                      <option value="Closed Won">Closed Won</option>
+                      <option value="Closed Lost">Closed Lost</option>
+                    </select>
+                  </div>
+                )}
+                {shouldShowField({ fieldName: 'fundingType' }) && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Funding Type</label>
+                    <select
+                      value={formData.fundingType}
+                      onChange={e => setFormData({
+                        ...formData,
+                        fundingType: e.target.value
+                      })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                      <option value="Bootstrapped">Bootstrapped</option>
+                      <option value="Pre-seed">Pre-seed</option>
+                      <option value="Y Combinator">Y Combinator</option>
+                      <option value="Angel">Angel</option>
+                      <option value="Series A">Series A</option>
+                      <option value="Series B">Series B</option>
+                      <option value="Series C">Series C</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Follow-up Date */}
+            {shouldShowField({ fieldName: 'followUpDate' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Follow-up Date</label>
+                <Input
+                  type="date"
+                  value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
+                  onChange={e => setFormData({
+                    ...formData,
+                    followUpDate: e.target.value ? new Date(e.target.value).toISOString() : ''
+                  })}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full"
                 />
               </div>
-            </div>
-          )}
+            )}
 
-          {/* LinkedIn URL */}
-          {shouldShowField({ fieldName: 'linkedinUrl' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn URL</label>
-              <Input
-                type="url"
-                value={formData.linkedinUrl}
-                onChange={e => setFormData({
-                  ...formData,
-                  linkedinUrl: e.target.value
-                })}
-                className="w-full"
-                required />
-            </div>
-          )}
+            {/* IVR Number */}
+            {shouldShowField({ fieldName: 'ivrNumber' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">IVR Number</label>
+                <Input
+                  type="text"
+                  value={formData.ivrNumber}
+                  onChange={e => {
+                    const value = e.target.value;
+                    // Validate 10-12 digits if numeric
+                    if (value && /^\d+$/.test(value) && (value.length < 10 || value.length > 12)) {
+                      return; // Don't update if numeric but wrong length
+                    }
+                    setFormData({...formData, ivrNumber: value});
+                  }}
+                  placeholder="Enter IVR number (10-12 digits if numeric)"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Status and Funding Type Row */}
-          {(shouldShowField({ fieldName: 'status' }) || shouldShowField({ fieldName: 'fundingType' })) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {shouldShowField({ fieldName: 'status' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={e => setFormData({
-                      ...formData,
-                      status: e.target.value
-                    })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="New Lead">New Lead</option>
-                    <option value="Contacted">Contacted</option>
-                    <option value="Keep an Eye">Keep an Eye</option>
-                    <option value="Proposal Sent">Proposal Sent</option>
-                    <option value="Meeting Booked">Meeting Booked</option>
-                    <option value="Meeting Done">Meeting Done</option>
-                    <option value="Commercials Sent">Commercials Sent</option>
-                    <option value="Negotiation">Negotiation</option>
-                    <option value="Hotlist">Hotlist</option>
-                    <option value="Temporarily on hold">Temporarily on hold</option>
-                    <option value="Out of League">Out of League</option>
-                    <option value="Outdated">Outdated</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Closed Won">Closed Won</option>
-                    <option value="Closed Lost">Closed Lost</option>
-                  </select>
-                </div>
-              )}
-              {shouldShowField({ fieldName: 'fundingType' }) && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Funding Type</label>
-                  <select
-                    value={formData.fundingType}
-                    onChange={e => setFormData({
-                      ...formData,
-                      fundingType: e.target.value
-                    })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                    <option value="Bootstrapped">Bootstrapped</option>
-                    <option value="Pre-seed">Pre-seed</option>
-                    <option value="Y Combinator">Y Combinator</option>
-                    <option value="Angel">Angel</option>
-                    <option value="Series A">Series A</option>
-                    <option value="Series B">Series B</option>
-                    <option value="Series C">Series C</option>
-                  </select>
-                </div>
-              )}
-</div>
-          )}
+            {/* DID Number */}
+            {shouldShowField({ fieldName: 'didNumber' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">DID Number</label>
+                <Input
+                  type="text"
+                  value={formData.didNumber}
+                  onChange={e => setFormData({
+                    ...formData,
+                    didNumber: e.target.value
+                  })}
+                  placeholder="Enter DID number"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* IVR Number */}
-          {shouldShowField({ fieldName: 'ivrNumber' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">IVR Number</label>
-              <Input
-                type="text"
-                value={formData.ivrNumber}
-                onChange={e => {
-                  const value = e.target.value;
-                  // Validate 10-12 digits if numeric
-                  if (value && /^\d+$/.test(value) && (value.length < 10 || value.length > 12)) {
-                    return; // Don't update if numeric but wrong length
-                  }
-                  setFormData({...formData, ivrNumber: value});
-                }}
-                placeholder="Enter IVR number (10-12 digits if numeric)"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Creation Date & Time */}
+            {shouldShowField({ fieldName: 'creationDateTime' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Creation Date & Time</label>
+                <Input
+                  type="datetime-local"
+                  value={formData.creationDateTime ? new Date(formData.creationDateTime).toISOString().slice(0, 16) : ''}
+                  onChange={e => setFormData({
+                    ...formData,
+                    creationDateTime: e.target.value ? new Date(e.target.value).toISOString() : ''
+                  })}
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* DID Number */}
-          {shouldShowField({ fieldName: 'didNumber' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">DID Number</label>
-              <Input
-                type="text"
-                value={formData.didNumber}
-                onChange={e => setFormData({
-                  ...formData,
-                  didNumber: e.target.value
-                })}
-                placeholder="Enter DID number"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Assigned To */}
+            {shouldShowField({ fieldName: 'assignedTo' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Assigned To</label>
+                <select
+                  value={formData.assignedTo}
+                  onChange={e => setFormData({
+                    ...formData,
+                    assignedTo: e.target.value
+                  })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                  <option value="">Select assignee...</option>
+                  {salesReps.map(rep => (
+                    <option key={rep.Id} value={rep.name}>{rep.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-          {/* Creation Date & Time */}
-          {shouldShowField({ fieldName: 'creationDateTime' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Creation Date & Time</label>
-              <Input
-                type="datetime-local"
-                value={formData.creationDateTime ? new Date(formData.creationDateTime).toISOString().slice(0, 16) : ''}
-                onChange={e => setFormData({
-                  ...formData,
-                  creationDateTime: e.target.value ? new Date(e.target.value).toISOString() : ''
-                })}
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Assign Number */}
+            {shouldShowField({ fieldName: 'assignNumber' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Assign Number</label>
+                <Input
+                  type="text"
+                  value={formData.assignNumber}
+                  onChange={e => {
+                    const value = e.target.value.replace(/\D/g, ''); // Only allow digits
+                    // Validate: 10-digit mobile or 4-6 digit extension
+                    if (value && ((value.length !== 10 && value.length < 4) || value.length > 10)) {
+                      return; // Don't update if invalid length
+                    }
+                    setFormData({...formData, assignNumber: value});
+                  }}
+                  placeholder="10-digit mobile or 4-6 digit extension"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Assigned To */}
-          {shouldShowField({ fieldName: 'assignedTo' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Assigned To</label>
-              <select
-                value={formData.assignedTo}
-                onChange={e => setFormData({
-                  ...formData,
-                  assignedTo: e.target.value
-                })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                <option value="">Select assignee...</option>
-                {salesReps.map(rep => (
-                  <option key={rep.Id} value={rep.name}>{rep.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
+            {/* Edition */}
+            {shouldShowField({ fieldName: 'edition' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Edition</label>
+                <select
+                  value={formData.edition}
+                  onChange={e => setFormData({
+                    ...formData,
+                    edition: e.target.value
+                  })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+                  <option value="Select Edition">Select Edition</option>
+                  <option value="Black Edition">Black Edition</option>
+                  <option value="Collector's Edition">Collector's Edition</option>
+                  <option value="Limited Edition">Limited Edition</option>
+                </select>
+              </div>
+            )}
 
-          {/* Assign Number */}
-          {shouldShowField({ fieldName: 'assignNumber' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Assign Number</label>
-              <Input
-                type="text"
-                value={formData.assignNumber}
-                onChange={e => {
-                  const value = e.target.value.replace(/\D/g, ''); // Only allow digits
-                  // Validate: 10-digit mobile or 4-6 digit extension
-                  if (value && ((value.length !== 10 && value.length < 4) || value.length > 10)) {
-                    return; // Don't update if invalid length
-                  }
-                  setFormData({...formData, assignNumber: value});
-                }}
-                placeholder="10-digit mobile or 4-6 digit extension"
-                className="w-full"
-              />
-            </div>
-          )}
+            {/* Product Name */}
+            {shouldShowField({ fieldName: 'productName' }) && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                <Input
+                  type="text"
+                  value={formData.productName}
+                  onChange={e => setFormData({
+                    ...formData,
+                    productName: e.target.value
+                  })}
+                  placeholder="Enter product name"
+                  className="w-full"
+                />
+              </div>
+            )}
 
-          {/* Edition */}
-          {shouldShowField({ fieldName: 'edition' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Edition</label>
-              <select
-                value={formData.edition}
-                onChange={e => setFormData({
-                  ...formData,
-                  edition: e.target.value
-                })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white">
-                <option value="Select Edition">Select Edition</option>
-                <option value="Black Edition">Black Edition</option>
-                <option value="Collector's Edition">Collector's Edition</option>
-                <option value="Limited Edition">Limited Edition</option>
-              </select>
-            </div>
-          )}
-
-          {/* Product Name */}
-          {shouldShowField({ fieldName: 'productName' }) && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-              <Input
-                type="text"
-                value={formData.productName}
-                onChange={e => setFormData({
-                  ...formData,
-                  productName: e.target.value
-                })}
-                placeholder="Enter product name"
-                className="w-full"
-              />
-            </div>
-          )}
-
-          {/* Dynamic custom fields */}
-          {columns && columns.map(column => renderFormField(column))}
+            {/* Dynamic custom fields */}
+            {columns && Array.isArray(columns) && columns.map(column => renderFormField(column))}
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto order-2 sm:order-1">
               Cancel

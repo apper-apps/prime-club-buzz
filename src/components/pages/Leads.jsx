@@ -15,14 +15,14 @@ import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
-// Utility functions
+// Helper function to map column names to field names
 const getFieldNameForColumn = (column) => {
   const fieldMap = {
-    'Website URL': 'websiteUrl',
     'Company Name': 'name',
-    'Status': 'status',
-    'Product Name': 'productName',
+    'Contact Name': 'contactName',
+    'Website URL': 'websiteUrl',
     'Team Size': 'teamSize',
+    'Status': 'status',
     'ARR': 'arr',
     'Category': 'category',
     'LinkedIn': 'linkedinUrl',
@@ -120,10 +120,13 @@ const Leads = () => {
   const [showHotlist, setShowHotlist] = useState(false);
   const [debounceTimeouts, setDebounceTimeouts] = useState({});
   const [nextTempId, setNextTempId] = useState(-1);
-// Additional constants and options
+  const [updateTimeouts, setUpdateTimeouts] = useState({});
+
+  // Additional constants and options
   const teamSizeOptions = ["1-3", "4-10", "11-50", "51-100", "101-500", "500+"];
-// Load data functions
-const loadCustomColumns = async () => {
+
+  // Load data functions
+  const loadCustomColumns = async () => {
     try {
       const columns = await getVisibleColumns();
       setCustomColumns(columns);
@@ -136,6 +139,7 @@ const loadCustomColumns = async () => {
   const loadLeads = async () => {
     try {
       setLoading(true);
+      setError(null);
       const leadsData = await getLeads();
       setData(leadsData);
     } catch (error) {
@@ -147,69 +151,34 @@ const loadCustomColumns = async () => {
     }
   };
 
-  const handleStatusChange = async (leadId, newStatus) => {
-    try {
-      const updatedLead = await updateLead(leadId, { status: newStatus })
-      
-      setData(prevData => prevData.map(item => 
-        item.Id === leadId ? updatedLead : item
-      ))
-      
-      // Handle deal creation/updates based on status
-      const statusToStageMap = {
-        'Contacted': 'Connected',
-        'Meeting Booked': 'Meeting Booked',
-        'Meeting Done': 'Meeting Done',
-        'Commercials Sent': 'Negotiation',
-        'Negotiation': 'Negotiation',
-        'Closed Won': 'Won',
-        'Closed Lost': 'Lost'
-      }
-      
-      const targetStage = statusToStageMap[newStatus]
-      if (targetStage) {
-        try {
-          // Get current deals to check if one exists for this lead
-          const currentDeals = await getDeals()
-          const existingDeal = currentDeals.find(deal => deal.leadId === leadId.toString())
-          
-          if (existingDeal) {
-            // Update existing deal to the new stage
-            await updateDeal(existingDeal.Id, { stage: targetStage })
-            toast.success(`Lead status updated and deal moved to ${targetStage} stage!`)
-          } else {
-            // Create new deal for this lead
-            const leadData = data.find(lead => lead.Id === leadId)
-            if (leadData) {
-              await createDeal({
-                leadId: leadId.toString(),
-                companyName: leadData.name,
-                email: leadData.email,
-                websiteUrl: leadData.websiteUrl,
-                stage: targetStage,
-                value: leadData.arr || 0,
-                probability: 50,
-                expectedCloseDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-                assignedTo: leadData.addedBy || 1
-              })
-              toast.success(`Lead status updated and new deal created in ${targetStage} stage!`)
-            }
-          }
-        } catch (dealError) {
-          console.error('Error handling deal operations:', dealError)
-          toast.warning(`Lead status updated, but failed to sync with deals pipeline`)
-        }
-      } else {
-        toast.success('Lead status updated successfully!')
-      }
-    } catch (error) {
-      console.error('Error updating lead status:', error)
-      toast.error('Failed to update lead status')
+  // Debounced field update with timeout management
+  const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
+    const timeoutKey = `${leadId}-${field}`;
+    
+    // Clear existing timeout
+    if (updateTimeouts[timeoutKey]) {
+      clearTimeout(updateTimeouts[timeoutKey]);
     }
-  }
+    
+    // Set new timeout
+    const timeoutId = setTimeout(() => {
+      handleFieldUpdate(leadId, field, value);
+      setUpdateTimeouts(prev => {
+        const newTimeouts = { ...prev };
+        delete newTimeouts[timeoutKey];
+        return newTimeouts;
+      });
+    }, 500);
+    
+    setUpdateTimeouts(prev => ({
+      ...prev,
+      [timeoutKey]: timeoutId
+    }));
+  }, [updateTimeouts]);
 
-  // Field update handlers
-  const handleFieldUpdate = async (leadId, field, value) => {
+// Field update handlers
+
+const handleFieldUpdate = async (leadId, field, value) => {
     try {
       const processedValue = field === 'arr' && value !== '' ? Number(value) : value;
       const updates = { [field]: processedValue };
@@ -224,27 +193,67 @@ const loadCustomColumns = async () => {
     }
   };
 
-  const handleFieldUpdateDebounced = useCallback((leadId, field, value) => {
-    const timeoutKey = `${leadId}-${field}`;
-    
-    if (debounceTimeouts[timeoutKey]) {
-      clearTimeout(debounceTimeouts[timeoutKey]);
+  // Handle status changes with deal creation logic
+  const handleStatusChange = async (leadId, newStatus) => {
+    try {
+      setData(prevData => prevData.map(item => 
+        item.Id === leadId ? { ...item, Status: newStatus } : item
+      ))
+
+      const updatedLead = await updateLead(leadId, { Status: newStatus })
+      
+      // Handle deal creation logic for specific statuses
+      const statusToStageMap = {
+        'Contacted': 'Connected',
+        'Meeting Booked': 'Meeting Booked',
+        'Meeting Done': 'Meeting Done',
+        'Commercials Sent': 'Negotiation',
+        'Negotiation': 'Negotiation',
+        'Closed Won': 'Won',
+        'Closed Lost': 'Lost'
+      }
+
+      const targetStage = statusToStageMap[newStatus]
+      if (targetStage) {
+        try {
+          const currentDeals = await getDeals()
+          const existingDeal = currentDeals.find(deal => deal.leadId === leadId)
+          
+          if (existingDeal) {
+            await updateDeal(existingDeal.Id, { stage: targetStage })
+          } else if (newStatus !== 'Closed Lost') {
+            const leadData = updatedLead || data.find(lead => lead.Id === leadId)
+            if (leadData) {
+              await createDeal({
+                title: `${leadData["Company Name"] || "Unknown Company"} - Deal`,
+                value: leadData.ARR || 0,
+                stage: targetStage,
+                leadId: leadId,
+                companyName: leadData["Company Name"],
+                contactName: leadData["Contact Name"],
+                email: leadData.Email,
+                phone: leadData.Phone,
+                createdAt: new Date().toISOString()
+              })
+            }
+          }
+        } catch (dealError) {
+          console.error('Error managing deal:', dealError)
+        }
+      }
+
+      toast.success(`Lead status updated to ${newStatus}`)
+    } catch (error) {
+      console.error('Error updating lead status:', error)
+      toast.error('Failed to update lead status')
+      
+      // Revert optimistic update on error
+      setData(prevData => prevData.map(item => 
+        item.Id === leadId ? { ...item, Status: data.find(lead => lead.Id === leadId)?.Status || 'New Lead' } : item
+      ))
     }
-    
-    const timeoutId = setTimeout(() => {
-      handleFieldUpdate(leadId, field, value);
-      setDebounceTimeouts(prev => {
-        const newTimeouts = { ...prev };
-        delete newTimeouts[timeoutKey];
-        return newTimeouts;
-      });
-    }, 500);
-    
-    setDebounceTimeouts(prev => ({
-      ...prev,
-      [timeoutKey]: timeoutId
-    }));
-  }, [debounceTimeouts]);
+  }
+
 
   // Empty row handlers
   const addEmptyRow = () => {
@@ -270,19 +279,93 @@ const loadCustomColumns = async () => {
       }
 
       const leadData = {}
-      customColumns.forEach(column => {
-        const fieldName = getFieldNameForColumn(column)
-        if (fieldName === 'websiteUrl') {
-          // Skip websiteUrl as we handle it separately
-          return
+customColumns.forEach(column => {
+        const fieldName = getFieldNameForColumn(column);
+        const fieldValue = emptyRow[fieldName] || (field === fieldName && value);
+        if (fieldValue !== undefined && fieldValue !== '') {
+          leadData[fieldName] = fieldValue;
         }
-        leadData[fieldName] = emptyRow[fieldName] || ''
+      });
+
+      // Create leads from URLs
+      const successfulLeads = [];
+      const failedUrls = [];
+
+  // Handle empty row updates and conversion to actual leads
+  const handleEmptyRowUpdate = async (tempId, field, value) => {
+    try {
+      // Update the empty row data
+      setEmptyRows(prev => prev.map(row => 
+        row.Id === tempId ? { ...row, [field]: value } : row
+      ))
+
+      // Find the updated empty row
+      const emptyRow = emptyRows.find(row => row.Id === tempId)
+      if (!emptyRow) return
+
+      // Check if this empty row has enough data to create a lead
+      const requiredFields = ['Website URL', 'Company Name']
+      const hasRequiredData = requiredFields.every(fieldName => {
+        const fieldKey = getFieldNameForColumn({ name: fieldName })
+        return (emptyRow[fieldKey] || (field === fieldKey && value))?.trim()
       })
 
-      // Create leads for each URL
-      const successfulLeads = []
-      const failedUrls = []
+      if (hasRequiredData) {
+        // Create lead data from empty row
+        const leadData = {}
+        customColumns.forEach(column => {
+          const fieldName = getFieldNameForColumn(column)
+          const fieldValue = field === fieldName ? value : emptyRow[fieldName]
+          if (fieldValue !== undefined && fieldValue !== '') {
+            leadData[fieldName] = fieldValue
+          }
+        })
 
+        // Set default values for required fields
+        leadData.Status = leadData.Status || 'New Lead'
+        leadData.createdAt = new Date().toISOString()
+        leadData.Id = Date.now() + Math.random() // Temporary ID
+
+        try {
+          // Create the lead
+          const newLead = await createLead(leadData)
+          
+          // Remove the empty row and add the new lead to data
+          setEmptyRows(prev => prev.filter(row => row.Id !== tempId))
+          setData(prevData => [newLead, ...prevData])
+          setLeads(prevLeads => [newLead, ...prevLeads])
+          
+          toast.success(`Lead created for ${leadData['Company Name'] || 'company'}`)
+        } catch (error) {
+          console.error('Error creating lead from empty row:', error)
+          toast.error('Failed to create lead')
+        }
+      }
+    } catch (error) {
+      console.error('Error updating empty row:', error)
+      toast.error('Failed to update data')
+    }
+  }
+
+  // Handle category creation
+  const handleCreateCategory = (newCategory) => {
+    if (newCategory && !categoryOptions.includes(newCategory)) {
+      setCategoryOptions(prev => [...prev, newCategory])
+      toast.success(`Category "${newCategory}" created`)
+    }
+  }
+
+  // Add empty row for inline data entry
+// Add empty row for inline data entry
+  const addEmptyRow = () => {
+    const newEmptyRow = {
+      Id: nextTempId,
+      isEmptyRow: true
+    };
+    setEmptyRows(prev => [...prev, newEmptyRow]);
+    setNextTempId(prev => prev - 1);
+  };
+  }
       for (const url of urls) {
         try {
           const newLead = await createLead({
@@ -628,7 +711,7 @@ icon="Building2" /> : <div className="relative">
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50px]">
                                 <input
                                     type="checkbox"
-                                    checked={selectedLeads.length === filteredAndSortedData.length && filteredAndSortedData.length > 0}
+checked={selectedLeads.size === filteredAndSortedData.length && filteredAndSortedData.length > 0}
                                     onChange={toggleSelectAll}
                                     className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                 />
@@ -659,9 +742,9 @@ icon="Building2" /> : <div className="relative">
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 opacity-50"
                                     />
                                 </td>
-                                {customColumns.map(column => (
+{customColumns.map(column => (
                                     <td key={column.Id} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
-                                        {renderColumnInput(column, emptyRow, true)}
+                                        {renderColumnInput(column, emptyRow, true, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)}
                                     </td>
                                 ))}
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium w-[120px] sticky right-0 bg-white border-l border-gray-200">
@@ -682,14 +765,14 @@ icon="Building2" /> : <div className="relative">
                                 <td className="px-6 py-4 whitespace-nowrap w-[50px]">
                                     <input
                                         type="checkbox"
-                                        checked={selectedLeads.includes(lead.Id)}
+checked={selectedLeads.has(lead.Id)}
                                         onChange={() => toggleLeadSelection(lead.Id)}
                                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                     />
                                 </td>
-                                {customColumns.map(column => (
+{customColumns.map(column => (
                                     <td key={column.Id} className="px-6 py-4 whitespace-nowrap min-w-[120px]">
-                                        {renderColumnInput(column, lead, false)}
+                                        {renderColumnInput(column, lead, false, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory)}
                                     </td>
                                 ))}
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium w-[120px] sticky right-0 bg-white border-l border-gray-200">
@@ -792,13 +875,13 @@ icon="Building2" /> : <div className="relative">
           </Card>
         )}
     {/* Bulk Actions */}
-    {selectedLeads.length > 0 && (
+{selectedLeads.size > 0 && (
       <Card className="p-4 bg-primary-50 border-primary-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <ApperIcon name="CheckCircle" size={20} className="text-primary-600" />
             <span className="text-sm font-medium text-primary-700">
-              {selectedLeads.length} lead{selectedLeads.length > 1 ? 's' : ''} selected
+{selectedLeads.size} lead{selectedLeads.size > 1 ? 's' : ''} selected
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -851,7 +934,8 @@ onSubmit={handleUpdateLead}
 };
 
 // Function to render column input based on column type
-const renderColumnInput = (column, rowData, isEmptyRow) => {
+// Function to render column input based on column type
+const renderColumnInput = (column, rowData, isEmptyRow, handleFieldUpdateDebounced, handleFieldUpdate, handleEmptyRowUpdate, setEmptyRows, setData, handleStatusChange, categoryOptions, handleCreateCategory) => {
   const fieldName = getFieldNameForColumn(column);
   const value = rowData[fieldName] || "";
   

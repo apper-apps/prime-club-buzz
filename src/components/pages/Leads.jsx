@@ -770,12 +770,13 @@ lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
             className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="all">All Categories</option>
-            <option value="Website Contact Form">Website Contact Form</option>
-            <option value="Partner Referral">Partner Referral</option>
-            <option value="Cold Calling">Cold Calling</option>
-            <option value="Events">Events</option>
-            <option value="Website Chatbot">Website Chatbot</option>
-            <option value="Customer Referral">Customer Referral</option>
+            {(() => {
+              const categoryColumn = columnsData.find(col => col.name === "Category");
+              const categoryOptions = categoryColumn?.selectOptions || [];
+              return categoryOptions.map(option => (
+                <option key={option} value={option}>{option}</option>
+              ));
+            })()}
           </select>
 
           <select

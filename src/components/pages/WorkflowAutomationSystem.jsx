@@ -1162,7 +1162,7 @@ const actionTypes = [
                   {activeTab === tab.id && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
                   )}
-                </button>
+</button>
               ))}
             </nav>
 </nav>
@@ -1172,7 +1172,6 @@ const actionTypes = [
 
       {/* Content Area */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-          {activeTab === 'workflows' && (
             <div>
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Workflow Automation</h2>

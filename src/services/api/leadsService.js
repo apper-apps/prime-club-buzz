@@ -344,6 +344,14 @@ export const deleteCustomColumn = async (id) => {
   return { success: true };
 };
 
+// Get visible columns for display (non-deleted, ordered)
+export const getVisibleColumns = async () => {
+  await new Promise(resolve => setTimeout(resolve, 100));
+  return [...customColumns]
+    .filter(col => !col.deleted)
+    .sort((a, b) => a.order - b.order);
+};
+
 export const reorderCustomColumns = async (columnIds) => {
   await new Promise(resolve => setTimeout(resolve, 200));
   

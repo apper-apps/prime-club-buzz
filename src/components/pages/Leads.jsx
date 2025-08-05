@@ -245,33 +245,6 @@ useEffect(() => {
   const [nextTempId, setNextTempId] = useState(-1);
   const [updateTimeouts, setUpdateTimeouts] = useState({});
 
-  // Missing state variables
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [fundingFilter, setFundingFilter] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [teamSizeFilter, setTeamSizeFilter] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [emptyRows, setEmptyRows] = useState([]);
-
-  // Add missing addEmptyRow function
-  const addEmptyRow = useCallback(() => {
-    const newEmptyRow = {
-      Id: nextTempId,
-      isEmptyRow: true,
-      name: '',
-      email: '',
-      websiteUrl: '',
-      status: 'Keep an Eye',
-      teamSize: '1-3',
-      category: '',
-      fundingType: 'Bootstrapped'
-    };
-    setEmptyRows(prev => [...prev, newEmptyRow]);
-    setNextTempId(prev => prev - 1);
-  }, [nextTempId]);
-
   // Derive categories from leads data
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(data.map(lead => lead.category).filter(Boolean))];

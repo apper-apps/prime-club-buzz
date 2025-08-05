@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from '@hello-pangea/dnd'
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import salesRepsData from "@/services/mockData/salesReps.json";

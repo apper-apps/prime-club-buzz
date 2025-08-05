@@ -15,6 +15,65 @@ import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 
+// Utility functions - moved to top to resolve hoisting issues
+const getStatusColor = (status) => {
+  const colors = {
+    'New Lead': 'info',
+    'Contacted': 'success',
+    'Keep an Eye': 'warning',
+    'Proposal Sent': 'primary',
+    'Meeting Booked': 'info',
+    'Meeting Done': 'success',
+    'Commercials Sent': 'primary',
+    'Negotiation': 'warning',
+    'Hotlist': 'danger',
+    'Temporarily on hold': 'secondary',
+    'Out of League': 'secondary',
+    'Outdated': 'secondary',
+    'Rejected': 'danger',
+    'Closed Won': 'success',
+    'Closed Lost': 'danger'
+  };
+  return colors[status] || 'default';
+};
+
+const getFieldNameForColumn = (column) => {
+  if (!column || !column.name) return '';
+  
+  const nameMap = {
+    'Company Name': 'name',
+    'Contact Name': 'contactName',
+    'Email': 'email',
+    'Website URL': 'websiteUrl',
+    'LinkedIn': 'linkedinUrl',
+    'Category': 'category',
+    'Team Size': 'teamSize',
+    'ARR': 'arr',
+    'Status': 'status',
+    'Funding Type': 'fundingType',
+    'Follow-up Date': 'followUpDate',
+    'Edition': 'edition',
+    'Product Name': 'productName'
+  };
+  
+  return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
+};
+
+const getDefaultValueForType = (type) => {
+  switch (type) {
+    case 'number':
+      return 0;
+    case 'boolean':
+      return false;
+    case 'date':
+      return '';
+    case 'select':
+      return '';
+    default:
+      return '';
+  }
+};
+
 function Leads() {
   const navigate = useNavigate()
   
@@ -54,28 +113,7 @@ const [selectedLeads, setSelectedLeads] = useState(new Set())
   
   // State for timeouts and debouncing
 
-const getStatusColor = (status) => {
-    const colors = {
-      'New Lead': 'info',
-      'Contacted': 'success',
-      'Keep an Eye': 'warning',
-      'Proposal Sent': 'primary',
-      'Meeting Booked': 'info',
-      'Meeting Done': 'success',
-      'Commercials Sent': 'primary',
-      'Negotiation': 'warning',
-      'Hotlist': 'danger',
-      'Temporarily on hold': 'secondary',
-      'Out of League': 'secondary',
-      'Outdated': 'secondary',
-      'Rejected': 'danger',
-      'Closed Won': 'success',
-      'Closed Lost': 'danger'
-    };
-    return colors[status] || 'default';
-  };
-
-  const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
+const teamSizeOptions = ['1-3', '4-10', '11-50', '50-100', '100+'];
   
   // Load custom columns
   async function loadCustomColumns() {
@@ -427,43 +465,6 @@ const handleFieldUpdate = async (leadId, field, value) => {
   };
 
 // Utility function to get field name for column
-  const getFieldNameForColumn = (column) => {
-    if (!column || !column.name) return '';
-    
-    const nameMap = {
-      'Company Name': 'name',
-      'Contact Name': 'contactName',
-      'Email': 'email',
-      'Website URL': 'websiteUrl',
-      'LinkedIn': 'linkedinUrl',
-      'Category': 'category',
-      'Team Size': 'teamSize',
-      'ARR': 'arr',
-      'Status': 'status',
-      'Funding Type': 'fundingType',
-      'Follow-up Date': 'followUpDate',
-      'Edition': 'edition',
-      'Product Name': 'productName'
-    };
-    
-    return nameMap[column.name] || column.name.toLowerCase().replace(/\s+/g, '');
-  };
-
-  // Utility function to get default value for column type
-  const getDefaultValueForType = (type) => {
-    switch (type) {
-      case 'number':
-        return 0;
-      case 'boolean':
-        return false;
-      case 'date':
-        return '';
-      case 'select':
-        return '';
-      default:
-        return '';
-    }
-  };
 
   // Initialize data
   useEffect(() => {

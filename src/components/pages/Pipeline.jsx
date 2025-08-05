@@ -64,11 +64,11 @@ const loadDeals = async () => {
         dealsArray = [];
       }
       
-      // Validate each deal object
+// Validate each deal object
       const validDeals = dealsArray.filter(deal => 
         deal && 
         typeof deal === 'object' && 
-        deal.id !== undefined
+        deal.Id !== undefined
       );
       
       console.log('Setting deals:', validDeals.length, 'valid deals out of', dealsArray.length);
@@ -106,7 +106,7 @@ const loadDeals = async () => {
       await updateDeal(dealId, { stage: newStage });
       
 const updatedDeals = deals.map(deal =>
-        deal.Id === parseInt(dealId) ? { ...deal, stage: newStage } : deal
+        deal.Id === dealId ? { ...deal, stage: newStage } : deal
       );
       setDeals(updatedDeals);
       
@@ -124,8 +124,8 @@ const updatedDeals = deals.map(deal =>
   const handleSaveDeal = async (dealId, updatedData) => {
     const updatedDeal = await updateDeal(dealId, updatedData);
     
-    const updatedDeals = deals.map(deal =>
-deal.Id === parseInt(dealId) ? { ...deal, ...updatedData } : deal
+const updatedDeals = deals.map(deal =>
+      deal.Id === dealId ? { ...deal, ...updatedData } : deal
     );
     setDeals(updatedDeals);
   };
@@ -251,8 +251,9 @@ stageDeals.map((deal, index) => (
       </DragDropContext>
 
       {/* Edit Deal Modal */}
-      {showEditModal && editingDeal && (
+{showEditModal && editingDeal && (
         <DealEditModal
+          isOpen={showEditModal}
           deal={editingDeal}
           onSave={handleSaveDeal}
           onClose={handleCloseEditModal}

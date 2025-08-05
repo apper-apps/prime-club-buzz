@@ -2,9 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 import NavItem from "@/components/molecules/NavItem";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const Sidebar = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, toggleSidebar } = useSidebar();
 
 const navigation = [
     { to: "/", icon: "BarChart3", label: "Dashboard" },
@@ -40,8 +41,8 @@ const navigation = [
                 </div>
               </div>
             )}
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
+<button
+              onClick={toggleSidebar}
               className="p-2 hover:bg-sidebar-hover rounded-lg transition-colors"
             >
               <ApperIcon 

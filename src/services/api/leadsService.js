@@ -294,7 +294,8 @@ export async function createCustomColumn(columnData) {
       ...columnData,
       Id: newId,
       createdAt: new Date().toISOString(),
-      order: customColumns.length + 1
+      order: customColumns.length + 1,
+      conditionalRules: columnData.conditionalRules || []
     };
     
     customColumns.push(newColumn);
@@ -312,7 +313,11 @@ export async function updateCustomColumn(id, updates) {
       throw new Error('Column not found');
     }
     
-    customColumns[index] = { ...customColumns[index], ...updates };
+    customColumns[index] = { 
+      ...customColumns[index], 
+      ...updates,
+      conditionalRules: updates.conditionalRules || customColumns[index].conditionalRules || []
+    };
     return customColumns[index];
   } catch (error) {
     console.error('Error updating custom column:', error);

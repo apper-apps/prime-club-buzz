@@ -201,26 +201,28 @@ const CustomColumns = () => {
 const ColumnItem = ({ column, index, onEdit, onDelete, onReorder }) => {
   const [isDragging, setIsDragging] = useState(false);
 
-  const getTypeIcon = (type) => {
+const getTypeIcon = (type) => {
     const icons = {
       text: "Type",
       number: "Hash",
       date: "Calendar",
       select: "ChevronDown",
       boolean: "ToggleLeft",
-      url: "Link"
+      url: "Link",
+      conditional: "GitBranch"
     };
     return icons[type] || "Type";
   };
 
-  const getTypeColor = (type) => {
+const getTypeColor = (type) => {
     const colors = {
       text: "info",
       number: "primary",
       date: "warning",
       select: "accent",
       boolean: "success",
-      url: "default"
+      url: "default",
+      conditional: "secondary"
     };
     return colors[type] || "default";
   };
@@ -303,23 +305,25 @@ const ColumnItem = ({ column, index, onEdit, onDelete, onReorder }) => {
 };
 
 const ColumnFormModal = ({ column, onClose, onSubmit, title }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: column?.name || "",
     type: column?.type || "text",
     required: column?.required || false,
     defaultValue: column?.defaultValue || "",
-    selectOptions: column?.selectOptions || []
+    selectOptions: column?.selectOptions || [],
+    conditionalRules: column?.conditionalRules || []
   });
   const [optionInput, setOptionInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const columnTypes = [
+const columnTypes = [
     { value: "text", label: "Text", icon: "Type" },
     { value: "number", label: "Number", icon: "Hash" },
     { value: "date", label: "Date", icon: "Calendar" },
     { value: "select", label: "Select/Dropdown", icon: "ChevronDown" },
     { value: "boolean", label: "True/False", icon: "ToggleLeft" },
-    { value: "url", label: "URL/Link", icon: "Link" }
+    { value: "url", label: "URL/Link", icon: "Link" },
+    { value: "conditional", label: "If-Then-Else Logic", icon: "GitBranch" }
   ];
 
   const handleSubmit = async (e) => {
@@ -396,11 +400,12 @@ const ColumnFormModal = ({ column, onClose, onSubmit, title }) => {
                 Column Type *
               </label>
               <select
-                value={formData.type}
+value={formData.type}
                 onChange={(e) => setFormData(prev => ({ 
                   ...prev, 
                   type: e.target.value,
-                  selectOptions: e.target.value === "select" ? prev.selectOptions : []
+                  selectOptions: e.target.value === "select" ? prev.selectOptions : [],
+                  conditionalRules: e.target.value === "conditional" ? prev.conditionalRules : []
                 }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 disabled={column?.isDefault}
@@ -459,8 +464,7 @@ const ColumnFormModal = ({ column, onClose, onSubmit, title }) => {
                 </div>
               </div>
             )}
-
-            <div className="flex items-center space-x-2">
+<div className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 id="required"
@@ -473,6 +477,12 @@ const ColumnFormModal = ({ column, onClose, onSubmit, title }) => {
               </label>
             </div>
 
+            {formData.type === "conditional" && (
+              <ConditionalRulesBuilder
+                rules={formData.conditionalRules}
+                onChange={(rules) => setFormData(prev => ({ ...prev, conditionalRules: rules }))}
+              />
+            )}
             {formData.type !== "boolean" && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -562,6 +572,275 @@ const DeleteConfirmationModal = ({ column, onClose, onConfirm }) => {
           </div>
         </div>
       </motion.div>
+    </div>
+  );
+};
+
+const ConditionalRulesBuilder = ({ rules, onChange }) => {
+  const [newRule, setNewRule] = useState({
+    condition: { field: "", operator: "", value: "" },
+    thenAction: { type: "setValue", value: "" },
+    elseAction: { type: "setValue", value: "" }
+  });
+
+  const availableFields = [
+    "Company Name", "Email", "Website URL", "Phone", "Status", "Lead Score", "Source"
+  ];
+
+  const operators = [
+    { value: "equals", label: "Equals" },
+    { value: "notEquals", label: "Not Equals" },
+    { value: "contains", label: "Contains" },
+    { value: "notContains", label: "Does Not Contain" },
+    { value: "greaterThan", label: "Greater Than" },
+    { value: "lessThan", label: "Less Than" },
+    { value: "isEmpty", label: "Is Empty" },
+    { value: "isNotEmpty", label: "Is Not Empty" }
+  ];
+
+  const actionTypes = [
+    { value: "setValue", label: "Set Value" },
+    { value: "concatenate", label: "Concatenate" },
+    { value: "calculate", label: "Calculate" },
+    { value: "copyFrom", label: "Copy From Field" }
+  ];
+
+  const addRule = () => {
+    if (newRule.condition.field && newRule.condition.operator) {
+      onChange([...rules, { ...newRule, id: Date.now() }]);
+      setNewRule({
+        condition: { field: "", operator: "", value: "" },
+        thenAction: { type: "setValue", value: "" },
+        elseAction: { type: "setValue", value: "" }
+      });
+    }
+  };
+
+  const removeRule = (ruleId) => {
+    onChange(rules.filter(rule => rule.id !== ruleId));
+  };
+
+  const updateRule = (ruleId, updates) => {
+    onChange(rules.map(rule => rule.id === ruleId ? { ...rule, ...updates } : rule));
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <label className="block text-sm font-medium text-gray-700">
+          If-Then-Else Rules *
+        </label>
+        <div className="text-xs text-gray-500">
+          {rules.length} rule{rules.length !== 1 ? 's' : ''} configured
+        </div>
+      </div>
+
+      {/* Existing Rules */}
+      {rules.length > 0 && (
+        <div className="space-y-3 max-h-60 overflow-y-auto">
+          {rules.map((rule, index) => (
+            <div key={rule.id} className="bg-gray-50 p-4 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <ApperIcon name="GitBranch" size={16} className="text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700">Rule {index + 1}</span>
+                </div>
+                <Button
+                  type="button"
+                  onClick={() => removeRule(rule.id)}
+                  variant="ghost"
+                  size="sm"
+                  className="p-1 text-red-600 hover:text-red-700"
+                >
+                  <ApperIcon name="Trash2" size={14} />
+                </Button>
+              </div>
+
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center space-x-2 text-gray-700">
+                  <span className="font-medium text-blue-600">IF</span>
+                  <span className="bg-white px-2 py-1 rounded border text-xs font-mono">
+                    {rule.condition.field}
+                  </span>
+                  <span>{operators.find(op => op.value === rule.condition.operator)?.label}</span>
+                  {rule.condition.value && (
+                    <span className="bg-white px-2 py-1 rounded border text-xs font-mono">
+                      {rule.condition.value}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2 text-gray-700">
+                  <span className="font-medium text-green-600">THEN</span>
+                  <span>{actionTypes.find(act => act.value === rule.thenAction.type)?.label}</span>
+                  {rule.thenAction.value && (
+                    <span className="bg-white px-2 py-1 rounded border text-xs font-mono">
+                      {rule.thenAction.value}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2 text-gray-700">
+                  <span className="font-medium text-orange-600">ELSE</span>
+                  <span>{actionTypes.find(act => act.value === rule.elseAction.type)?.label}</span>
+                  {rule.elseAction.value && (
+                    <span className="bg-white px-2 py-1 rounded border text-xs font-mono">
+                      {rule.elseAction.value}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Add New Rule Form */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+        <div className="flex items-center space-x-2 mb-3">
+          <ApperIcon name="Plus" size={16} className="text-blue-600" />
+          <span className="text-sm font-medium text-blue-900">Add New Rule</span>
+        </div>
+
+        <div className="space-y-3">
+          {/* IF Condition */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">IF Field</label>
+              <select
+                value={newRule.condition.field}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  condition: { ...prev.condition, field: e.target.value }
+                }))}
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select field...</option>
+                {availableFields.map(field => (
+                  <option key={field} value={field}>{field}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Operator</label>
+              <select
+                value={newRule.condition.operator}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  condition: { ...prev.condition, operator: e.target.value }
+                }))}
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select operator...</option>
+                {operators.map(op => (
+                  <option key={op.value} value={op.value}>{op.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Value</label>
+              <Input
+                value={newRule.condition.value}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  condition: { ...prev.condition, value: e.target.value }
+                }))}
+                placeholder="Condition value"
+                className="text-sm"
+                disabled={["isEmpty", "isNotEmpty"].includes(newRule.condition.operator)}
+              />
+            </div>
+          </div>
+
+          {/* THEN Action */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-green-700 mb-1">THEN Action</label>
+              <select
+                value={newRule.thenAction.type}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  thenAction: { ...prev.thenAction, type: e.target.value }
+                }))}
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500"
+              >
+                {actionTypes.map(action => (
+                  <option key={action.value} value={action.value}>{action.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-green-700 mb-1">THEN Value</label>
+              <Input
+                value={newRule.thenAction.value}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  thenAction: { ...prev.thenAction, value: e.target.value }
+                }))}
+                placeholder="Then value"
+                className="text-sm"
+              />
+            </div>
+          </div>
+
+          {/* ELSE Action */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs font-medium text-orange-700 mb-1">ELSE Action</label>
+              <select
+                value={newRule.elseAction.type}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  elseAction: { ...prev.elseAction, type: e.target.value }
+                }))}
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+              >
+                {actionTypes.map(action => (
+                  <option key={action.value} value={action.value}>{action.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-orange-700 mb-1">ELSE Value</label>
+              <Input
+                value={newRule.elseAction.value}
+                onChange={(e) => setNewRule(prev => ({
+                  ...prev,
+                  elseAction: { ...prev.elseAction, value: e.target.value }
+                }))}
+                placeholder="Else value"
+                className="text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              onClick={addRule}
+              disabled={!newRule.condition.field || !newRule.condition.operator}
+              size="sm"
+              className="text-sm"
+            >
+              <ApperIcon name="Plus" size={14} className="mr-1" />
+              Add Rule
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {formData.type === "conditional" && rules.length === 0 && (
+        <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+          <div className="flex items-center space-x-2">
+            <ApperIcon name="AlertCircle" size={16} />
+            <span>Conditional columns require at least one if-then-else rule to function properly.</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2439,24 +2439,23 @@ return (
                     </tbody>
                   </table>
                 </div>
-              </div>
-            </div>
 </div>
+            </div>
           )}
         </div>
       </div>
-
-      {/* Enhanced Workflow Builder Modal */}
+{/* Enhanced Workflow Builder Modal */}
       {isBuilderOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          {/* Enhanced Overlay with Blur Effect */}
-          <div 
-            className="fixed inset-0 bg-gradient-to-br from-black/60 via-blue-900/20 to-purple-900/20 backdrop-blur-sm transition-all duration-300"
-            onClick={() => setIsBuilderOpen(false)}
-          ></div>
-          
-          {/* Enhanced Centered Modal */}
-          <div className="flex min-h-full items-center justify-center p-6">
+          <div className="relative">
+            {/* Enhanced Overlay with Blur Effect */}
+            <div 
+              className="fixed inset-0 bg-gradient-to-br from-black/60 via-blue-900/20 to-purple-900/20 backdrop-blur-sm transition-all duration-300"
+              onClick={() => setIsBuilderOpen(false)}
+            ></div>
+            
+            {/* Enhanced Centered Modal */}
+            <div className="flex min-h-full items-center justify-center p-6">
             <div 
               className="relative bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col border border-gray-100"
               onClick={(e) => e.stopPropagation()}
@@ -2899,10 +2898,9 @@ return (
                   </div>
                 </div>
 </div>
-            </div>
+          </div>
           </div>
         </div>
-</div>
       )}
     </div>
   );

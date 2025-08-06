@@ -2434,15 +2434,15 @@ return (
                               )}
                             </div>
                           </td>
-                        </tr>
+</tr>
                       ))}
-</tbody>
+                    </tbody>
                   </table>
                 </div>
               </div>
             </div>
           )}
-</div>
+        </div>
       </div>
 
       {/* Enhanced Workflow Builder Modal */}

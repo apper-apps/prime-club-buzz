@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { applyGlobalColumnOrder, updateGlobalColumnOrder } from "@/services/columnOrderService";
 import { createLead, deleteLead, getLeads, getVisibleColumns, updateLead } from "@/services/api/leadsService";
@@ -94,6 +94,7 @@ const getDefaultValueForType = (type) => {
 
 function Leads() {
 const navigate = useNavigate();
+const location = useLocation();
   
   // State for columns data
   const [columns, setColumns] = useState([])
@@ -747,17 +748,25 @@ return (
           >
 <div className="flex items-center gap-4">
               {/* Tab Navigation */}
-              <div className="flex bg-surface-100 rounded-lg p-1">
+<div className="flex bg-surface-100 rounded-lg p-1">
                 <button
                   onClick={() => navigate('/leads')}
-                  className="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 bg-white text-primary-600 shadow-sm"
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center ${
+                    location.pathname === '/leads'
+                      ? 'bg-white text-primary-600 shadow-sm'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-50'
+                  }`}
                 >
                   <ApperIcon name="Users" size={16} className="mr-2" />
                   Leads
                 </button>
                 <button
                   onClick={() => navigate('/leads/custom-columns')}
-                  className="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 text-text-secondary hover:text-text-primary hover:bg-surface-50"
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center ${
+                    location.pathname === '/leads/custom-columns'
+                      ? 'bg-white text-primary-600 shadow-sm'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-50'
+                  }`}
                 >
                   <ApperIcon name="Settings" size={16} className="mr-2" />
                   Custom Columns
